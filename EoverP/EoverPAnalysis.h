@@ -45,9 +45,6 @@ public:
   virtual EL::StatusCode finalize ();
   virtual EL::StatusCode histFinalize ();
 
-  // these are the functions not inherited from Algorithm
-  virtual EL::StatusCode configure ();
-
   StatusCode trackClusterMatching (const xAOD::TrackParticle* trk, const xAOD::CaloClusterContainer* ccls, float eventWeight);
   
   /// @cond

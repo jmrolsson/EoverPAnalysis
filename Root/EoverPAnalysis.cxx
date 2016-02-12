@@ -9,9 +9,6 @@
 
 #include <xAODAnaHelpers/tools/ReturnCheck.h>
 
-#include "TEnv.h"
-#include "TSystem.h"
-
 // this is needed to distribute the algorithm to the workers
 ClassImp(EoverPAnalysis)
 
@@ -42,50 +39,16 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   Info("histInitialize()", "%s", m_name.c_str() );
   RETURN_CHECK("xAH::Algorithm::algInitialize()", xAH::Algorithm::algInitialize(), "");
   // needed here and not in initalize since this is called first
-  Info("histInitialize()", "Attempting to configure using: %s", getConfig().c_str());
-  if ( this->configure() == EL::StatusCode::FAILURE ) {
-    Error("histInitialize()", "%s failed to properly configure. Exiting.", m_name.c_str() );
-    return EL::StatusCode::FAILURE;
-  } else {
-    Info("histInitialize()", "Successfully configured! ");
-  }
-
-  // declare class and add histograms to output
-  m_plots_tcmatch = new TCMatchHists(m_name+"_tcmatch", m_detailStr);
-  RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_tcmatch -> initialize(), "");
-  m_plots_tcmatch -> record( wk() );
-
-  return EL::StatusCode::SUCCESS;
-}
-
-EL::StatusCode EoverPAnalysis :: configure ()
-{
-  if(!getConfig().empty()){
-    // the file exists, use TEnv to read it off
-    TEnv* config = new TEnv(getConfig(true).c_str());
-
-    //
-    //  If Container Name is already set dont read it from the config
-    //   (Allows to pass as argument in setup script)
-    //
-    m_inTrackContainerName    = config->GetValue("InputTrackContainer",  m_inTrackContainerName.c_str());
-    m_inClusterContainerName  = config->GetValue("InputClusterContainer",  m_inClusterContainerName.c_str());
-    m_detailStr               = config->GetValue("DetailStr",       m_detailStr.c_str());
-    m_debug                   = config->GetValue("Debug" ,          m_debug);
-
-    Info("configure()", "Loaded in configuration values");
-
-    // everything seems preliminarily ok, let's print config and say we were successful
-    config->Print();
-
-    delete config;
-  }
-
   if( m_inTrackContainerName.empty() || m_inClusterContainerName.empty() || m_detailStr.empty() ){
     Error("configure()", "One or more required configuration values are empty");
     return EL::StatusCode::FAILURE;
   }
 
+
+  // declare class and add histograms to output
+  m_plots_tcmatch = new TCMatchHists(m_name+"_tcmatch", m_detailStr);
+  RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_tcmatch -> initialize(), "");
+  m_plots_tcmatch -> record( wk() );
 
   return EL::StatusCode::SUCCESS;
 }

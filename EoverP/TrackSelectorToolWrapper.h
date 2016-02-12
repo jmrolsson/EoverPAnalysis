@@ -33,6 +33,7 @@ public:
   std::string              m_cutLevel; // "NoCut", "Loose", "LoosePrimary", "TightPrimary", "LooseMuon", "LooseElectron", "MinBias", "HILoose", "HITight"
   float m_maxD0;
   float m_maxZ0SinTheta;
+  int m_minNTrtHits; 
 
   std::string              m_passAuxDecorKeys;
   std::string              m_failAuxDecorKeys;
@@ -78,9 +79,6 @@ public:
   virtual EL::StatusCode postExecute ();
   virtual EL::StatusCode finalize ();
   virtual EL::StatusCode histFinalize ();
-
-  // these are the functions not inherited from Algorithm
-  virtual EL::StatusCode configure ();
 
   // added functions not from Algorithm
   // why does this need to be virtual?

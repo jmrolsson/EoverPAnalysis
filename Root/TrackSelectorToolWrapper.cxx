@@ -18,9 +18,7 @@
 #include <xAODAnaHelpers/tools/ReturnCheck.h>
 
 // ROOT include(s):
-#include "TEnv.h"
 #include "TFile.h"
-#include "TSystem.h"
 #include "TObjArray.h"
 #include "TObjString.h"
 
@@ -65,106 +63,12 @@ TrackSelectorToolWrapper :: TrackSelectorToolWrapper (std::string className) :
   m_cutLevel                = "LoosePrimary"; 
   m_maxD0                   = 1e8; 
   m_maxZ0SinTheta           = 1e8; 
+  m_minNTrtHits             = 1e8;             
 
   m_passAuxDecorKeys        = "";
 
   m_failAuxDecorKeys        = "";
 
-}
-
-EL::StatusCode  TrackSelectorToolWrapper :: configure ()
-{
-  if(!getConfig().empty()){
-    Info("configure()", "Configuing TrackSelectorToolWrapper Interface. User configuration read from : %s ", getConfig().c_str());
-
-    TEnv* config = new TEnv(getConfig(true).c_str());
-
-    // read debug flag from .config file
-    m_debug         = config->GetValue("Debug" ,      m_debug);
-    m_useCutFlow    = config->GetValue("UseCutFlow",  m_useCutFlow);
-
-    // input container to be read from TEvent or TStore
-    m_inContainerName  = config->GetValue("InputContainer",  m_inContainerName.c_str());
-
-    // decorate selected objects that pass the cuts
-    m_decorateSelectedObjects = config->GetValue("DecorateSelectedObjects", m_decorateSelectedObjects);
-    // additional functionality : create output container of selected objects
-    //                            using the SG::VIEW_ELEMENTS option
-    //                            decorating and output container should not be mutually exclusive
-    m_createSelectedContainer = config->GetValue("CreateSelectedContainer", m_createSelectedContainer);
-    // if requested, a new container is made using the SG::VIEW_ELEMENTS option
-    m_outContainerName        = config->GetValue("OutputContainer", m_outContainerName.c_str());
-    // if only want to look at a subset of object
-    m_nToProcess              = config->GetValue("NToProcess", m_nToProcess);
-
-    // cuts
-    m_pass_max                = config->GetValue("PassMax",       m_pass_max);
-    m_pass_min                = config->GetValue("PassMin",       m_pass_min);
-    
-    m_cutLevel                = config->GetValue("CutLevel",      m_cutLevel.c_str());
-    m_maxD0                   = config->GetValue("MaxD0",         m_maxD0);
-    m_maxZ0SinTheta           = config->GetValue("MaxZ0SinTheta", m_maxZ0SinTheta);
-
-    m_passAuxDecorKeys        = config->GetValue("PassDecorKeys", m_passAuxDecorKeys.c_str());
-
-    m_failAuxDecorKeys        = config->GetValue("FailDecorKeys", m_failAuxDecorKeys.c_str());
-
-    config->Print();
-    Info("configure()", "TrackSelectorToolWrapper Interface succesfully configured! ");
-
-    delete config;
-  }
-
-  // parse and split by comma
-  std::string token;
-  std::istringstream ss(m_passAuxDecorKeys);
-  while(std::getline(ss, token, ',')){
-    m_passKeys.push_back(token);
-  }
-  ss.clear();
-  ss.str(m_failAuxDecorKeys);
-  while(std::getline(ss, token, ',')){
-    m_failKeys.push_back(token);
-  }
-
-
-  if( m_inContainerName.empty() ) {
-    Error("configure()", "InputContainer is empty!");
-    return EL::StatusCode::FAILURE;
-  }
-
-    // initialize and configure the track selection tool
-    //------------------------------------------------------
-    m_selTool = new InDet::InDetTrackSelectionTool("TrackSelection");
-    RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("CutLevel", m_cutLevel.c_str()), ""); // set tool to apply the pre-defined cuts        
-    RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("maxD0", 1.0), ""); // additional cuts can be set on top of/overwriting the pre-defined ones
-    RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("maxZ0SinTheta", 3.0), ""); // additional cuts can be set on top of/overwriting the pre-defined ones
-    RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->initialize(), "");
-    //  Pion-vertex Association
-    //  Loose
-    //  |d0BL| < 2 mm
-    //  |Δ z0BL sin θ| < 3 mm
-    //  https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/TrackingCPMoriond2016
-
-    // m_trktovxtool = new CP::LooseTrackVertexAssociationTool("LooseTrackVertexAssociationTool");
-    // m_trktovxtool->setProperty("dzSinTheta_cut", 1.5.); // mm
-
-//  //
-//  //  Pass Keys
-//  //
-//  for(auto& passKey : m_passKeys){
-//    if(!(trk->auxdata< char >(passKey) == '1')) { return 0;}
-//  }
-//
-//  //
-//  //  Fail Keys
-//  //
-//  for(auto& failKey : m_failKeys){
-//    if(!(trk->auxdata< char >(failKey) == '0')) {return 0;}
-//  }
-
-
-  return EL::StatusCode::SUCCESS;
 }
 
 EL::StatusCode TrackSelectorToolWrapper :: setupJob (EL::Job& job)
@@ -245,8 +149,50 @@ EL::StatusCode TrackSelectorToolWrapper :: initialize ()
     m_cutflowHistW->GetXaxis()->FindBin(m_name.c_str());
   }
 
-  if ( this->configure() == EL::StatusCode::FAILURE ) {
-    Error("initialize()", "Failed to properly configure. Exiting." );
+  // parse and split by comma
+  std::string token;
+  std::istringstream ss(m_passAuxDecorKeys);
+  while(std::getline(ss, token, ',')){
+    m_passKeys.push_back(token);
+  }
+  ss.clear();
+  ss.str(m_failAuxDecorKeys);
+  while(std::getline(ss, token, ',')){
+    m_failKeys.push_back(token);
+  }
+
+  // initialize and configure the track selection tool
+  //------------------------------------------------------
+  m_selTool = new InDet::InDetTrackSelectionTool("TrackSelection");
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("CutLevel", m_cutLevel.c_str()), ""); // set tool to apply the pre-defined cuts        
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("maxD0", 2.0), ""); // additional cuts can be set on top of/overwriting the pre-defined ones
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("maxZ0SinTheta", 3.0), ""); // additional cuts can be set on top of/overwriting the pre-defined ones
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("minNTrtHits", 20), ""); // additional cuts can be set on top of/overwriting the pre-defined ones
+  //  Pion-vertex Association
+  //  Loose
+  //  |d0BL| < 2 mm
+  //  |Δ z0BL sin θ| < 3 mm
+  //  https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/TrackingCPMoriond2016
+
+  // m_trktovxtool = new CP::LooseTrackVertexAssociationTool("LooseTrackVertexAssociationTool");
+  // m_trktovxtool->setProperty("dzSinTheta_cut", 1.5.); // mm
+
+  //  //
+  //  //  Pass Keys
+  //  //
+  //  for(auto& passKey : m_passKeys){
+  //    if(!(trk->auxdata< char >(passKey) == '1')) { return 0;}
+  //  }
+  //
+  //  //
+  //  //  Fail Keys
+  //  //
+  //  for(auto& failKey : m_failKeys){
+  //    if(!(trk->auxdata< char >(failKey) == '0')) {return 0;}
+  //  }
+
+  if( m_inContainerName.empty() ) {
+    Error("initialize()", "InputContainer is empty!");
     return EL::StatusCode::FAILURE;
   }
 

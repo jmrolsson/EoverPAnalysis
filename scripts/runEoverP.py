@@ -17,6 +17,7 @@ trks_select = trks+"Select"
 trk_cutLevel = "LoosePrimary"
 trk_maxD0 = 2.0
 trk_maxZ0SinTheta = 3.0
+trk_minNTrtHits = 20
 
 ''' Set up all the algorithms '''
 c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
@@ -51,6 +52,7 @@ c.setalg("TrackSelectorToolWrapper", {"m_name": "TrackSelector_"+trk_cutLevel,
                                       "m_cutLevel": trk_cutLevel,
                                       "m_maxD0": trk_maxD0,
                                       "m_maxZ0SinTheta": trk_maxZ0SinTheta,
+                                      "m_minNTrtHits": trk_minNTrtHits,
                                       "m_outContainerName": trks_select,
                                       "m_useCutFlow": True,
                                       "m_debug": False})

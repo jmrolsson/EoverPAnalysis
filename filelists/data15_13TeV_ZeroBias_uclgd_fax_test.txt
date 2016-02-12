@@ -1,0 +1,5 @@
+root://fax.mwt2.org:1094//atlas/rucio/data15_13TeV:DAOD_JETM5.06565605._000001.pool.root.1
+root://fax.mwt2.org:1094//atlas/rucio/data15_13TeV:DAOD_JETM5.06565610._000001.pool.root.1
+root://fax.mwt2.org:1094//atlas/rucio/data15_13TeV:DAOD_JETM5.06565626._000001.pool.root.1
+root://fax.mwt2.org:1094//atlas/rucio/data15_13TeV:DAOD_JETM5.06565611._000001.pool.root.1
+root://fax.mwt2.org:1094//atlas/rucio/data15_13TeV:DAOD_JETM5.06565640._000001.pool.root.1
