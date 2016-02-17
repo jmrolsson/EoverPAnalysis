@@ -1,17 +1,17 @@
-#include "EoverP/TCMatchHists.h"
+#include "EoverP/EoverPHists.h"
 
 #include <math.h>
 
 #include "xAODAnaHelpers/tools/ReturnCheck.h"
 
-TCMatchHists :: TCMatchHists (std::string name, std::string detailStr) :
+EoverPHists :: EoverPHists (std::string name, std::string detailStr) :
   HistogramManager(name, detailStr)
 {
 }
 
-TCMatchHists :: ~TCMatchHists () {}
+EoverPHists :: ~EoverPHists () {}
 
-StatusCode TCMatchHists::initialize()
+StatusCode EoverPHists::initialize()
 {
   // number of bins and ranges for histograms
   int nBinsDR = 100;       float minDR = 0;                float maxDR = 1;
@@ -22,7 +22,7 @@ StatusCode TCMatchHists::initialize()
   int nBinsTrkN = 10;      float minTrkN = -0.5;           float maxTrkN = 9.5;
   int nBinsCclN = 100;     float minCclN = -0.5;           float maxCclN = 99.5;
 
-  int nBinsEoP = 220;      float minEoP = -10;             float maxEoP = 100;
+  int nBinsEoP = 250;      float minEoP = -5;             float maxEoP = 20;
 
   //// 1D histograms
 
@@ -55,6 +55,9 @@ StatusCode TCMatchHists::initialize()
   // eoverp plots
   m_eop_neccl = book(m_name, "eop_neccls", "E/p (nearest cluster, maxDR=0.2)", nBinsEoP, minEoP, maxEoP);
   m_eop_sum_ccls_dRcone = book(m_name, "eop_sum_ccls_dRcone", "E/p (sum of clusters with dR<0.2)", nBinsEoP, minEoP, maxEoP);
+  
+  m_eop_neccl_etaL06_ptG12L18 = book(m_name, "eop_neccls_etaL06_ptG12L18 ", "E/p (nearest cluster, maxDR=0.2)", nBinsEoP, minEoP, maxEoP);
+  m_eop_sum_ccls_dRcone_etaL06_ptG12L18  = book(m_name, "eop_sum_ccls_dRcone_etaL06_ptG12L18 ", "E/p (sum of clusters with dR<0.2)", nBinsEoP, minEoP, maxEoP);
 
   //// 2D histograms
 
@@ -65,17 +68,17 @@ StatusCode TCMatchHists::initialize()
 
   // eoverp plots
   m_eop_neccl_vs_trk_pt = book(m_name, "eop_neccl_vs_trk_pt", "track p_{T}", nBinsTrkPt, minTrkPt, maxTrkPt, "E/p (nearest cluster, maxDR=0.2)", nBinsEoP, minEoP, maxEoP);
-  m_eop_neccl_vs_trk_eta = book(m_name, "eop_neccl_vs_trk_eta", "track p_{T}", nBinsEta, minEta, maxEta, "E/p (nearest cluster, maxDR=0.2)", nBinsEoP, minEoP, maxEoP);
-  m_eop_neccl_vs_trk_phi = book(m_name, "eop_neccl_vs_trk_phi", "track p_{T}", nBinsPhi, minPhi, maxPhi, "E/p (nearest cluster, maxDR=0.2)", nBinsEoP, minEoP, maxEoP);
+  m_eop_neccl_vs_trk_eta = book(m_name, "eop_neccl_vs_trk_eta", "track #eta", nBinsEta, minEta, maxEta, "E/p (nearest cluster, maxDR=0.2)", nBinsEoP, minEoP, maxEoP);
+  m_eop_neccl_vs_trk_phi = book(m_name, "eop_neccl_vs_trk_phi", "track #phi", nBinsPhi, minPhi, maxPhi, "E/p (nearest cluster, maxDR=0.2)", nBinsEoP, minEoP, maxEoP);
   m_eop_sum_ccls_dRcone_vs_trk_pt = book(m_name, "eop_sum_ccls_dRcone_vs_trk_pt", "track p_{T}", nBinsTrkPt, minTrkPt, maxTrkPt, "E/p (sum of clusters with dR<0.2)", nBinsEoP, minEoP, maxEoP);
-  m_eop_sum_ccls_dRcone_vs_trk_eta = book(m_name, "eop_sum_ccls_dRcone_vs_trk_eta", "track p_{T}", nBinsEta, minEta, maxEta, "E/p (sum of clusters with dR<0.2)", nBinsEoP, minEoP, maxEoP);
-  m_eop_sum_ccls_dRcone_vs_trk_phi = book(m_name, "eop_sum_ccls_dRcone_vs_trk_phi", "track p_{T}", nBinsPhi, minPhi, maxPhi, "E/p (sum of clusters with dR<0.2)", nBinsEoP, minEoP, maxEoP);
+  m_eop_sum_ccls_dRcone_vs_trk_eta = book(m_name, "eop_sum_ccls_dRcone_vs_trk_eta", "track #eta", nBinsEta, minEta, maxEta, "E/p (sum of clusters with dR<0.2)", nBinsEoP, minEoP, maxEoP);
+  m_eop_sum_ccls_dRcone_vs_trk_phi = book(m_name, "eop_sum_ccls_dRcone_vs_trk_phi", "track #phi", nBinsPhi, minPhi, maxPhi, "E/p (sum of clusters with dR<0.2)", nBinsEoP, minEoP, maxEoP);
 
   // if worker is passed to the class add histograms to the output
   return StatusCode::SUCCESS;
 }
 
-StatusCode TCMatchHists::execute( const xAOD::TrackParticleContainer* trks, const xAOD::CaloClusterContainer* ccls, float eventWeight )
+StatusCode EoverPHists::execute( const xAOD::TrackParticleContainer* trks, const xAOD::CaloClusterContainer* ccls, float eventWeight )
 {
   float trk_pt = 0;
   float trk_eta = 0; 
@@ -107,7 +110,7 @@ StatusCode TCMatchHists::execute( const xAOD::TrackParticleContainer* trks, cons
     trk_phi = trk->phi();
 
     // keep track of the number of tracks within a certain dR from the selected track
-    int trk_ntrks_maxDR[10] = {0};
+   int trk_ntrks_maxDR[10] = {0};
     isolatedTrack = true;
     trk2_itr = trks->begin();
     for( ; trk2_itr != trk2_end; ++trk2_itr ) {
@@ -198,11 +201,11 @@ StatusCode TCMatchHists::execute( const xAOD::TrackParticleContainer* trks, cons
       m_eop_sum_ccls_dRcone_vs_trk_eta -> Fill(trk_eta, eop_sum_ccls_dRcone, eventWeight); 
       m_eop_sum_ccls_dRcone_vs_trk_phi -> Fill(trk_phi, eop_sum_ccls_dRcone, eventWeight); 
 
-      // if (abs(trk_eta) < 0.6) {
-      // }
-      // if (abs(trk_eta) > 0.6 && abs(trk_eta) < 1.2) {
-      // }
-    }
+      if (abs(trk_eta) < 0.6 && trk_pt > 1.2 && trk_pt < 1.8) {
+        m_eop_neccl_etaL06_ptG12L18           -> Fill(eop_neccl, eventWeight); 
+        m_eop_sum_ccls_dRcone_etaL06_ptG12L18 -> Fill(eop_sum_ccls_dRcone , eventWeight); 
+      }
+    } // END eoverp histograms
 
   } // END loop tracks 
 

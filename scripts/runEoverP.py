@@ -24,7 +24,8 @@ c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
                                  "m_applyGRLCut": False,
                                  "m_cleanPowheg": False,
                                  "m_doPUreweighting": False,
-                                 "m_applyPrimaryVertexCut": False,
+                                 "m_applyPrimaryVertexCut": True,
+                                 "m_PVNTrack": 3,
                                  "m_applyEventCleaningCut": False,
                                  "m_applyCoreFlagsCut": False,
                                  "m_applyTriggerCut": False,
@@ -35,7 +36,7 @@ c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
 ''' Fill histograms with tracking details, passing only basic event selection'''
 c.setalg("TrackHistsAlgo", {"m_name": "Tracks_JETM5",
                             "m_inContainerName": trks,
-                            "m_detailStr": "IPDetails HitCounts",
+                            "m_detailStr": "2D IPDetails HitCounts",
                             "m_debug": False})
 
 ''' Fill histograms with cluster details, passing only basic event selection'''
@@ -45,22 +46,22 @@ c.setalg("ClusterHistsAlgo", {"m_name": "Clusters_JETM5",
                               "m_debug": False})
 
 ''' Select the Tracks passing the Tracking CP Recommendations (Moriond 2016)'''
-c.setalg("TrackSelectorToolWrapper", {"m_name": "TrackSelector_"+trk_cutLevel,
-                                      "m_inContainerName": trks,
-                                      "m_decorateSelectedObjects": False,
-                                      "m_createSelectedContainer": True,
-                                      "m_cutLevel": trk_cutLevel,
-                                      "m_maxD0": trk_maxD0,
-                                      "m_maxZ0SinTheta": trk_maxZ0SinTheta,
-                                      "m_minNTrtHits": trk_minNTrtHits,
-                                      "m_outContainerName": trks_select,
-                                      "m_useCutFlow": True,
-                                      "m_debug": False})
+c.setalg("TrackVertexSelection", {"m_name": "TrackSelector_"+trk_cutLevel,
+                                   "m_inContainerName": trks,
+                                   "m_decorateSelectedObjects": False,
+                                   "m_createSelectedContainer": True,
+                                   "m_cutLevel": trk_cutLevel,
+                                   "m_maxD0": trk_maxD0,
+                                   "m_maxZ0SinTheta": trk_maxZ0SinTheta,
+                                   "m_minNTrtHits": trk_minNTrtHits,
+                                   "m_outContainerName": trks_select,
+                                   "m_useCutFlow": True,
+                                   "m_debug": False})
 
 ''' Fill histograms with tracking details, after selection '''
 c.setalg("TrackHistsAlgo", {"m_name": "Tracks_loosePrimary_mD02_mZ0ST3",
                              "m_inContainerName": trks_select,
-                             "m_detailStr": "IPDetails HitCounts",
+                             "m_detailStr": "2D IPDetails HitCounts",
                              "m_debug": False})
 
 ''' Track-cluster matching and E/p histograms '''

@@ -1,11 +1,10 @@
-#ifndef EoverP_TrackSelectorToolWrapper_H
-#define EoverP_TrackSelectorToolWrapper_H
+#ifndef EoverP_TrackVertexSelection_H
+#define EoverP_TrackVertexSelection_H
 
 // EDM include(s):
 #include "xAODTracking/VertexContainer.h"
 #include "xAODTracking/TrackParticleContainer.h"
 #include "InDetTrackSelectionTool/InDetTrackSelectionTool.h"
-// #include "TrackVertexAssociationTool/TrackVertexAssociationTool.h"
 
 // algorithm wrapper
 #include "xAODAnaHelpers/Algorithm.h"
@@ -13,7 +12,7 @@
 // ROOT include(s):
 #include "TH1D.h"
 
-class TrackSelectorToolWrapper : public xAH::Algorithm
+class TrackVertexSelection : public xAH::Algorithm
 {
   // put your configuration variables here as public variables.
   // that way they can be set directly from CINT and python.
@@ -56,8 +55,7 @@ private:
   // track selection tool
   // https://twiki.cern.ch/twiki/bin/view/AtlasProtected/InDetTrackSelectionTool
   // https://svnweb.cern.ch/trac/atlasoff/browser/InnerDetector/InDetRecTools/InDetTrackSelectionTool
-  InDet::InDetTrackSelectionTool *m_selTool; //!
-  // CP::LooseTrackVertexAssociationTool *m_trktovxtool; //! 
+  InDet::InDetTrackSelectionTool *m_trkSelection;
 
   // variables that don't get filled at submission time should be
   // protected from being send from the submission node to the worker
@@ -67,7 +65,7 @@ public:
   // TH1 *myHist; //!
 
   // this is a standard constructor
-  TrackSelectorToolWrapper(std::string className = "TrackSelectorToolWrapper");
+  TrackVertexSelection(std::string className = "TrackVertexSelection");
 
   // these are the functions inherited from Algorithm
   virtual EL::StatusCode setupJob (EL::Job& job);
@@ -85,7 +83,7 @@ public:
 
   /// @cond
   // this is needed to distribute the algorithm to the workers
-  ClassDef(TrackSelectorToolWrapper, 1);
+  ClassDef(TrackVertexSelection, 1);
   /// @endcond
 };
 

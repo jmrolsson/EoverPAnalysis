@@ -10,11 +10,10 @@
 // EDM include(s):
 #include "AthContainers/ConstDataVector.h"
 #include "InDetTrackSelectionTool/InDetTrackSelectionTool.h"
-// #include "TrackVertexAssociationTool/TrackVertexAssociationTool.h"
 
 // package include(s):
 #include "xAODAnaHelpers/HelperFunctions.h"
-#include "EoverP/TrackSelectorToolWrapper.h"
+#include "EoverP/TrackVertexSelection.h"
 #include <xAODAnaHelpers/tools/ReturnCheck.h>
 
 // ROOT include(s):
@@ -23,13 +22,14 @@
 #include "TObjString.h"
 
 // this is needed to distribute the algorithm to the workers
-ClassImp(TrackSelectorToolWrapper)
+ClassImp(TrackVertexSelection)
 
 
-TrackSelectorToolWrapper :: TrackSelectorToolWrapper (std::string className) :
+TrackVertexSelection :: TrackVertexSelection (std::string className) :
     Algorithm(className),
     m_cutflowHist(nullptr),
-    m_cutflowHistW(nullptr)
+    m_cutflowHistW(nullptr),
+    m_trkSelection(nullptr)
 {
   // Here you put any code for the base initialization of variables,
   // e.g. initialize all pointers to 0.  Note that you should only put
@@ -37,7 +37,7 @@ TrackSelectorToolWrapper :: TrackSelectorToolWrapper (std::string className) :
   // called on both the submission and the worker node.  Most of your
   // initialization code will go into histInitialize() and
   // initialize().
-  Info("TrackSelectorToolWrapper()", "Calling constructor");
+  Info("TrackVertexSelection()", "Calling constructor");
 
   // read debug flag from .config file
   m_debug         = false;
@@ -71,7 +71,7 @@ TrackSelectorToolWrapper :: TrackSelectorToolWrapper (std::string className) :
 
 }
 
-EL::StatusCode TrackSelectorToolWrapper :: setupJob (EL::Job& job)
+EL::StatusCode TrackVertexSelection :: setupJob (EL::Job& job)
 {
   // Here you put code that sets up the job on the submission object
   // so that it is ready to work with your algorithm, e.g. you can
@@ -84,14 +84,14 @@ EL::StatusCode TrackSelectorToolWrapper :: setupJob (EL::Job& job)
   Info("setupJob()", "Calling setupJob");
 
   job.useXAOD ();
-  xAOD::Init( "TrackSelectorToolWrapper" ).ignore(); // call before opening first file
+  xAOD::Init( "TrackVertexSelection" ).ignore(); // call before opening first file
 
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode TrackSelectorToolWrapper :: histInitialize ()
+EL::StatusCode TrackVertexSelection :: histInitialize ()
 {
   // Here you do everything that needs to be done at the very
   // beginning on each worker node, e.g. create histograms and output
@@ -105,7 +105,7 @@ EL::StatusCode TrackSelectorToolWrapper :: histInitialize ()
 
 
 
-EL::StatusCode TrackSelectorToolWrapper :: fileExecute ()
+EL::StatusCode TrackVertexSelection :: fileExecute ()
 {
   // Here you do everything that needs to be done exactly once for every
   // single file, e.g. collect a list of all lumi-blocks processed
@@ -117,7 +117,7 @@ EL::StatusCode TrackSelectorToolWrapper :: fileExecute ()
 
 
 
-EL::StatusCode TrackSelectorToolWrapper :: changeInput (bool /*firstFile*/)
+EL::StatusCode TrackVertexSelection :: changeInput (bool /*firstFile*/)
 {
   // Here you do everything you need to do when we change input files,
   // e.g. resetting branch addresses on trees.  If you are using
@@ -130,7 +130,7 @@ EL::StatusCode TrackSelectorToolWrapper :: changeInput (bool /*firstFile*/)
 
 
 
-EL::StatusCode TrackSelectorToolWrapper :: initialize ()
+EL::StatusCode TrackVertexSelection :: initialize ()
 {
   // Here you do everything that you need to do after the first input
   // file has been connected and before the first event is processed,
@@ -163,21 +163,24 @@ EL::StatusCode TrackSelectorToolWrapper :: initialize ()
 
   // initialize and configure the track selection tool
   //------------------------------------------------------
-  m_selTool = new InDet::InDetTrackSelectionTool("TrackSelection");
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("CutLevel", m_cutLevel.c_str()), ""); // set tool to apply the pre-defined cuts        
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("maxD0", 2.0), ""); // additional cuts can be set on top of/overwriting the pre-defined ones
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("maxZ0SinTheta", 3.0), ""); // additional cuts can be set on top of/overwriting the pre-defined ones
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_selTool->setProperty("minNTrtHits", 20), ""); // additional cuts can be set on top of/overwriting the pre-defined ones
+  // std::cout << "m_maxD0: " << m_maxD0 << std::endl;
+  // std::cout << "m_maxZ0SinTheta: " << m_maxZ0SinTheta << std::endl;
+  // std::cout << "m_minNTrtHits:" << m_minNTrtHits << std::endl;
+
+  m_trkSelection = new InDet::InDetTrackSelectionTool("TrackSelection");
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxD0", 2.0), ""); // additional cuts can be set on top of/overwriting the pre-defined ones
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxZ0SinTheta", 3.0), ""); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxTrtEtaAcceptance", 0.0), ""); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxEtaForTrtHitCuts", 2.0), ""); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNTrtHits", 20), ""); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("CutLevel", m_cutLevel.c_str()), ""); // set tool to apply the pre-defined cuts        
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->initialize(), ""); 
   //  Pion-vertex Association
   //  Loose
   //  |d0BL| < 2 mm
   //  |Δ z0BL sin θ| < 3 mm
   //  https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/TrackingCPMoriond2016
 
-  // m_trktovxtool = new CP::LooseTrackVertexAssociationTool("LooseTrackVertexAssociationTool");
-  // m_trktovxtool->setProperty("dzSinTheta_cut", 1.5.); // mm
-
-  //  //
   //  //  Pass Keys
   //  //
   //  for(auto& passKey : m_passKeys){
@@ -206,14 +209,14 @@ EL::StatusCode TrackSelectorToolWrapper :: initialize ()
   m_numEventPass  = 0;
   m_numObjectPass = 0;
 
-  Info("initialize()", "TrackSelectorToolWrapper Interface succesfully initialized!" );
+  Info("initialize()", "TrackVertexSelection Interface succesfully initialized!" );
 
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode TrackSelectorToolWrapper :: execute ()
+EL::StatusCode TrackVertexSelection :: execute ()
 {
   // Here you do everything that needs to be done on every single
   // events, e.g. read input variables, apply cuts, and fill
@@ -228,11 +231,11 @@ EL::StatusCode TrackSelectorToolWrapper :: execute ()
 
   // get the collection from TEvent or TStore
   const xAOD::TrackParticleContainer* inTracks(nullptr);
-  RETURN_CHECK("TrackSelectorToolWrapper::execute()", HelperFunctions::retrieve(inTracks, m_inContainerName, m_event, m_store, m_verbose) ,"");
+  RETURN_CHECK("TrackVertexSelection::execute()", HelperFunctions::retrieve(inTracks, m_inContainerName, m_event, m_store, m_verbose) ,"");
 
   // get primary vertex
   const xAOD::VertexContainer *vertices(nullptr);
-  RETURN_CHECK("TrackSelectorToolWrapper::execute()", HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store, m_verbose) ,"");
+  RETURN_CHECK("TrackVertexSelection::execute()", HelperFunctions::retrieve(vertices, "PrimaryVertices", m_event, m_store, m_verbose) ,"");
   const xAOD::Vertex *pvx = HelperFunctions::getPrimaryVertex(vertices);
 
 
@@ -243,15 +246,13 @@ EL::StatusCode TrackSelectorToolWrapper :: execute ()
     selectedTracks = new ConstDataVector<xAOD::TrackParticleContainer>(SG::VIEW_ELEMENTS);
   }
 
-  xAOD::TrackParticleContainer::const_iterator trk_itr = inTracks->begin();
-  xAOD::TrackParticleContainer::const_iterator trk_end = inTracks->end();
   int nPass(0); int nObj(0);
-  for( ; trk_itr != trk_end; ++trk_itr ){
+  for(const auto trk : *inTracks){
 
     // if only looking at a subset of tracks make sure all are decorrated
     if( m_nToProcess > 0 && nObj >= m_nToProcess ) {
       if(m_decorateSelectedObjects) {
-        (*trk_itr)->auxdecor< char >( "passSel" ) = -1;
+        trk->auxdecor< char >( "passSel" ) = -1;
       } else {
         break;
       }
@@ -259,16 +260,15 @@ EL::StatusCode TrackSelectorToolWrapper :: execute ()
     }
 
     nObj++;
-    // int passSel = m_selTool->accept(*trk_itr, &pvx);  
-    int passSel = m_selTool->accept(*trk_itr);  
+    int passSel = m_trkSelection->accept(*trk, pvx);  
     if(m_decorateSelectedObjects) {
-      (*trk_itr)->auxdecor< char >( "passSel" ) = passSel;
+      trk->auxdecor< char >( "passSel" ) = passSel;
     }
 
     if(passSel) {
       nPass++;
       if(m_createSelectedContainer) {
-        selectedTracks->push_back( *trk_itr );
+        selectedTracks->push_back( trk );
       }
     }
   }
@@ -288,7 +288,7 @@ EL::StatusCode TrackSelectorToolWrapper :: execute ()
 
   // add output container to TStore
   if( m_createSelectedContainer ) {
-    RETURN_CHECK( "TrackSelectorToolWrapper::execute()", m_store->record( selectedTracks, m_outContainerName ), "Failed to store container.");
+    RETURN_CHECK( "TrackVertexSelection::execute()", m_store->record( selectedTracks, m_outContainerName ), "Failed to store container.");
   }
 
   m_numEventPass++;
@@ -301,7 +301,7 @@ EL::StatusCode TrackSelectorToolWrapper :: execute ()
 }
 
 
-EL::StatusCode TrackSelectorToolWrapper :: postExecute ()
+EL::StatusCode TrackVertexSelection :: postExecute ()
 {
   // Here you do everything that needs to be done after the main event
   // processing.  This is typically very rare, particularly in user
@@ -314,7 +314,7 @@ EL::StatusCode TrackSelectorToolWrapper :: postExecute ()
 
 
 
-EL::StatusCode TrackSelectorToolWrapper :: finalize ()
+EL::StatusCode TrackVertexSelection :: finalize ()
 {
   // This method is the mirror image of initialize(), meaning it gets
   // called after the last event has been processed on the worker node
@@ -328,12 +328,16 @@ EL::StatusCode TrackSelectorToolWrapper :: finalize ()
 
   Info("finalize()", "Deleting tool instances...");
 
+  if ( m_trkSelection ) {
+    delete m_trkSelection; m_trkSelection = nullptr;
+  }
+
   return EL::StatusCode::SUCCESS;
 }
 
 
 
-EL::StatusCode TrackSelectorToolWrapper :: histFinalize ()
+EL::StatusCode TrackVertexSelection :: histFinalize ()
 {
   // This method is the mirror image of histInitialize(), meaning it
   // gets called after the last event has been processed on the worker

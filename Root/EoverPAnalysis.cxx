@@ -14,7 +14,7 @@ ClassImp(EoverPAnalysis)
 
 EoverPAnalysis :: EoverPAnalysis (std::string className) :
     Algorithm(className),
-    m_plots_tcmatch(nullptr)
+    m_plots_eop(nullptr)
 {
   m_inTrackContainerName    = "";
   m_inClusterContainerName  = "";
@@ -46,9 +46,9 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
 
 
   // declare class and add histograms to output
-  m_plots_tcmatch = new TCMatchHists(m_name+"_tcmatch", m_detailStr);
-  RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_tcmatch -> initialize(), "");
-  m_plots_tcmatch -> record( wk() );
+  m_plots_eop = new EoverPHists(m_name, m_detailStr);
+  RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop -> initialize(), "");
+  m_plots_eop -> record( wk() );
 
   return EL::StatusCode::SUCCESS;
 }
@@ -75,6 +75,16 @@ EL::StatusCode EoverPAnalysis :: execute ()
     eventWeight = eventInfo->auxdecor< float >( "mcEventWeight" );
   }
 
+  float mu(-1.);
+  if( eventInfo->isAvailable< float >( "actualInteractionsPerCrossing" ) ) {
+    mu = eventInfo->actualInteractionsPerCrossing();
+  }
+  
+  float avg_mu(-1.);
+  if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) ) {
+    avg_mu = eventInfo->averageInteractionsPerCrossing();
+  }
+
   const xAOD::TrackParticleContainer* trks(nullptr);
   RETURN_CHECK("EoverPAnalysis::execute()", HelperFunctions::retrieve(trks, m_inTrackContainerName, m_event, m_store, m_verbose) ,"");
 
@@ -82,7 +92,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
   RETURN_CHECK("EoverPAnalysis::execute()", HelperFunctions::retrieve(ccls, m_inClusterContainerName, m_event, m_store, m_verbose) ,"");
 
   // make some diagnostic plots to test the track-cluster matching
-  RETURN_CHECK("EoverPAnalysis::execute()", m_plots_tcmatch->execute(trks, ccls, eventWeight), "");
+  RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop->execute(trks, ccls, eventInfo, eventWeight), "");
 
   xAOD::TrackParticleContainer::const_iterator trk_itr = trks->begin();
   xAOD::TrackParticleContainer::const_iterator trk_end = trks->end();
@@ -111,7 +121,7 @@ EL::StatusCode EoverPAnalysis :: finalize () { return EL::StatusCode::SUCCESS; }
 EL::StatusCode EoverPAnalysis :: histFinalize ()
 {
   // clean up memory
-  if(m_plots_tcmatch) delete m_plots_tcmatch;
+  if(m_plots_eop) delete m_plots_eop;
   RETURN_CHECK("xAH::Algorithm::algFinalize()", xAH::Algorithm::algFinalize(), "");
   return EL::StatusCode::SUCCESS;
 }

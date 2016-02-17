@@ -8,7 +8,7 @@
 #include "xAODAnaHelpers/Algorithm.h"
 
 // Histograms
-#include "EoverP/TCMatchHists.h"
+#include "EoverP/EoverPHists.h"
 
 class EoverPAnalysis : public xAH::Algorithm
 {
@@ -22,7 +22,7 @@ public:
   std::string m_detailStr;
 
 private:
-  TCMatchHists* m_plots_tcmatch; //!
+  EoverPHists* m_plots_eop; //!
 
   // variables that don't get filled at submission time should be
   // protected from being send from the submission node to the worker
