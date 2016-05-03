@@ -1,6 +1,7 @@
 #ifndef EoverP_EoverPAnalysis_H
 #define EoverP_EoverPAnalysis_H
 
+#include "xAODTracking/VertexContainer.h"
 #include "xAODTracking/TrackParticleContainer.h"
 #include "xAODCaloEvent/CaloClusterContainer.h"
 

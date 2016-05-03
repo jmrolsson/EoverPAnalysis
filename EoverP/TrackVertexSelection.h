@@ -18,13 +18,13 @@ class TrackVertexSelection : public xAH::Algorithm
   // that way they can be set directly from CINT and python.
 public:
 
-  bool m_useCutFlow;            //!
+  bool m_useCutFlow;
 
   // configuration variables
-  std::string m_inContainerName;      // input container name
-  std::string m_outContainerName;     // output container name
-  bool  m_decorateSelectedObjects; // decorate selected objects? defaul passSel
-  bool  m_createSelectedContainer; // fill using SG::VIEW_ELEMENTS to be light weight
+  std::string m_inContainerName;    // input container name
+  std::string m_outContainerName;   // output container name
+  bool  m_decorateSelectedObjects;  // decorate selected objects? defaul passSel
+  bool  m_createSelectedContainer;  // fill using SG::VIEW_ELEMENTS to be light weight
   int   m_nToProcess;               // look at n objects
   int   m_pass_min;                 // minimum number of objects passing cuts
   int   m_pass_max;                 // maximum number of objects passing cuts
@@ -33,7 +33,7 @@ public:
   float m_maxD0;
   float m_maxZ0SinTheta;
   int m_minNTrtHits; 
-
+  
   std::string              m_passAuxDecorKeys;
   std::string              m_failAuxDecorKeys;
 
@@ -45,6 +45,7 @@ private:
   int m_numEvent;         //!
   int m_numObject;        //!
   int m_numEventPass;     //!
+  int m_weightNumEventPass; //!
   int m_numObjectPass;    //!
 
   // cutflow
@@ -52,10 +53,17 @@ private:
   TH1D* m_cutflowHistW;         //!
   int   m_cutflow_bin;          //!
 
+  /* object-level cutflow */
+
+  TH1D* m_trk_cutflowHist_1;  //!
+
+  int   m_trk_cutflow_all;    //!
+  int   m_trk_cutflow_accept; //!
+
   // track selection tool
   // https://twiki.cern.ch/twiki/bin/view/AtlasProtected/InDetTrackSelectionTool
   // https://svnweb.cern.ch/trac/atlasoff/browser/InnerDetector/InDetRecTools/InDetTrackSelectionTool
-  InDet::InDetTrackSelectionTool *m_trkSelection;
+  InDet::InDetTrackSelectionTool *m_trkSelection; //!
 
   // variables that don't get filled at submission time should be
   // protected from being send from the submission node to the worker

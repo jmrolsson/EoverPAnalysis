@@ -2,8 +2,10 @@
 #define EoverP_EoverPHists_H
 
 #include "xAODAnaHelpers/HistogramManager.h"
+#include "xAODTracking/VertexContainer.h"
 #include "xAODTracking/TrackParticleContainer.h"
 #include "xAODCaloEvent/CaloClusterContainer.h"
+#include "xAODEventInfo/EventInfo.h"
 
 class EoverPHists : public HistogramManager
 {
@@ -12,7 +14,7 @@ class EoverPHists : public HistogramManager
     ~EoverPHists();
 
     StatusCode initialize();
-    StatusCode execute( const xAOD::TrackParticleContainer* trks, const xAOD::CaloClusterContainer* ccls, float eventWeight );
+    StatusCode execute( const xAOD::TrackParticleContainer* trks, const xAOD::CaloClusterContainer* ccls, const xAOD::VertexContainer *vtxs, const xAOD::EventInfo* eventInfo, float eventWeight );
     using HistogramManager::book; // make other overloaded versions of book() to show up in subclass
     using HistogramManager::execute; // overload
 
@@ -27,8 +29,13 @@ class EoverPHists : public HistogramManager
   private:
 
     //// 1D histograms
+    
+    // event level plots
+    TH1F* m_mu; //!
+    TH1F* m_avg_mu; //!
+    TH1F* m_npv; //!
 
-    //track-track plots
+    // track-track plots
     TH1F* m_trk_ntrks_maxDR01; //!
     TH1F* m_trk_ntrks_maxDR02; //!
     TH1F* m_trk_ntrks_maxDR03; //!
@@ -57,8 +64,24 @@ class EoverPHists : public HistogramManager
     // eoverp plots
     TH1F* m_eop_neccl; //!
     TH1F* m_eop_sum_ccls_dRcone; //!
-    TH1F* m_eop_neccl_etaL06_ptG12L18; //! 
-    TH1F* m_eop_sum_ccls_dRcone_etaL06_ptG12L18; //! 
+    TH1F* m_eop_maxE_ccl_dRcone; //!
+    TH1F* m_eop_neccl_pG2 ; //!
+    TH1F* m_eop_sum_ccls_dRcone_pG2 ; //!
+    TH1F* m_eop_maxE_ccl_dRcone_pG2 ; //!
+
+    TH1F* m_eop_neccl_etaL08; //! 
+    TH1F* m_eop_sum_ccls_dRcone_etaL08; //! 
+    TH1F* m_eop_maxE_ccl_dRcone_etaL08; //! 
+    TH1F* m_eop_neccl_etaL08_pG2 ; //! 
+    TH1F* m_eop_sum_ccls_dRcone_etaL08_pG2 ; //! 
+    TH1F* m_eop_maxE_ccl_dRcone_etaL08_pG2 ; //! 
+
+    TH1F* m_eop_neccl_etaG08L17; //! 
+    TH1F* m_eop_sum_ccls_dRcone_etaG08L17; //! 
+    TH1F* m_eop_maxE_ccl_dRcone_etaG08L17; //! 
+    TH1F* m_eop_neccl_etaG08L17_pG2 ; //! 
+    TH1F* m_eop_sum_ccls_dRcone_etaG08L17_pG2 ; //! 
+    TH1F* m_eop_maxE_ccl_dRcone_etaG08L17_pG2 ; //! 
 
     // 2D histograms
 
@@ -68,12 +91,18 @@ class EoverPHists : public HistogramManager
     TH2F* m_trk_neccl_trk_phi_vs_neccl_phi ; //! 
 
     // eoverp plots
-    TH2F* m_eop_neccl_vs_trk_pt; //!
+    TH2F* m_eop_neccl_vs_avg_mu; //!
+    TH2F* m_eop_neccl_vs_trk_p; //!
     TH2F* m_eop_neccl_vs_trk_eta; //!
     TH2F* m_eop_neccl_vs_trk_phi; //!
-    TH2F* m_eop_sum_ccls_dRcone_vs_trk_pt; //!
+    TH2F* m_eop_sum_ccls_dRcone_vs_avg_mu; //!
+    TH2F* m_eop_sum_ccls_dRcone_vs_trk_p; //!
     TH2F* m_eop_sum_ccls_dRcone_vs_trk_eta; //!
     TH2F* m_eop_sum_ccls_dRcone_vs_trk_phi; //!
+    TH2F* m_eop_maxE_ccl_dRcone_vs_avg_mu; //!
+    TH2F* m_eop_maxE_ccl_dRcone_vs_trk_p; //!
+    TH2F* m_eop_maxE_ccl_dRcone_vs_trk_eta; //!
+    TH2F* m_eop_maxE_ccl_dRcone_vs_trk_phi; //!
 };
 
 

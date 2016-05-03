@@ -12,6 +12,7 @@
 #include "InDetTrackSelectionTool/InDetTrackSelectionTool.h"
 
 // package include(s):
+#include "xAODEventInfo/EventInfo.h"
 #include "xAODAnaHelpers/HelperFunctions.h"
 #include "EoverP/TrackVertexSelection.h"
 #include <xAODAnaHelpers/tools/ReturnCheck.h>
@@ -147,6 +148,11 @@ EL::StatusCode TrackVertexSelection :: initialize ()
     m_cutflowHistW = (TH1D*)file->Get("cutflow_weighted");
     m_cutflow_bin  = m_cutflowHist->GetXaxis()->FindBin(m_name.c_str());
     m_cutflowHistW->GetXaxis()->FindBin(m_name.c_str());
+
+    // retrieve the object cutflow
+    m_trk_cutflowHist_1  = (TH1D*)file->Get("cutflow_trks_1");
+    m_trk_cutflow_all    = m_trk_cutflowHist_1->GetXaxis()->FindBin("all");
+    m_trk_cutflow_accept = m_trk_cutflowHist_1->GetXaxis()->FindBin("accept");
   }
 
   // parse and split by comma
@@ -166,14 +172,13 @@ EL::StatusCode TrackVertexSelection :: initialize ()
   // std::cout << "m_maxD0: " << m_maxD0 << std::endl;
   // std::cout << "m_maxZ0SinTheta: " << m_maxZ0SinTheta << std::endl;
   // std::cout << "m_minNTrtHits:" << m_minNTrtHits << std::endl;
-
   m_trkSelection = new InDet::InDetTrackSelectionTool("TrackSelection");
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxD0", 2.0), ""); // additional cuts can be set on top of/overwriting the pre-defined ones
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxZ0SinTheta", 3.0), ""); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxTrtEtaAcceptance", 0.0), ""); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxEtaForTrtHitCuts", 2.0), ""); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNTrtHits", 20), ""); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("CutLevel", m_cutLevel.c_str()), ""); // set tool to apply the pre-defined cuts        
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxD0", 2.0), "failed to set maxD0 property"); // additional cuts can be set on top of/overwriting the pre-defined ones
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxZ0SinTheta", 3.0), "failed to set maxZ0SinTheta property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxTrtEtaAcceptance", 0.0), "failed to set property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxEtaForTrtHitCuts", 2.0), "failed to set property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNTrtHits", 20), "failed to set minNTrtHits property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("CutLevel", m_cutLevel.c_str()), "failed to set CutLevel property"); // set tool to apply the pre-defined cuts        
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->initialize(), ""); 
   //  Pion-vertex Association
   //  Loose
@@ -207,6 +212,7 @@ EL::StatusCode TrackVertexSelection :: initialize ()
   m_numEvent      = 0;
   m_numObject     = 0;
   m_numEventPass  = 0;
+  m_weightNumEventPass  = 0;
   m_numObjectPass = 0;
 
   Info("initialize()", "TrackVertexSelection Interface succesfully initialized!" );
@@ -225,7 +231,18 @@ EL::StatusCode TrackVertexSelection :: execute ()
 
   if(m_debug) Info("execute()", "Applying Track Selection... ");
 
-  float mcEvtWeight(1); // FIXME - set to something from eventInfo
+  // retrieve event
+  const xAOD::EventInfo* eventInfo(nullptr);
+  RETURN_CHECK("TrackVertexSelection::execute()", HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store, m_verbose) ,"");
+
+  // MC event weight
+  float mcEvtWeight(1.0);
+  static SG::AuxElement::Accessor< float > mcEvtWeightAcc("mcEventWeight");
+  if ( ! mcEvtWeightAcc.isAvailable( *eventInfo ) ) {
+    Error("execute()  ", "mcEventWeight is not available as decoration! Aborting" );
+    return EL::StatusCode::FAILURE;
+  }
+  mcEvtWeight = mcEvtWeightAcc( *eventInfo );
 
   m_numEvent++;
 
@@ -292,10 +309,7 @@ EL::StatusCode TrackVertexSelection :: execute ()
   }
 
   m_numEventPass++;
-  if(m_useCutFlow) {
-    m_cutflowHist ->Fill( m_cutflow_bin, 1 );
-    m_cutflowHistW->Fill( m_cutflow_bin, mcEvtWeight);
-  }
+  m_weightNumEventPass += mcEvtWeight;
 
   return EL::StatusCode::SUCCESS;
 }
@@ -325,6 +339,12 @@ EL::StatusCode TrackVertexSelection :: finalize ()
   // submission node after all your histogram outputs have been
   // merged.  This is different from histFinalize() in that it only
   // gets called on worker nodes that processed input events.
+  //
+  if ( m_useCutFlow ) {
+    Info("histFinalize()", "Filling cutflow");
+    m_cutflowHist ->SetBinContent( m_cutflow_bin, m_numEventPass        );
+    m_cutflowHistW->SetBinContent( m_cutflow_bin, m_weightNumEventPass  );
+  }
 
   Info("finalize()", "Deleting tool instances...");
 

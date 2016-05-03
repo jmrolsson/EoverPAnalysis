@@ -75,15 +75,8 @@ EL::StatusCode EoverPAnalysis :: execute ()
     eventWeight = eventInfo->auxdecor< float >( "mcEventWeight" );
   }
 
-  float mu(-1.);
-  if( eventInfo->isAvailable< float >( "actualInteractionsPerCrossing" ) ) {
-    mu = eventInfo->actualInteractionsPerCrossing();
-  }
-  
-  float avg_mu(-1.);
-  if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) ) {
-    avg_mu = eventInfo->averageInteractionsPerCrossing();
-  }
+  const xAOD::VertexContainer *vtxs(nullptr);
+  RETURN_CHECK("TrackVertexSelection::execute()", HelperFunctions::retrieve(vtxs, "PrimaryVertices", m_event, m_store, m_verbose) ,"");
 
   const xAOD::TrackParticleContainer* trks(nullptr);
   RETURN_CHECK("EoverPAnalysis::execute()", HelperFunctions::retrieve(trks, m_inTrackContainerName, m_event, m_store, m_verbose) ,"");
@@ -92,7 +85,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
   RETURN_CHECK("EoverPAnalysis::execute()", HelperFunctions::retrieve(ccls, m_inClusterContainerName, m_event, m_store, m_verbose) ,"");
 
   // make some diagnostic plots to test the track-cluster matching
-  RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop->execute(trks, ccls, eventInfo, eventWeight), "");
+  RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop->execute(trks, ccls, vtxs, eventInfo, eventWeight), "");
 
   xAOD::TrackParticleContainer::const_iterator trk_itr = trks->begin();
   xAOD::TrackParticleContainer::const_iterator trk_end = trks->end();
@@ -105,13 +98,14 @@ EL::StatusCode EoverPAnalysis :: execute ()
 
 StatusCode EoverPAnalysis :: trackClusterMatching(const xAOD::TrackParticle* trk, const xAOD::CaloClusterContainer* ccls, float eventWeight)
 {
-  xAOD::CaloClusterContainer::const_iterator ccl_itr = ccls->begin();
-  xAOD::CaloClusterContainer::const_iterator ccl_end = ccls->end();
-  for( ; ccl_itr != ccl_end; ++ccl_itr ) {
-    const xAOD::CaloCluster* ccl = (*ccl_itr);
-    float trk_ccl_dR = trk->p4().DeltaR( ccl->p4() );
-    // std::cout << trk_ccl_dR << std::endl;
-  }
+  // FIXME Function for track cluster matching, at the moment this is implemented in EoverPHists
+  // xAOD::CaloClusterContainer::const_iterator ccl_itr = ccls->begin();
+  // xAOD::CaloClusterContainer::const_iterator ccl_end = ccls->end();
+  // for( ; ccl_itr != ccl_end; ++ccl_itr ) {
+  //   const xAOD::CaloCluster* ccl = (*ccl_itr);
+  //   float trk_ccl_dR = trk->p4().DeltaR( ccl->p4() );
+  //   // std::cout << trk_ccl_dR << std::endl;
+  // }
 
   return StatusCode::SUCCESS;
 } 
