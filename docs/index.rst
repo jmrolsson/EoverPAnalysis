@@ -6,7 +6,7 @@
 EoverP documentation
 ====================
 
-Welcome to the documentation for the `xAODAnaHelpers role <https://github.com/UCATLAS/xAODAnaHelpers>`_ based RootCore package `EoverP <https://github.com/jolsson/EoverP">`_.
+Welcome to the documentation for the `xAODAnaHelpers <https://github.com/UCATLAS/xAODAnaHelpers>`_ based RootCore package `EoverP <https://github.com/jolsson/EoverP">`_.
 
 This documentation will be updated soon!
 
