@@ -3,20 +3,23 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to EoverP's documentation!
-==================================
+EoverP documentation
+====================
 
-Contents:
+Welcome to the documentation for the <a href="https://github.com/UCATLAS/xAODAnaHelpers>xAODAnaHelpers</a> based RootCore package <a href="https://github.com/jolsson/EoverP">EoverP</a>.
 
-.. toctree::
-   :maxdepth: 2
+This documentation will be updated soon!
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+.. Contents:
+..
+.. .. toctree::
+..    :maxdepth: 2
+..
+..
+.. Indices and tables
+.. ==================
+..
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`
+..
