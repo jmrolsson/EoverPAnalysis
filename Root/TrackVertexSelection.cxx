@@ -61,13 +61,19 @@ TrackVertexSelection :: TrackVertexSelection (std::string className) :
   // cuts
   m_pass_max                = -1;
   m_pass_min                = -1;
+
   m_cutLevel                = "LoosePrimary"; 
-  m_maxD0                   = 1e8; 
-  m_maxZ0SinTheta           = 1e8; 
-  m_minNTrtHits             = 1e8;             
+  m_minPt                   = -1.;
+  m_maxAbsEta               = 1e8;
+  m_maxZ0SinTheta           = 1e8;
+  m_maxZ0                   = 1e8;
+  m_maxD0                   = 1e8;
+  m_minNPixelHits           = -1;
+  m_minNSctHits             = -1;
+  m_minNSiHits              = -1;
+  m_minNTrtHits             = -1;
 
   m_passAuxDecorKeys        = "";
-
   m_failAuxDecorKeys        = "";
 
 }
@@ -169,40 +175,20 @@ EL::StatusCode TrackVertexSelection :: initialize ()
 
   // initialize and configure the track selection tool
   //------------------------------------------------------
-  // std::cout << "m_maxD0: " << m_maxD0 << std::endl;
-  // std::cout << "m_maxZ0SinTheta: " << m_maxZ0SinTheta << std::endl;
-  // std::cout << "m_minNTrtHits:" << m_minNTrtHits << std::endl;
   m_trkSelection = new InDet::InDetTrackSelectionTool("TrackSelection");
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxD0", 2.0), "failed to set maxD0 property"); // additional cuts can be set on top of/overwriting the pre-defined ones
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxZ0SinTheta", 3.0), "failed to set maxZ0SinTheta property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minPt", static_cast<double>(m_minPt)), "failed to set minPt property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxAbsEta", static_cast<double>(m_maxAbsEta)), "failed to set maxAbsEta property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxZ0SinTheta", static_cast<double>(m_maxZ0SinTheta)), "failed to set maxZ0SinTheta property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxD0", static_cast<double>(m_maxD0)), "failed to set maxD0 property");
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxZ0", static_cast<double>(m_maxZ0)), "failed to set maxZ0 property");
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNPixelHits", static_cast<int>(m_minNPixelHits)), "failed to set minNPixelHits property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNSctHits", static_cast<int>(m_minNSctHits)), "failed to set minNSctHits property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNSiHits", static_cast<int>(m_minNSiHits)), "failed to set minNSiHits property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxTrtEtaAcceptance", 0.0), "failed to set property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxEtaForTrtHitCuts", 2.0), "failed to set property"); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNTrtHits", 20), "failed to set minNTrtHits property"); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("CutLevel", m_cutLevel.c_str()), "failed to set CutLevel property"); // set tool to apply the pre-defined cuts        
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNTrtHits", static_cast<int>(m_minNTrtHits)), "failed to set minNTrtHits property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("CutLevel", m_cutLevel.c_str()), "failed to set CutLevel property");
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->initialize(), ""); 
-  //  Pion-vertex Association
-  //  Loose
-  //  |d0BL| < 2 mm
-  //  |Δ z0BL sin θ| < 3 mm
-  //  https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/TrackingCPMoriond2016
-
-  //  //  Pass Keys
-  //  //
-  //  for(auto& passKey : m_passKeys){
-  //    if(!(trk->auxdata< char >(passKey) == '1')) { return 0;}
-  //  }
-  //
-  //  //
-  //  //  Fail Keys
-  //  //
-  //  for(auto& failKey : m_failKeys){
-  //    if(!(trk->auxdata< char >(failKey) == '0')) {return 0;}
-  //  }
-
-  if( m_inContainerName.empty() ) {
-    Error("initialize()", "InputContainer is empty!");
-    return EL::StatusCode::FAILURE;
-  }
 
   m_event = wk()->xaodEvent();
   m_store = wk()->xaodStore();

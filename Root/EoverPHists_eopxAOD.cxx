@@ -1,5 +1,6 @@
 #include "EoverP/EoverPHists_eopxAOD.h"
 #include "xAODAnaHelpers/tools/ReturnCheck.h"
+#include "xAODAnaHelpers/HelperFunctions.h"
 #include <regex>
 #include <math.h>
 
@@ -45,8 +46,9 @@ StatusCode EoverPHists_eopxAOD::initialize()
   int nBinsEop = 250;      float minEop = -5;             float maxEop = 20;
 
   // equally spaced logarithmic bins for track p
-  int nBinsLogP = 14;      float minLogP = 0.5;             float maxLogP = 30;
-  const Double_t* vecLogPbins = logspace(minLogP, maxLogP, nBinsLogP+1);
+  int nBinsLogP = 15;//      float minLogP = 0.5;             float maxLogP = 30;
+  // const Double_t* vecLogPbins = logspace(minLogP, maxLogP, nBinsLogP+1);
+  const Double_t vecLogPbins[16] = {0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 5.8, 7.3, 9.2, 11.7, 14.8, 18.7, 23.7, 30};
 
   // same eta binning as in run 1 studies 
   int nBinsVarEta = 7;
@@ -113,8 +115,12 @@ StatusCode EoverPHists_eopxAOD::initialize()
   // calo layer with the highest cluster energy
   m_ClusterEnergy_100_highestEnergyLayer = book (m_name, "ClusterEnergy_100_highestEnergyLayer", "Calorimeter layer", 21, 0, 21); 
   m_ClusterEnergy_200_highestEnergyLayer = book (m_name, "ClusterEnergy_200_highestEnergyLayer", "Calorimeter layer", 21, 0, 21); 
+  m_ClusterEnergy_100_highestEnergyLayer_vs_E = book (m_name, "ClusterEnergy_100_highestEnergyLayer_vs_E", "E [GeV]", nBinsE, minE, maxE, "Calorimeter layer", 21, 0, 21); 
+  m_ClusterEnergy_200_highestEnergyLayer_vs_E = book (m_name, "ClusterEnergy_200_highestEnergyLayer_vs_E", "E [GeV]", nBinsE, minE, maxE, "Calorimeter layer", 21, 0, 21); 
   m_ClusterEnergy_100_highestEnergyLayer_passTrkIso = book (m_name, "ClusterEnergy_100_highestEnergyLayer_passTrkIso", "Calorimeter layer", 21, 0, 21); 
   m_ClusterEnergy_200_highestEnergyLayer_passTrkIso = book (m_name, "ClusterEnergy_200_highestEnergyLayer_passTrkIso", "Calorimeter layer", 21, 0, 21); 
+  m_ClusterEnergy_100_highestEnergyLayer_passTrkIso_vs_E = book (m_name, "ClusterEnergy_100_highestEnergyLayer_passTrkIso_vs_E", "E [GeV]", nBinsE, minE, maxE, "Calorimeter layer", 21, 0, 21); 
+  m_ClusterEnergy_200_highestEnergyLayer_passTrkIso_vs_E = book (m_name, "ClusterEnergy_200_highestEnergyLayer_passTrkIso_vs_E", "E [GeV]", nBinsE, minE, maxE, "Calorimeter layer", 21, 0, 21); 
 
   m_trk_TileEfrac_100 = book (m_name, "trk_TileEfrac_100", "Tile Energy Fraction", 100, 0, 5.0); 
   m_trk_TileEfrac_100_vs_trk_p = book (m_name, "trk_TileEfrac_100_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "Tile Energy Fraction", 100, 0, 5.0); 
@@ -123,10 +129,14 @@ StatusCode EoverPHists_eopxAOD::initialize()
 
   m_trk_SumTileLayers_over_HAD_100 = book (m_name, "trk_SumTileLayers_over_HAD_100", "#Sigma Tile layers / HAD", 100, 0, 5.0); 
   m_trk_SumLarLayers_over_EM_100 = book (m_name, "trk_SumLarLayers_over_EM_100", "#Sigma Lar layers / EM", 100, 0, 5.0); 
+  m_trk_SumTileLarHECLayers_over_HAD_100 = book (m_name, "trk_SumTileLarHECLayers_over_HAD_100", "#Sigma Tile+LarEM layers / EM", 100, 0, 5.0); 
+  m_trk_SumLarEMLayers_over_EM_100 = book (m_name, "trk_SumLarEMLayers_over_EM_100", "#Sigma LarEM layers / EM", 100, 0, 5.0); 
   m_trk_EMandHAD_over_Total_100 = book (m_name, "trk_EMandHAD_over_Total_100", "(EM+HAD) / Total", 100, 0, 5.0); 
   m_trk_SumAllLayers_over_Total_100 = book (m_name, "trk_SumAllLayers_over_Total_100", "#Sigma all layers / Total", 100, 0, 5.0); 
   m_trk_SumTileLayers_over_HAD_200 = book (m_name, "trk_SumTileLayers_over_HAD_200", "#Sigma Tile layers / HAD", 100, 0, 5.0); 
   m_trk_SumLarLayers_over_EM_200 = book (m_name, "trk_SumLarLayers_over_EM_200", "#Sigma Lar layers / EM", 100, 0, 5.0); 
+  m_trk_SumTileLarHECLayers_over_HAD_200 = book (m_name, "trk_SumTileLarHECLayers_over_HAD_200", "#Sigma Tile+LarEM layers / EM", 100, 0, 5.0); 
+  m_trk_SumLarEMLayers_over_EM_200 = book (m_name, "trk_SumLarEMLayers_over_EM_200", "#Sigma LarEM layers / EM", 100, 0, 5.0); 
   m_trk_EMandHAD_over_Total_200 = book (m_name, "trk_EMandHAD_over_Total_200", "(EM+HAD) / Total", 100, 0, 5.0); 
   m_trk_SumAllLayers_over_Total_200 = book (m_name, "trk_SumAllLayers_over_Total_200", "#Sigma all layers / Total", 100, 0, 5.0); 
 
@@ -142,7 +152,6 @@ StatusCode EoverPHists_eopxAOD::initialize()
       m_trk_matched_Total_ClusterEnergy_100 = book(m_name, "trk_Total_ClusterEnergy_0_100", "E", nBinsE, minE, maxE);
       m_eop_Total_ClusterEnergy_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100"), "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      std::cout << m_eop_Total_ClusterEnergy_100_vs_trkP->GetNbinsX() << std::endl; 
       m_eop_Total_ClusterEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergy_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergy_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -377,7 +386,7 @@ StatusCode EoverPHists_eopxAOD::execute( const xAOD::TrackParticleContainer* trk
   m_mu_avg -> Fill(mu_avg, eventWeight);
 
   // get number of primary vtxs 
-  float npv = vtxs->size();
+  float npv = HelperFunctions::countPrimaryVertices(vtxs, 2);
   m_npv -> Fill(npv, eventWeight);
 
   // number of tracks
@@ -426,6 +435,10 @@ StatusCode EoverPHists_eopxAOD::execute( const xAOD::TrackParticleContainer* trk
   float trk_matched_Tile_ClusterEnergy_200 = 0; 
   float trk_matched_Lar_ClusterEnergy_100 = 0; 
   float trk_matched_Lar_ClusterEnergy_200 = 0; 
+  float trk_matched_TileLarHEC_ClusterEnergy_100 = 0; 
+  float trk_matched_TileLarHEC_ClusterEnergy_200 = 0; 
+  float trk_matched_LarEM_ClusterEnergy_100 = 0; 
+  float trk_matched_LarEM_ClusterEnergy_200 = 0; 
 
   // loop over tracks and clusters around a selected track, plot how many tracks (clusters) fall within a certain dR
   float maxDR_ranges[] = {.1, .2, .3, .4, .5, .6, .7, .8, .9, 1.0};
@@ -438,6 +451,8 @@ StatusCode EoverPHists_eopxAOD::execute( const xAOD::TrackParticleContainer* trk
   // track-track and track-cluster (outer loop over all tracks)
   for( ; trk_itr != trk_end; ++trk_itr ) {
 
+    // count the number of tracks passing all selections
+    trk_n += 1;
     const xAOD::TrackParticle* trk = (*trk_itr);
     if (TMath::Abs(trk->qOverP())>0.) trk_p = (1./TMath::Abs(trk->qOverP()))/1e3; 
     trk_pt  = trk->pt()/1e3;
@@ -456,8 +471,6 @@ StatusCode EoverPHists_eopxAOD::execute( const xAOD::TrackParticleContainer* trk
       if (TMath::Abs(trk_etaCALO) > m_trkEtamax) continue;
     }
 
-    trk_n += 1;
-
     // apply TileCal cuts
     trk_matched_Total_ClusterEnergy_100 = trk->auxdata<float>("CALO_Total_ClusterEnergy_0_100")/1e3; 
     trk_matched_HAD_ClusterEnergy_100 = trk->auxdata<float>("CALO_HAD_ClusterEnergy_0_100")/1e3; 
@@ -469,16 +482,28 @@ StatusCode EoverPHists_eopxAOD::execute( const xAOD::TrackParticleContainer* trk
     trk_matched_Tile_ClusterEnergy_200 = 0; 
     trk_matched_Lar_ClusterEnergy_100 = 0; 
     trk_matched_Lar_ClusterEnergy_200 = 0; 
-    for (int i=0; i<m_layer_tile.size(); i++) {
+    trk_matched_TileLarHEC_ClusterEnergy_100 = 0; 
+    trk_matched_TileLarHEC_ClusterEnergy_200 = 0; 
+    trk_matched_LarEM_ClusterEnergy_100 = 0; 
+    trk_matched_LarEM_ClusterEnergy_200 = 0; 
+    for (unsigned int i=0; i<m_layer_tile.size(); i++) {
       trk_matched_Tile_ClusterEnergy_100 += trk->auxdata<float>(std::string("CALO_ClusterEnergy_"+m_layer_tile[i]+"_100"))/1e3; 
       trk_matched_Tile_ClusterEnergy_200 += trk->auxdata<float>(std::string("CALO_ClusterEnergy_"+m_layer_tile[i]+"_200"))/1e3; 
     }
-    for (int i=0; i<m_layer_lar.size(); i++) {
+    for (unsigned int i=0; i<m_layer_lar.size(); i++) {
       trk_matched_Lar_ClusterEnergy_100 += trk->auxdata<float>(std::string("CALO_ClusterEnergy_"+m_layer_lar[i]+"_100"))/1e3; 
       trk_matched_Lar_ClusterEnergy_200 += trk->auxdata<float>(std::string("CALO_ClusterEnergy_"+m_layer_lar[i]+"_200"))/1e3; 
     }
-    float trk_TileEfrac_100 = TMath::Abs(trk_matched_Tile_ClusterEnergy_100/trk_matched_Total_ClusterEnergy_100);    
-    float trk_TileEfrac_200 = TMath::Abs(trk_matched_Tile_ClusterEnergy_200/trk_matched_Total_ClusterEnergy_200);    
+    for (unsigned int i=0; i<m_layer_tile_larhec.size(); i++) {
+      trk_matched_TileLarHEC_ClusterEnergy_100 += trk->auxdata<float>(std::string("CALO_ClusterEnergy_"+m_layer_tile_larhec[i]+"_100"))/1e3; 
+      trk_matched_TileLarHEC_ClusterEnergy_200 += trk->auxdata<float>(std::string("CALO_ClusterEnergy_"+m_layer_tile_larhec[i]+"_200"))/1e3; 
+    }
+    for (unsigned int i=0; i<m_layer_larem.size(); i++) {
+      trk_matched_LarEM_ClusterEnergy_100 += trk->auxdata<float>(std::string("CALO_ClusterEnergy_"+m_layer_larem[i]+"_100"))/1e3; 
+      trk_matched_LarEM_ClusterEnergy_200 += trk->auxdata<float>(std::string("CALO_ClusterEnergy_"+m_layer_larem[i]+"_200"))/1e3; 
+    }
+    float trk_TileEfrac_100 = trk_matched_Tile_ClusterEnergy_100/trk_matched_Total_ClusterEnergy_100;    
+    float trk_TileEfrac_200 = trk_matched_Tile_ClusterEnergy_200/trk_matched_Total_ClusterEnergy_200;    
     if (trk_matched_EM_ClusterEnergy_200 > m_LarEmax) continue; // energy loss in LAr 
     if (trk_TileEfrac_200 < m_TileEfrac) continue;
 
@@ -498,9 +523,14 @@ StatusCode EoverPHists_eopxAOD::execute( const xAOD::TrackParticleContainer* trk
     m_trk_SumTileLayers_over_HAD_200 -> Fill(trk_matched_Tile_ClusterEnergy_200/trk_matched_HAD_ClusterEnergy_200, eventWeight);
     m_trk_SumLarLayers_over_EM_100 -> Fill(trk_matched_Lar_ClusterEnergy_100/trk_matched_EM_ClusterEnergy_100, eventWeight);
     m_trk_SumLarLayers_over_EM_200 -> Fill(trk_matched_Lar_ClusterEnergy_200/trk_matched_EM_ClusterEnergy_200, eventWeight);
+    m_trk_SumTileLarHECLayers_over_HAD_100 -> Fill(trk_matched_TileLarHEC_ClusterEnergy_100/trk_matched_HAD_ClusterEnergy_100, eventWeight);
+    m_trk_SumTileLarHECLayers_over_HAD_200 -> Fill(trk_matched_TileLarHEC_ClusterEnergy_200/trk_matched_HAD_ClusterEnergy_200, eventWeight);
+    m_trk_SumLarEMLayers_over_EM_100 -> Fill(trk_matched_LarEM_ClusterEnergy_100/trk_matched_EM_ClusterEnergy_100, eventWeight);
+    m_trk_SumLarEMLayers_over_EM_200 -> Fill(trk_matched_LarEM_ClusterEnergy_200/trk_matched_EM_ClusterEnergy_200, eventWeight);
     m_trk_EMandHAD_over_Total_100 -> Fill((trk_matched_EM_ClusterEnergy_100+trk_matched_HAD_ClusterEnergy_100)/trk_matched_Total_ClusterEnergy_100, eventWeight);
     m_trk_EMandHAD_over_Total_200 -> Fill((trk_matched_EM_ClusterEnergy_200+trk_matched_HAD_ClusterEnergy_200)/trk_matched_Total_ClusterEnergy_200, eventWeight);
 
+    // basic track properties
     m_trk_p -> Fill(trk_p, eventWeight); 
     m_trk_eta -> Fill(trk_etaCALO, eventWeight); 
     m_trk_eta_abs -> Fill(TMath::Abs(trk_etaCALO), eventWeight); 
@@ -589,10 +619,10 @@ StatusCode EoverPHists_eopxAOD::execute( const xAOD::TrackParticleContainer* trk
 
     int trk_highClusE_100_layer = 0;
     int trk_highClusE_200_layer = 0;
-    float trk_highClusE_100 = -1e6;
-    float trk_highClusE_200 = -1e6;
-    float trk_clusE_100_tmp = -1e6;
-    float trk_clusE_200_tmp = -1e6;
+    float trk_highClusE_100 = -1e8;
+    float trk_highClusE_200 = -1e8;
+    float trk_clusE_100_tmp = -1e8;
+    float trk_clusE_200_tmp = -1e8;
     float trk_clusE_100_sum = 0.;
     float trk_clusE_200_sum = 0.;
     for (int i=0; i<m_layer.size(); i++) { 
@@ -614,6 +644,8 @@ StatusCode EoverPHists_eopxAOD::execute( const xAOD::TrackParticleContainer* trk
     }
     m_ClusterEnergy_100_highestEnergyLayer -> Fill(trk_highClusE_100_layer, eventWeight);
     m_ClusterEnergy_200_highestEnergyLayer -> Fill(trk_highClusE_200_layer, eventWeight);
+    m_ClusterEnergy_100_highestEnergyLayer_vs_E -> Fill(trk_highClusE_100, trk_highClusE_100_layer, eventWeight);
+    m_ClusterEnergy_200_highestEnergyLayer_vs_E -> Fill(trk_highClusE_200, trk_highClusE_200_layer, eventWeight);
 
     m_trk_SumAllLayers_over_Total_100 -> Fill(trk_clusE_100_sum/trk_matched_Total_ClusterEnergy_100, eventWeight);
     m_trk_SumAllLayers_over_Total_200 -> Fill(trk_clusE_200_sum/trk_matched_Total_ClusterEnergy_200, eventWeight);
@@ -642,6 +674,8 @@ StatusCode EoverPHists_eopxAOD::execute( const xAOD::TrackParticleContainer* trk
     }
     m_ClusterEnergy_100_highestEnergyLayer_passTrkIso -> Fill(trk_highClusE_100_layer, eventWeight);
     m_ClusterEnergy_200_highestEnergyLayer_passTrkIso -> Fill(trk_highClusE_200_layer, eventWeight);
+    m_ClusterEnergy_100_highestEnergyLayer_passTrkIso_vs_E -> Fill(trk_highClusE_100, trk_highClusE_100_layer, eventWeight);
+    m_ClusterEnergy_200_highestEnergyLayer_passTrkIso_vs_E -> Fill(trk_highClusE_200, trk_highClusE_200_layer, eventWeight);
 
     // fill eoverp
     if (m_doEMcalib) { 

@@ -48,6 +48,13 @@ class EoverPAnalysis_eopxAOD : public xAH::Algorithm
   private:
     EoverPHists_eopxAOD* m_plots_eop; //!
     EoverPHists_eopxAOD* m_plots_eop_etaL06; //!
+    EoverPHists_eopxAOD* m_plots_eop_etaG06L11; //!
+    EoverPHists_eopxAOD* m_plots_eop_etaG18L19; //!
+    EoverPHists_eopxAOD* m_plots_eop_etaG19L23; //!
+    EoverPHists_eopxAOD* m_plots_eop_pG1200L1800; //!
+    EoverPHists_eopxAOD* m_plots_eop_pG1800L2200; //!
+    EoverPHists_eopxAOD* m_plots_eop_pG2200L2800; //!
+    EoverPHists_eopxAOD* m_plots_eop_pG2800L3600; //!
     EoverPHists_eopxAOD* m_plots_eop_pG2000; //!
     EoverPHists_eopxAOD* m_plots_eop_etaL06_pG2000; //!
     EoverPHists_eopxAOD* m_plots_eop_etaL20_pG2000_LarL1000; //!

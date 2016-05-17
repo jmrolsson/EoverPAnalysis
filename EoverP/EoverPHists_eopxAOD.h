@@ -31,6 +31,8 @@ class EoverPHists_eopxAOD : public HistogramManager
     const std::vector<std::string> m_layer = {"PreSamplerB","PreSamplerE", "EMB1", "EMB2", "EMB3", "EME1", "EME2", "EME3", "HEC0", "HEC1", "HEC2", "HEC3", "TileBar0", "TileBar1", "TileBar2", "TileGap1", "TileGap2", "TileGap3", "TileExt0", "TileExt1", "TileExt2"}; //! array of all the calo layers
     const std::vector<std::string> m_layer_lar = {"EMB1", "EMB2", "EMB3", "EME1", "EME2", "EME3", "HEC0", "HEC1", "HEC2", "HEC3"}; //! array of lar layers only
     const std::vector<std::string> m_layer_tile = {"TileBar0", "TileBar1", "TileBar2", "TileGap1", "TileGap2", "TileGap3", "TileExt0", "TileExt1", "TileExt2"}; //! array of tile layers only
+    const std::vector<std::string> m_layer_tile_larhec = {"TileBar0", "TileBar1", "TileBar2", "TileGap1", "TileGap2", "TileGap3", "TileExt0", "TileExt1", "TileExt2", "HEC0", "HEC1", "HEC2", "HEC3"}; //! array of tile layers and lar hec layers only
+    const std::vector<std::string> m_layer_larem = {"EMB1", "EMB2", "EMB3", "EME1", "EME2", "EME3"}; //! array of lar layers only
     std::string m_trkExtrapol; //! layer where tracks are extrapolated
     bool m_doBgSubtr; //!
     bool m_doEMcalib; //!
@@ -105,8 +107,12 @@ class EoverPHists_eopxAOD : public HistogramManager
     TH2F* m_ClusterEnergy_200_vs_layer_passTrkIso; //! 
     TH1F* m_ClusterEnergy_100_highestEnergyLayer; //!
     TH1F* m_ClusterEnergy_200_highestEnergyLayer; //!
+    TH2F* m_ClusterEnergy_100_highestEnergyLayer_vs_E; //!
+    TH2F* m_ClusterEnergy_200_highestEnergyLayer_vs_E; //!
     TH1F* m_ClusterEnergy_100_highestEnergyLayer_passTrkIso; //!
     TH1F* m_ClusterEnergy_200_highestEnergyLayer_passTrkIso; //!
+    TH2F* m_ClusterEnergy_100_highestEnergyLayer_passTrkIso_vs_E; //!
+    TH2F* m_ClusterEnergy_200_highestEnergyLayer_passTrkIso_vs_E; //!
 
     TH1F* m_trk_TileEfrac_100; //! 
     TH2F* m_trk_TileEfrac_100_vs_trk_p; //! 
@@ -115,10 +121,14 @@ class EoverPHists_eopxAOD : public HistogramManager
 
     TH1F* m_trk_SumTileLayers_over_HAD_100; //! 
     TH1F* m_trk_SumLarLayers_over_EM_100; //!
+    TH1F* m_trk_SumTileLarHECLayers_over_HAD_100; //!
+    TH1F* m_trk_SumLarEMLayers_over_EM_100; //!
     TH1F* m_trk_EMandHAD_over_Total_100; //! 
     TH1F* m_trk_SumAllLayers_over_Total_100; //! 
     TH1F* m_trk_SumTileLayers_over_HAD_200; //! 
     TH1F* m_trk_SumLarLayers_over_EM_200; //!
+    TH1F* m_trk_SumTileLarHECLayers_over_HAD_200; //!
+    TH1F* m_trk_SumLarEMLayers_over_EM_200; //!
     TH1F* m_trk_EMandHAD_over_Total_200; //! 
     TH1F* m_trk_SumAllLayers_over_Total_200; //! 
 
