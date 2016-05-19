@@ -9,6 +9,7 @@ trks = "InDetTrackParticles"
 
 # selected version
 trks_loose = trks+"LoosePrimary"
+trks_loose_notrt = trks+"LoosePrimaryNoTRT"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
 
@@ -20,7 +21,7 @@ c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
                                  "m_applyPrimaryVertexCut": True,
                                  "m_PVNTrack": 4,
                                  "m_applyEventCleaningCut": True,
-                                 "m_applyCoreFlagsCut": False,
+                                 "m_applyCoreFlagsCut": True,
                                  "m_applyTriggerCut": True,
                                  "m_triggerSelection": "HLT_noalg_mb_L1MBTS_1",
                                  "m_useMetaData": False,
@@ -51,6 +52,27 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimary",
 ''' Fill histograms with tracking details, after LoosePrimary selection '''
 c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimary",
                             "m_inContainerName": trks_loose,
+                            "m_detailStr": "2D IPDetails HitCounts",
+                            "m_debug": False})
+
+''' Select tracks passing the "LoosePrimary" but with *NO TRT cut* Tracking CP Recommendations (Moriond 2016)'''
+# https://twiki.cern.ch/twiki/bin/view/AtlasProtected/TrackingCPMoriond2016
+c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimaryNoTRT",
+                                   "m_inContainerName": trks,
+                                   "m_decorateSelectedObjects": False,
+                                   "m_createSelectedContainer": True,
+                                   "m_pass_min": 1.0,
+                                   "m_cutLevel": "LoosePrimary",
+                                   "m_maxD0": 2.0,
+                                   "m_maxZ0SinTheta": 3.0,
+                                   "m_minNTrtHits": -1,
+                                   "m_outContainerName": trks_loose_notrt,
+                                   "m_useCutFlow": False,
+                                   "m_debug": False})
+
+''' Fill histograms with tracking details, after LoosePrimary but with *NO TRT cut* selection '''
+c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimaryNoTRT",
+                            "m_inContainerName": trks_loose_notrt,
                             "m_detailStr": "2D IPDetails HitCounts",
                             "m_debug": False})
 
@@ -100,9 +122,59 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_Run1",
                             "m_detailStr": "2D IPDetails HitCounts",
                             "m_debug": False})
 
+''' E/p histograms with basic track selection'''
+c.setalg("EoverPAnalysis_eopxAOD", {"m_name": "EoverP_BasicEvtSel",
+                                    "m_inTrackContainerName": trks,
+                                    "m_trkExtrapol": "EMB2",
+                                    "m_doBgSubtr" : True,
+                                    "m_doEMcalib": True,
+                                    "m_doLCWcalib": True,
+                                    "m_doCells": True,
+                                    "m_doCaloEM": True,
+                                    "m_doCaloHAD": True,
+                                    "m_doCaloTotal": True,
+                                    "m_trkIsoDRmax": .4,
+                                    "m_doTrkPcut": True,
+                                    "m_trkPmin": 0.,
+                                    "m_trkPmax": 1e8,
+                                    "m_doTrkEtacut": True,
+                                    "m_trkEtamin": 0.,
+                                    "m_trkEtamax": 1e8,
+                                    "m_doTileCuts": True,
+                                    "m_LarEmax": 1e8,
+                                    "m_TileEfrac": -1,
+                                    "m_doEtaPranges": True,
+                                    "m_detailStr": "all",
+                                    "m_debug": False})
+
 ''' E/p histograms with LoosePrimary track selection'''
 c.setalg("EoverPAnalysis_eopxAOD", {"m_name": "EoverP_LoosePrimaryTrks",
                                     "m_inTrackContainerName": trks_loose,
+                                    "m_trkExtrapol": "EMB2",
+                                    "m_doBgSubtr" : True,
+                                    "m_doEMcalib": True,
+                                    "m_doLCWcalib": True,
+                                    "m_doCells": True,
+                                    "m_doCaloEM": True,
+                                    "m_doCaloHAD": True,
+                                    "m_doCaloTotal": True,
+                                    "m_trkIsoDRmax": .4,
+                                    "m_doTrkPcut": True,
+                                    "m_trkPmin": 0.,
+                                    "m_trkPmax": 1e8,
+                                    "m_doTrkEtacut": True,
+                                    "m_trkEtamin": 0.,
+                                    "m_trkEtamax": 1e8,
+                                    "m_doTileCuts": True,
+                                    "m_LarEmax": 1e8,
+                                    "m_TileEfrac": -1,
+                                    "m_doEtaPranges": True,
+                                    "m_detailStr": "all",
+                                    "m_debug": False})
+
+''' E/p histograms with LoosePrimary but with *NO TRT cut* track selection'''
+c.setalg("EoverPAnalysis_eopxAOD", {"m_name": "EoverP_LoosePrimaryTrksNoTRT",
+                                    "m_inTrackContainerName": trks_loose_notrt,
                                     "m_trkExtrapol": "EMB2",
                                     "m_doBgSubtr" : True,
                                     "m_doEMcalib": True,
