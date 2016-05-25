@@ -4,7 +4,7 @@
 #include <regex>
 #include <math.h>
 
-EoverPHists_eopxAOD :: EoverPHists_eopxAOD (std::string name, std::string detailStr, std::string trkExtrapol, bool doBgSubtr, bool doEMcalib, bool doLCWcalib, bool doCells, bool doCaloEM, bool doCaloHAD, bool doCaloTotal, float trkIsoDRmax, float trkIsoPfrac, float LarEmax, float TileEfrac, bool doTrkPcut, float trkPmin, float trkPmax, bool doTrkEtacut, float trkEtamin, float trkEtamax) :
+EoverPHists_eopxAOD :: EoverPHists_eopxAOD (std::string name, std::string detailStr, std::string trkExtrapol, bool doBgSubtr, bool doEMcalib, bool doLCWcalib, bool doCells, bool doCaloEM, bool doCaloHAD, bool doCaloTotal, float trkIsoDRmax, float trkIsoPfrac, float LarEmax, float TileEfrac, std::string Ebins, bool doEbinsArray, std::string EbinsArray, std::string EtaAbsbins, bool doEtaAbsbinsArray, std::string EtaAbsbinsArray, bool doTrkPcut, float trkPmin, float trkPmax, bool doTrkEtacut, float trkEtamin, float trkEtamax) :
   HistogramManager(name, detailStr)
 {
   m_trkExtrapol = trkExtrapol; 
@@ -19,6 +19,12 @@ EoverPHists_eopxAOD :: EoverPHists_eopxAOD (std::string name, std::string detail
   m_trkIsoPfrac = trkIsoPfrac;
   m_LarEmax = LarEmax;
   m_TileEfrac = TileEfrac;
+  m_Ebins = Ebins;
+  m_doEbinsArray = doEbinsArray;
+  m_EbinsArray = EbinsArray; 
+  m_EtaAbsbins = EtaAbsbins; 
+  m_doEtaAbsbinsArray = doEtaAbsbinsArray;
+  m_EtaAbsbinsArray = EtaAbsbinsArray; 
   m_doTrkPcut = doTrkPcut;
   m_trkPmin = trkPmin;
   m_trkPmax = trkPmax; 
@@ -36,23 +42,45 @@ StatusCode EoverPHists_eopxAOD::initialize()
   int nBinsMu = 50;        float minMu = -0.5;            float maxMu = 49.5;
   int nBinsNPV = 50;       float minNPV = -0.5;           float maxNPV = 49.5;
   int nBinsDR = 60;        float minDR = 0;               float maxDR = 3;
-  int nBinsEta = 100;      float minEta = -2.5;           float maxEta = 2.5;
-  int nBinsEtaAbs = 50;    float minEtaAbs = 0;           float maxEtaAbs = 2.5;
   int nBinsPhi = 128;      float minPhi = -3.2;           float maxPhi = 3.2; 
 
-  int nBinsE = 300;        float minE = 0;                float maxE = 30;
   int nBinsTrkN = 200;     float minTrkN = -0.5;          float maxTrkN = 199.5;
 
   int nBinsEop = 250;      float minEop = -5;             float maxEop = 20;
 
-  // equally spaced logarithmic bins for track p
-  int nBinsLogP = 15;//      float minLogP = 0.5;             float maxLogP = 30;
-  // const Double_t* vecLogPbins = logspace(minLogP, maxLogP, nBinsLogP+1);
-  const Double_t vecLogPbins[16] = {0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 5.8, 7.3, 9.2, 11.7, 14.8, 18.7, 23.7, 30};
+  int nBinsE = 300;        float minE = 0;                float maxE = 30;
+  std::vector<double> Ebins = str2vec(m_Ebins);
+  if (Ebins.size() > 2) {
+    nBinsE = (int) Ebins[0];
+    minE = (float) Ebins[1];
+    maxE = (float) Ebins[2];
+  }
 
-  // same eta binning as in run 1 studies 
-  int nBinsVarEta = 7;
-  const Double_t vecVarEtaBins[8] = {0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3};
+  int nBinsEta = 100;      float minEta = -2.5;           float maxEta = 2.5;
+  int nBinsEtaAbs = 50;    float minEtaAbs = 0;           float maxEtaAbs = 2.5;
+  std::vector<double> EtaAbsbins = str2vec(m_EtaAbsbins);
+  if (EtaAbsbins.size() > 2) {
+    nBinsEtaAbs = (int) Ebins[0];
+    minEtaAbs = (float) Ebins[1];
+    maxEtaAbs = (float) Ebins[2];
+    nBinsEta = (int) 2*Ebins[0];
+    maxEta = (float) Ebins[2];
+    minEta = -maxEta;
+  }
+
+  std::vector<double> EbinsArray;
+  int nEbinsArray = 0;
+  if (m_doEbinsArray){
+    EbinsArray = str2vec(m_EbinsArray);
+    nEbinsArray = EbinsArray.size()-1;
+  }
+
+  std::vector<double> EtaAbsbinsArray;
+  int nEtaAbsbinsArray = 0;
+  if (m_doEtaAbsbinsArray){
+    EtaAbsbinsArray = str2vec(m_EtaAbsbinsArray);
+    nEtaAbsbinsArray = EtaAbsbinsArray.size()-1;
+  }
 
   //// Book histograms
 
@@ -151,8 +179,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.1
       m_trk_matched_Total_ClusterEnergy_100 = book(m_name, "trk_Total_ClusterEnergy_0_100", "E", nBinsE, minE, maxE);
       m_eop_Total_ClusterEnergy_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_ClusterEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_ClusterEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_Total_ClusterEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_ClusterEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_Total_ClusterEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_ClusterEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergy_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergy_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergy_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -160,8 +190,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.2
       m_trk_matched_Total_ClusterEnergy_200 = book(m_name, "trk_Total_ClusterEnergy_0_200", "E", nBinsE, minE, maxE);
       m_eop_Total_ClusterEnergy_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_200"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_ClusterEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_200_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_ClusterEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_Total_ClusterEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_ClusterEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_Total_ClusterEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_ClusterEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergy_200_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergy_200_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergy_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergy_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -171,8 +203,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.1
       m_trk_matched_EM_ClusterEnergy_100 = book(m_name, "trk_EM_ClusterEnergy_0_100", "E", nBinsE, minE, maxE);
       m_eop_EM_ClusterEnergy_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_100"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_ClusterEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_100_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_ClusterEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_EM_ClusterEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_100_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_ClusterEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_EM_ClusterEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_ClusterEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergy_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergy_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergy_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -180,8 +214,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.2
       m_trk_matched_EM_ClusterEnergy_200 = book(m_name, "trk_EM_ClusterEnergy_0_200", "E", nBinsE, minE, maxE);
       m_eop_EM_ClusterEnergy_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_200"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_ClusterEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_200_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_ClusterEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_EM_ClusterEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_ClusterEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_EM_ClusterEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_ClusterEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergy_200_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergy_200_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergy_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergy_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -191,8 +227,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.1
       m_trk_matched_HAD_ClusterEnergy_100 = book(m_name, "trk_HAD_ClusterEnergy_0_100", "E", nBinsE, minE, maxE);
       m_eop_HAD_ClusterEnergy_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_100"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_ClusterEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_100_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_ClusterEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_HAD_ClusterEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_100_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_ClusterEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_HAD_ClusterEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_ClusterEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergy_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergy_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergy_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -200,8 +238,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.2
       m_trk_matched_HAD_ClusterEnergy_200 = book(m_name, "trk_HAD_ClusterEnergy_0_200", "E", nBinsE, minE, maxE);
       m_eop_HAD_ClusterEnergy_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_200"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_ClusterEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_200_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_ClusterEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_HAD_ClusterEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_ClusterEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_HAD_ClusterEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_ClusterEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergy_200_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergy_200_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergy_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergy_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -209,8 +249,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
     }
     if (m_doBgSubtr) {
       m_eop_EM_BG_ClusterEnergy = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergy"), "E/p Background", nBinsEop, minEop, maxEop);
-      m_eop_EM_BG_ClusterEnergy_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergy_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_BG_ClusterEnergy_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergy_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_EM_BG_ClusterEnergy_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergy_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_BG_ClusterEnergy_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergy_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_EM_BG_ClusterEnergy_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergy_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_BG_ClusterEnergy_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergy_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_BG_ClusterEnergy_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergy_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_BG_ClusterEnergy_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergy_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_BG_ClusterEnergy_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergy_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -225,8 +267,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.1
       m_trk_matched_Total_ClusterEnergyLCW_100 = book(m_name, "trk_Total_ClusterEnergyLCW_0_100", "E", nBinsE, minE, maxE);
       m_eop_Total_ClusterEnergyLCW_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_100"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_ClusterEnergyLCW_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_100_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_ClusterEnergyLCW_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_Total_ClusterEnergyLCW_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_100_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_ClusterEnergyLCW_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_Total_ClusterEnergyLCW_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_100_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_ClusterEnergyLCW_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergyLCW_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergyLCW_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergyLCW_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -234,8 +278,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.2
       m_trk_matched_Total_ClusterEnergyLCW_200 = book(m_name, "trk_Total_ClusterEnergyLCW_0_200", "E", nBinsE, minE, maxE);
       m_eop_Total_ClusterEnergyLCW_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_200"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_ClusterEnergyLCW_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_200_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_ClusterEnergyLCW_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_Total_ClusterEnergyLCW_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_ClusterEnergyLCW_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_Total_ClusterEnergyLCW_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_200_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_ClusterEnergyLCW_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergyLCW_200_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergyLCW_200_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_ClusterEnergyLCW_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_ClusterEnergyLCW_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -245,8 +291,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.1
       m_trk_matched_EM_ClusterEnergyLCW_100 = book(m_name, "trk_EM_ClusterEnergyLCW_0_100", "E", nBinsE, minE, maxE);
       m_eop_EM_ClusterEnergyLCW_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_100"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_ClusterEnergyLCW_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_100_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_ClusterEnergyLCW_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_EM_ClusterEnergyLCW_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_100_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_ClusterEnergyLCW_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_EM_ClusterEnergyLCW_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_100_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_ClusterEnergyLCW_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergyLCW_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergyLCW_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergyLCW_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -254,8 +302,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.2
       m_trk_matched_EM_ClusterEnergyLCW_200 = book(m_name, "trk_EM_ClusterEnergyLCW_0_200", "E", nBinsE, minE, maxE);
       m_eop_EM_ClusterEnergyLCW_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_200"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_ClusterEnergyLCW_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_200_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_ClusterEnergyLCW_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_EM_ClusterEnergyLCW_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_ClusterEnergyLCW_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_EM_ClusterEnergyLCW_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_200_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_ClusterEnergyLCW_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergyLCW_200_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergyLCW_200_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_ClusterEnergyLCW_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_ClusterEnergyLCW_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -265,8 +315,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.1
       m_trk_matched_HAD_ClusterEnergyLCW_100 = book(m_name, "trk_HAD_ClusterEnergyLCW_0_100", "E", nBinsE, minE, maxE);
       m_eop_HAD_ClusterEnergyLCW_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_100"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_ClusterEnergyLCW_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_100_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_ClusterEnergyLCW_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_HAD_ClusterEnergyLCW_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_100_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_ClusterEnergyLCW_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_HAD_ClusterEnergyLCW_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_100_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_ClusterEnergyLCW_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergyLCW_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergyLCW_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergyLCW_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -274,8 +326,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.2
       m_trk_matched_HAD_ClusterEnergyLCW_200 = book(m_name, "trk_HAD_ClusterEnergyLCW_0_200", "E", nBinsE, minE, maxE);
       m_eop_HAD_ClusterEnergyLCW_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_200"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_ClusterEnergyLCW_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_200_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_ClusterEnergyLCW_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_HAD_ClusterEnergyLCW_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_ClusterEnergyLCW_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_HAD_ClusterEnergyLCW_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_200_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_ClusterEnergyLCW_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergyLCW_200_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergyLCW_200_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_ClusterEnergyLCW_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_ClusterEnergyLCW_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -283,8 +337,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
     }
     if (m_doBgSubtr) {
       m_eop_EM_BG_ClusterEnergyLCW = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergyLCW"), "E/p Background", nBinsEop, minEop, maxEop);
-      m_eop_EM_BG_ClusterEnergyLCW_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergyLCW_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_BG_ClusterEnergyLCW_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergyLCW_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_EM_BG_ClusterEnergyLCW_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergyLCW_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_BG_ClusterEnergyLCW_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergyLCW_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_EM_BG_ClusterEnergyLCW_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergyLCW_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_BG_ClusterEnergyLCW_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergyLCW_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_BG_ClusterEnergyLCW_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergyLCW_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_BG_ClusterEnergyLCW_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergyLCW_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_BG_ClusterEnergyLCW_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_ClusterEnergyLCW_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -299,8 +355,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.1
       m_trk_matched_Total_CellEnergy_100 = book(m_name, "trk_Total_CellEnergy_0_100", "E", nBinsE, minE, maxE);
       m_eop_Total_CellEnergy_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_100"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_CellEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_100_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_CellEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_Total_CellEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_100_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_CellEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_Total_CellEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_CellEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_CellEnergy_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_CellEnergy_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_CellEnergy_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -308,8 +366,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.2
       m_trk_matched_Total_CellEnergy_200 = book(m_name, "trk_Total_CellEnergy_0_200", "E", nBinsE, minE, maxE);
       m_eop_Total_CellEnergy_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_200"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_CellEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_200_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_Total_CellEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_Total_CellEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_CellEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_Total_CellEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_Total_CellEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_CellEnergy_200_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_CellEnergy_200_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_Total_CellEnergy_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_CellEnergy_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -319,8 +379,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.1
       m_trk_matched_EM_CellEnergy_100 = book(m_name, "trk_EM_CellEnergy_0_100", "E", nBinsE, minE, maxE);
       m_eop_EM_CellEnergy_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_100"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_CellEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_100_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_CellEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_EM_CellEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_100_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_CellEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_EM_CellEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_CellEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_CellEnergy_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_CellEnergy_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_CellEnergy_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -328,8 +390,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.2
       m_trk_matched_EM_CellEnergy_200 = book(m_name, "trk_EM_CellEnergy_0_200", "E", nBinsE, minE, maxE);
       m_eop_EM_CellEnergy_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_200"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_CellEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_200_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_CellEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_EM_CellEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_CellEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_EM_CellEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_CellEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_CellEnergy_200_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_CellEnergy_200_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_CellEnergy_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_CellEnergy_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -339,8 +403,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.1
       m_trk_matched_HAD_CellEnergy_100 = book(m_name, "trk_HAD_CellEnergy_0_100", "E", nBinsE, minE, maxE);
       m_eop_HAD_CellEnergy_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_100"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_CellEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_100_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_CellEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_HAD_CellEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_100_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_CellEnergy_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_HAD_CellEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_CellEnergy_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_CellEnergy_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_CellEnergy_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_CellEnergy_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -348,8 +414,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
       // dR_matched < 0.2
       m_trk_matched_HAD_CellEnergy_200 = book(m_name, "trk_HAD_CellEnergy_0_200", "E", nBinsE, minE, maxE);
       m_eop_HAD_CellEnergy_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_200"), "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_CellEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_200_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_HAD_CellEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_HAD_CellEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_CellEnergy_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_HAD_CellEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_HAD_CellEnergy_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_CellEnergy_200_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_CellEnergy_200_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_HAD_CellEnergy_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_CellEnergy_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -357,8 +425,10 @@ StatusCode EoverPHists_eopxAOD::initialize()
     }
     if (m_doBgSubtr) {
       m_eop_EM_BG_CellEnergy = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_CellEnergy"), "E/p Background", nBinsEop, minEop, maxEop);
-      m_eop_EM_BG_CellEnergy_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_CellEnergy_vs_trkP"), "p_{trk}", nBinsLogP, vecLogPbins, "E/p", nBinsEop, minEop, maxEop);
-      m_eop_EM_BG_CellEnergy_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_CellEnergy_vs_trkEta"), "|#eta_{trk}|", nBinsVarEta, vecVarEtaBins, "E/p", nBinsEop, minEop, maxEop);
+      if (m_doEbinsArray) m_eop_EM_BG_CellEnergy_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_CellEnergy_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_BG_CellEnergy_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_CellEnergy_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
+      if(m_doEtaAbsbinsArray) m_eop_EM_BG_CellEnergy_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_CellEnergy_vs_trkEta"), "|#eta_{trk}|", nEtaAbsbinsArray, &EtaAbsbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
+      else m_eop_EM_BG_CellEnergy_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_CellEnergy_vs_trkEta"), "|#eta_{trk}|", nBinsEtaAbs, minEtaAbs, maxEtaAbs, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_BG_CellEnergy_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_CellEnergy_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_BG_CellEnergy_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_CellEnergy_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
       m_eop_EM_BG_CellEnergy_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG_CellEnergy_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
@@ -943,3 +1013,15 @@ Double_t* EoverPHists_eopxAOD::logspace(float a, float b, unsigned int n) {
     vec[i] = float(TMath::Nint(TMath::Power(10, vec[i])*10))/10; 
   return vec;
 }
+
+std::vector<double> EoverPHists_eopxAOD::str2vec(std::string str)
+{
+  std::vector<double> vec;
+  str.erase (std::remove (str.begin(), str.end(), ' '), str.end()); // remove whitespace
+  std::stringstream ss(str);
+  std::string token; // split string at ','
+  while ( std::getline(ss, token, ','))
+    vec.push_back(std::stof(token));
+  return vec;
+}
+

@@ -105,5 +105,4 @@ class EoverPHists : public HistogramManager
     TH2F* m_eop_maxE_ccl_dRcone_vs_trk_phi; //!
 };
 
-
 #endif

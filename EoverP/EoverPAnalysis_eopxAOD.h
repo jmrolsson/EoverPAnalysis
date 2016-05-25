@@ -45,6 +45,14 @@ class EoverPAnalysis_eopxAOD : public xAH::Algorithm
     float m_LarEmax = 1e8;
     float m_TileEfrac = -1;
 
+    std::string m_Ebins = "";
+    bool m_doEbinsArray = false;
+    std::string m_EbinsArray = "";
+
+    std::string m_EtaAbsbins = "";
+    bool m_doEtaAbsbinsArray = false;
+    std::string m_EtaAbsbinsArray = "";
+
   private:
     EoverPHists_eopxAOD* m_plots_eop; //!
     EoverPHists_eopxAOD* m_plots_eop_etaL06; //!

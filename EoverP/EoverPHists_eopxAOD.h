@@ -9,7 +9,7 @@
 class EoverPHists_eopxAOD : public HistogramManager
 {
   public:
-    EoverPHists_eopxAOD(std::string name, std::string detailStr, std::string trkExtrapol, bool doBgSubtr, bool doEMcalib, bool doLCWcalib, bool doCells, bool doCaloEM, bool doCaloHAD, bool doCaloTotal, float trkIsoDRmax, float trkIsoPfrac, float LarEmax, float TileEfrac, bool doTrkPcut, float trkPmin, float trkPmax, bool doTrkEtacut, float trkEtamin, float trkEtamax);
+    EoverPHists_eopxAOD(std::string name, std::string detailStr, std::string trkExtrapol, bool doBgSubtr, bool doEMcalib, bool doLCWcalib, bool doCells, bool doCaloEM, bool doCaloHAD, bool doCaloTotal, float trkIsoDRmax, float trkIsoPfrac, float LarEmax, float TileEfrac, std::string Ebins, bool doEbinsArray, std::string EbinsArray, std::string EtaAbsbins, bool doEtaAbsbinsArray, std::string EtabinsArray, bool doTrkPcut, float trkPmin, float trkPmax, bool doTrkEtacut, float trkEtamin, float trkEtamax);
     ~EoverPHists_eopxAOD();
 
     StatusCode initialize();
@@ -20,6 +20,7 @@ class EoverPHists_eopxAOD : public HistogramManager
 
     Double_t* linspace(float a, float b, unsigned int n);
     Double_t* logspace(float a, float b, unsigned int n);
+    std::vector<double> str2vec(std::string str);
 
   protected:
     // bools to control which histograms are filled
@@ -45,6 +46,12 @@ class EoverPHists_eopxAOD : public HistogramManager
     float m_trkIsoPfrac; //! track isolation max p fraction
     float m_LarEmax; //! maximum cluster energy in LAr
     float m_TileEfrac; //! minimum energy fraction in Tile calorimeter
+    std::string m_Ebins; //!
+    bool m_doEbinsArray; //!
+    std::string m_EbinsArray; //!
+    std::string m_EtaAbsbins; //!
+    bool m_doEtaAbsbinsArray; //!
+    std::string m_EtaAbsbinsArray; //!
     bool m_doTrkPcut; //! apply track momentum cut
     float m_trkPmin; //!
     float m_trkPmax; //! 
