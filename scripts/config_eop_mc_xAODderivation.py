@@ -30,7 +30,7 @@ c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
 ''' Fill histograms with tracking details, passing only basic event selection'''
 c.setalg("TrackHistsAlgo", {"m_name": "Tracks_BasicEvtSel",
                             "m_inContainerName": trks,
-                            "m_detailStr": "2D IPDetails HitCounts",
+                            "m_detailStr": "2D IPDetails HitCounts Chi2Details",
                             "m_debug": False})
 
 ''' Select tracks passing the "LoosePrimary" Tracking CP Recommendations (Moriond 2016)'''
@@ -51,7 +51,7 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimary",
 ''' Fill histograms with tracking details, after LoosePrimary selection '''
 c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimary",
                             "m_inContainerName": trks_loose,
-                            "m_detailStr": "2D IPDetails HitCounts",
+                            "m_detailStr": "2D IPDetails HitCounts Chi2Details",
                             "m_debug": False})
 
 ''' Select tracks passing the "LoosePrimary" but with *NO TRT cut* Tracking CP Recommendations (Moriond 2016)'''
@@ -72,7 +72,7 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimaryNoTRT",
 ''' Fill histograms with tracking details, after LoosePrimary but with *NO TRT cut* selection '''
 c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimaryNoTRT",
                             "m_inContainerName": trks_loose_notrt,
-                            "m_detailStr": "2D IPDetails HitCounts",
+                            "m_detailStr": "2D IPDetails HitCounts Chi2Details",
                             "m_debug": False})
 
 ''' Select tracks passing the "TightPrimary" Tracking CP Recommendations (Moriond 2016)'''
@@ -93,7 +93,7 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_TightPrimary",
 ''' Fill histograms with tracking details, after TightPrimary selection '''
 c.setalg("TrackHistsAlgo", {"m_name": "Tracks_TightPrimary",
                             "m_inContainerName": trks_tight,
-                            "m_detailStr": "2D IPDetails HitCounts",
+                            "m_detailStr": "2D IPDetails HitCounts Chi2Details",
                             "m_debug": False})
 
 ''' Tracks with the same selections as in the ATLAS Run 1 paper '''
@@ -118,7 +118,7 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_Run1",
 ''' Fill histograms with tracking details, after Run1 selection '''
 c.setalg("TrackHistsAlgo", {"m_name": "Tracks_Run1",
                             "m_inContainerName": trks_run1,
-                            "m_detailStr": "2D IPDetails HitCounts",
+                            "m_detailStr": "2D IPDetails HitCounts Chi2Details",
                             "m_debug": False})
 
 ''' E/p histograms with basic track selection'''
@@ -143,6 +143,12 @@ c.setalg("EoverPAnalysis_eopxAOD", {"m_name": "EoverP_BasicEvtSel",
                                     "m_LarEmax": 1e8,
                                     "m_TileEfrac": -1,
                                     "m_doEtaPranges": True,
+                                    "m_Ebins": "50, 0., 2.5",
+                                    "m_doEbinsArray": True,
+                                    "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 5.8, 7.3, 9.2, 11.7, 14.8, 18.7, 23.7, 30",
+                                    "m_EtaAbsbins": "50, 0., 2.5",
+                                    "m_doEtaAbsbinsArray": True,
+                                    "m_EtaAbsbinsArray": "0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3",
                                     "m_detailStr": "all",
                                     "m_debug": False})
 
@@ -168,6 +174,12 @@ c.setalg("EoverPAnalysis_eopxAOD", {"m_name": "EoverP_LoosePrimaryTrks",
                                     "m_LarEmax": 1e8,
                                     "m_TileEfrac": -1,
                                     "m_doEtaPranges": True,
+                                    "m_Ebins": "50, 0., 2.5",
+                                    "m_doEbinsArray": True,
+                                    "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 5.8, 7.3, 9.2, 11.7, 14.8, 18.7, 23.7, 30",
+                                    "m_EtaAbsbins": "50, 0., 2.5",
+                                    "m_doEtaAbsbinsArray": True,
+                                    "m_EtaAbsbinsArray": "0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3",
                                     "m_detailStr": "all",
                                     "m_debug": False})
 
@@ -193,6 +205,12 @@ c.setalg("EoverPAnalysis_eopxAOD", {"m_name": "EoverP_LoosePrimaryTrksNoTRT",
                                     "m_LarEmax": 1e8,
                                     "m_TileEfrac": -1,
                                     "m_doEtaPranges": True,
+                                    "m_Ebins": "50, 0., 2.5",
+                                    "m_doEbinsArray": True,
+                                    "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 5.8, 7.3, 9.2, 11.7, 14.8, 18.7, 23.7, 30",
+                                    "m_EtaAbsbins": "50, 0., 2.5",
+                                    "m_doEtaAbsbinsArray": True,
+                                    "m_EtaAbsbinsArray": "0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3",
                                     "m_detailStr": "all",
                                     "m_debug": False})
 
@@ -218,6 +236,12 @@ c.setalg("EoverPAnalysis_eopxAOD", {"m_name": "EoverP_TightPrimaryTrks",
                                     "m_LarEmax": 1e8,
                                     "m_TileEfrac": -1,
                                     "m_doEtaPranges": True,
+                                    "m_Ebins": "50, 0., 2.5",
+                                    "m_doEbinsArray": True,
+                                    "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 5.8, 7.3, 9.2, 11.7, 14.8, 18.7, 23.7, 30",
+                                    "m_EtaAbsbins": "50, 0., 2.5",
+                                    "m_doEtaAbsbinsArray": True,
+                                    "m_EtaAbsbinsArray": "0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3",
                                     "m_detailStr": "all",
                                     "m_debug": False})
 
@@ -243,5 +267,12 @@ c.setalg("EoverPAnalysis_eopxAOD", {"m_name": "EoverP_Run1Trks",
                                     "m_LarEmax": 1e8,
                                     "m_TileEfrac": -1,
                                     "m_doEtaPranges": True,
+                                    "m_Ebins": "50, 0., 2.5",
+                                    "m_doEbinsArray": True,
+                                    "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 5.8, 7.3, 9.2, 11.7, 14.8, 18.7, 23.7, 30",
+                                    "m_EtaAbsbins": "50, 0., 2.5",
+                                    "m_doEtaAbsbinsArray": True,
+                                    "m_EtaAbsbinsArray": "0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3",
                                     "m_detailStr": "all",
                                     "m_debug": False})
+
