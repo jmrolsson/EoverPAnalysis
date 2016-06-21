@@ -12,12 +12,12 @@ if [ $# -eq 0 ]
     today=$(date +"%Y%m%d")
 
     echo "---> Running data:"
-    echo xAH_run.py --files EoverP/filelists/data15_13TeV_TrackCaloDxAOD.txt --inputList --config EoverP/scripts/config_eop_data_xAODderivation.py --submitDir results/condor_all_eop_data_xAODderivation_${today}_${tag} --verbose --force condor --optFilesPerWorker 20
-    xAH_run.py --files EoverP/filelists/data15_13TeV_TrackCaloDxAOD.txt --inputList --config EoverP/scripts/config_eop_data_xAODderivation.py --submitDir results/condor_all_eop_data_xAODderivation_${today}_${tag} --verbose --force condor --optFilesPerWorker 20
+    echo xAH_run.py --files EoverP/filelists/data15_13TeV_TrackCaloDxAOD.txt --inputList --config EoverP/scripts/config_eop_data_xAODderivation.py --submitDir results/condor_all_eop_data_xAODderivation_${today}_${tag} --verbose --force condor --optFilesPerWorker 30
+    xAH_run.py --files EoverP/filelists/data15_13TeV_TrackCaloDxAOD.txt --inputList --config EoverP/scripts/config_eop_data_xAODderivation.py --submitDir results/condor_all_eop_data_xAODderivation_${today}_${tag} --verbose --force condor --optFilesPerWorker 30
 
     echo "---> Running MC:"
-    echo xAH_run.py --files EoverP/filelists/mc15_13TeV_TrackCaloDxAOD.txt --inputList --config EoverP/scripts/config_eop_mc_xAODderivation.py --submitDir results/condor_all_eop_mc_xAODderivation_${today}_${tag} --verbose --force condor --optFilesPerWorker 20
-    xAH_run.py --files EoverP/filelists/mc15_13TeV_TrackCaloDxAOD.txt --inputList --config EoverP/scripts/config_eop_mc_xAODderivation.py --submitDir results/condor_all_eop_mc_xAODderivation_${today}_${tag} --verbose --force condor --optFilesPerWorker 20
+    echo xAH_run.py --files EoverP/filelists/mc15_13TeV_TrackCaloDxAOD.txt --inputList --config EoverP/scripts/config_eop_mc_xAODderivation.py --submitDir results/condor_all_eop_mc_xAODderivation_${today}_${tag} --verbose --force condor --optFilesPerWorker 30
+    xAH_run.py --files EoverP/filelists/mc15_13TeV_TrackCaloDxAOD.txt --inputList --config EoverP/scripts/config_eop_mc_xAODderivation.py --submitDir results/condor_all_eop_mc_xAODderivation_${today}_${tag} --verbose --force condor --optFilesPerWorker 30
 
     echo "---> Write to logfile:"
     # logfiles of all runs

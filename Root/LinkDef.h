@@ -1,6 +1,5 @@
 #include <EoverP/TrackVertexSelection.h>
 #include <EoverP/EoverPAnalysis.h>
-#include <EoverP/EoverPAnalysis_eopxAOD.h>
 
 #ifdef __CINT__
 
@@ -14,5 +13,4 @@
 #ifdef __CINT__
 #pragma link C++ class TrackVertexSelection+;
 #pragma link C++ class EoverPAnalysis+;
-#pragma link C++ class EoverPAnalysis_eopxAOD+;
 #endif
