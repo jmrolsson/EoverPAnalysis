@@ -9,7 +9,7 @@ trks = "InDetTrackParticles"
 
 # selected version
 trks_loose = trks+"LoosePrimary"
-trks_loose_notrt = trks+"LoosePrimaryNoTRT"
+trks_loose_ntrtG20 = trks+"LoosePrimary_nTRTG20"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
 
@@ -43,9 +43,9 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimary",
                                   "m_cutLevel": "LoosePrimary",
                                   "m_maxD0": 2.0,
                                   "m_maxZ0SinTheta": 3.0,
-                                  "m_minNTrtHits": 20,
+                                  "m_minNTrtHits": -1,
                                   "m_outContainerName": trks_loose,
-                                  "m_useCutFlow": False,
+                                  "m_useCutFlow": True,
                                   "m_debug": False})
 
 ''' Fill histograms with tracking details, after LoosePrimary selection '''
@@ -54,9 +54,9 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimary",
                             "m_detailStr": "2D IPDetails HitCounts Chi2Details",
                             "m_debug": False})
 
-''' Select tracks passing the "LoosePrimary" but with *NO TRT cut* Tracking CP Recommendations (Moriond 2016)'''
+''' Select tracks passing the "LoosePrimary" Tracking CP Recommendations (Moriond 2016), with nTRT > 20'''
 # https://twiki.cern.ch/twiki/bin/view/AtlasProtected/TrackingCPMoriond2016
-c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimaryNoTRT",
+c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimary_nTRTG20",
                                   "m_inContainerName": trks,
                                   "m_decorateSelectedObjects": False,
                                   "m_createSelectedContainer": True,
@@ -64,14 +64,14 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimaryNoTRT",
                                   "m_cutLevel": "LoosePrimary",
                                   "m_maxD0": 2.0,
                                   "m_maxZ0SinTheta": 3.0,
-                                  "m_minNTrtHits": -1,
-                                  "m_outContainerName": trks_loose_notrt,
+                                  "m_minNTrtHits": 20,
+                                  "m_outContainerName": trks_loose_ntrtG20,
                                   "m_useCutFlow": False,
                                   "m_debug": False})
 
 ''' Fill histograms with tracking details, after LoosePrimary but with *NO TRT cut* selection '''
 c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimaryNoTRT",
-                            "m_inContainerName": trks_loose_notrt,
+                            "m_inContainerName": trks_loose_ntrtG20,
                             "m_detailStr": "2D IPDetails HitCounts Chi2Details",
                             "m_debug": False})
 
@@ -121,18 +121,18 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_Run1",
                             "m_detailStr": "2D IPDetails HitCounts Chi2Details",
                             "m_debug": False})
 
+# E/p for comparisons with the Run 1 paper
+
 ''' E/p histograms with LoosePrimary track selection'''
 c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_Run1paper",
-                            "m_inTrackContainerName": trks_loose,
+                            "m_inTrackContainerName": trks_loose_ntrtG20,
                             "m_trkExtrapol": "EMB2",
-                            "m_doEMcalib": True,
-                            "m_doLCWcalib": True,
-                            "m_doCells": True,
+                            "m_energyCalib": "ClusterEnergy", # ClusterEnergy, ClusterEnergyLCW, or Cells
                             "m_doCaloTotal": True,
                             "m_doCaloEM": True,
                             "m_doCaloHAD": True,
                             "m_doBgSubtr" : True,
-                            "m_doTileLayer": True,
+                            "m_doTileLayer": False,
                             "m_trkIsoDRmax": .4,
                             "m_trkIsoPfrac": 0.,
                             "m_doTrkPcut": True,
@@ -144,23 +144,27 @@ c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_Run1paper",
                             "m_doTileCuts": True,
                             "m_LarEmax": 1e8,
                             "m_TileEfracmin": -1,
-                            "m_doEtaEnergyRanges": True,
-                            "m_Ebins": "50, 0., 30",
+                            "m_Ebins": "30, 0., 30",
                             "m_doEbinsArray": True,
-                            "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 5.8, 7.3, 9.2, 11.7, 14.8, 18.7, 23.7, 30",
+                            "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 5.8, 7.3, 9.2, 11.7, 14.8, 18.7, 23.7, 30.",
                             "m_Etabins": "50, 0., 2.5",
                             "m_doEtabinsArray": True,
                             "m_EtabinsArray": "0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3",
+                            "m_doExtraEtaEnergyBinHists": True,
+                            "m_doGlobalTileEfracRanges": False,
+                            "m_doGlobalEnergyRanges": False,
+                            "m_doGlobalEtaRanges": False,
                             "m_detailStr": "all",
+                            "m_useCutFlow": False,
                             "m_debug": False})
 
+# # E/p with TileCal selections
+
 ''' E/p histograms with LoosePrimary track selection'''
-c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_TileCuts",
+c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_EMcalib_Tile_noLar_noTileEfrac",
                             "m_inTrackContainerName": trks_loose,
                             "m_trkExtrapol": "EMB2",
-                            "m_doEMcalib": True,
-                            "m_doLCWcalib": False,
-                            "m_doCells": False,
+                            "m_energyCalib": "ClusterEnergy", # ClusterEnergy, ClusterEnergyLCW, or Cells
                             "m_doCaloTotal": True,
                             "m_doCaloEM": True,
                             "m_doCaloHAD": True,
@@ -169,31 +173,68 @@ c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_TileCuts",
                             "m_trkIsoDRmax": .4,
                             "m_trkIsoPfrac": 0.15,
                             "m_doTrkPcut": True,
-                            "m_trkPmin": 2,
+                            "m_trkPmin": 2.,
                             "m_trkPmax": 1e8,
                             "m_doTrkEtacut": True,
                             "m_trkEtamin": 0.,
-                            "m_trkEtamax": 1e8,
+                            "m_trkEtamax": 1.7,
                             "m_doTileCuts": True,
-                            "m_LarEmax": 1e3,
-                            "m_TileEfracmin": 0.75,
-                            "m_doEtaEnergyRanges": False,
-                            "m_Ebins": "50, 0., 30",
+                            "m_LarEmax": 1e8,
+                            "m_TileEfracmin": -1,
+                            "m_Ebins": "30, 0., 30.",
                             "m_doEbinsArray": True,
-                            "m_EbinsArray": "0 2.5 3 3.5 4 4.5 5 6 7 8 9 10 12 14 16 20 30 50",
+                            "m_EbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
                             "m_Etabins": "17, -1.7, 1.7",
                             "m_doEtabinsArray": False,
                             "m_EtabinsArray": "",
+                            "m_doExtraEtaEnergyBinHists": False,
+                            "m_doGlobalTileEfracRanges": False,
+                            "m_doGlobalEnergyRanges": False,
+                            "m_doGlobalEtaRanges": False,
                             "m_detailStr": "all",
+                            "m_useCutFlow": False,
                             "m_debug": False})
 
 ''' E/p histograms with LoosePrimary track selection'''
-c.setalg("EoverPAnalysis", {"m_name": "EoverP_Run1Trks_TileCuts",
-                            "m_inTrackContainerName": trks_run1,
+c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_EMcalib_Tile_1GeVLar_noTileEfrac",
+                            "m_inTrackContainerName": trks_loose,
                             "m_trkExtrapol": "EMB2",
-                            "m_doEMcalib": True,
-                            "m_doLCWcalib": False,
-                            "m_doCells": False,
+                            "m_energyCalib": "ClusterEnergy", # ClusterEnergy, ClusterEnergyLCW, or Cells
+                            "m_doCaloTotal": True,
+                            "m_doCaloEM": True,
+                            "m_doCaloHAD": True,
+                            "m_doBgSubtr" : False,
+                            "m_doTileLayer": True,
+                            "m_trkIsoDRmax": .4,
+                            "m_trkIsoPfrac": 0.15,
+                            "m_doTrkPcut": True,
+                            "m_trkPmin": 2.,
+                            "m_trkPmax": 1e8,
+                            "m_doTrkEtacut": True,
+                            "m_trkEtamin": 0.,
+                            "m_trkEtamax": 1.7,
+                            "m_doTileCuts": True,
+                            "m_LarEmax": 1,
+                            "m_TileEfracmin": -1,
+                            "m_Ebins": "30, 0., 30.",
+                            "m_doEbinsArray": True,
+                            "m_EbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
+                            "m_Etabins": "17, -1.7, 1.7",
+                            "m_doEtabinsArray": False,
+                            "m_EtabinsArray": "",
+                            "m_doExtraEtaEnergyBinHists": False,
+                            "m_doGlobalTileEfracRanges": False,
+                            "m_doGlobalEnergyRanges": False,
+                            "m_doGlobalEtaRanges": False,
+                            "m_detailStr": "all",
+                            "m_useCutFlow": False,
+                            "m_debug": False})
+
+''' E/p histograms with LoosePrimary track selection'''
+c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_EMcalib_Tile_defaultCuts",
+                            "m_inTrackContainerName": trks_loose,
+                            "m_trkExtrapol": "EMB2",
+                            "m_energyCalib": "ClusterEnergy", # ClusterEnergy, ClusterEnergyLCW, or Cells
                             "m_doCaloTotal": True,
                             "m_doCaloEM": True,
                             "m_doCaloHAD": True,
@@ -206,16 +247,20 @@ c.setalg("EoverPAnalysis", {"m_name": "EoverP_Run1Trks_TileCuts",
                             "m_trkPmax": 1e8,
                             "m_doTrkEtacut": True,
                             "m_trkEtamin": 0.,
-                            "m_trkEtamax": 1e8,
+                            "m_trkEtamax": 1.7,
                             "m_doTileCuts": True,
-                            "m_LarEmax": 1e3,
+                            "m_LarEmax": 1.,
                             "m_TileEfracmin": 0.75,
-                            "m_doEtaEnergyRanges": False,
-                            "m_Ebins": "50, 0., 30",
+                            "m_Ebins": "30, 0., 30.",
                             "m_doEbinsArray": True,
-                            "m_EbinsArray": "0 2.5 3 3.5 4 4.5 5 6 7 8 9 10 12 14 16 20 30 50",
+                            "m_EbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
                             "m_Etabins": "17, -1.7, 1.7",
                             "m_doEtabinsArray": False,
                             "m_EtabinsArray": "",
+                            "m_doExtraEtaEnergyBinHists": False,
+                            "m_doGlobalTileEfracRanges": True,
+                            "m_doGlobalEnergyRanges": True,
+                            "m_doGlobalEtaRanges": True,
                             "m_detailStr": "all",
+                            "m_useCutFlow": True,
                             "m_debug": False})

@@ -1,3 +1,6 @@
+// E/p analysis for run 2
+// Joakim Olsson (joakim.olsson@cern.ch)
+
 #include "EoverP/EoverPHists.h"
 #include "xAODAnaHelpers/tools/ReturnCheck.h"
 #include "xAODAnaHelpers/HelperFunctions.h"
@@ -5,7 +8,7 @@
 #include <sstream>
 #include <cmath>
 
-EoverPHists :: EoverPHists (std::string name, std::string detailStr, std::string energyCalib, std::string trkExtrapol, bool doCaloTotal, bool doCaloEM, bool doCaloHAD, bool doBgSubtr, bool doTileLayer, std::string Ebins, bool doEbinsArray, std::string EbinsArray, std::string Etabins, bool doEtabinsArray, std::string EtabinsArray, bool doEtaEnergyRanges) : HistogramManager(name, detailStr)
+EoverPHists :: EoverPHists (std::string name, std::string detailStr, std::string energyCalib, std::string trkExtrapol, bool doCaloTotal, bool doCaloEM, bool doCaloHAD, bool doBgSubtr, bool doTileLayer, std::string Ebins, bool doEbinsArray, std::string EbinsArray, std::string Etabins, bool doEtabinsArray, std::string EtabinsArray, bool doExtraEtaEnergyBinHists) : HistogramManager(name, detailStr)
 {
   m_energyCalib = energyCalib;
   m_trkExtrapol = trkExtrapol;
@@ -20,7 +23,7 @@ EoverPHists :: EoverPHists (std::string name, std::string detailStr, std::string
   m_Etabins = Etabins; 
   m_doEtabinsArray = doEtabinsArray;
   m_EtabinsArray = EtabinsArray; 
-  m_doEtaEnergyRanges = doEtaEnergyRanges;
+  m_doExtraEtaEnergyBinHists = doExtraEtaEnergyBinHists;
 }
 
 EoverPHists :: ~EoverPHists () {}
@@ -70,7 +73,9 @@ StatusCode EoverPHists::initialize()
 
   // track kinematics
   m_trk_p = book(m_name, "trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE); 
+  if (m_doEbinsArray) m_trk_p_array = book(m_name, "trk_p_EbinsArray", "p_{trk} [GeV]", nEbinsArray, &EbinsArray[0]); 
   m_trk_eta = book(m_name, "trk_eta", "#eta_{trk}", nBinsEta, minEta, maxEta); 
+  if (m_doEtabinsArray) m_trk_eta_array = book(m_name, "trk_eta_EtabinsArray", "#eta_{trk}", nEtabinsArray, &EtabinsArray[0]); 
   m_trk_phi = book(m_name, "trk_phi", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
   m_trk_DR_CALO_ID = book(m_name, std::string("trk_DR_"+m_trkExtrapol+"_ID"), std::string("#Delta R_{trk}("+m_trkExtrapol+", ID)"), nBinsDR, minDR, maxDR); 
   m_trk_DEta_CALO_ID = book(m_name, std::string("trk_DEta_"+m_trkExtrapol+"_ID"), std::string("#Delta #eta_{trk}("+m_trkExtrapol+", ID)"), nBinsEta, minEta, maxEta); 
@@ -86,6 +91,10 @@ StatusCode EoverPHists::initialize()
   m_trk_TileEfrac_200_vs_trk_p = book (m_name, std::string("trk_"+m_energyCalib+"_TileEfrac_200_vs_trk_p"), "p_{trk} [GeV]", nBinsE, minE, maxE, "E(tile)/E(total)", 100, 0, 5.0); 
 
   // basic "sanity" checks of the E/p xAOD derivation
+  m_trk_sumE_Tile_100 = book (m_name, std::string("trk_"+m_energyCalib+"_sumE_Tile_100"), "E(Tile)", nBinsE, minE, maxE); 
+  m_trk_sumE_Tile_200 = book (m_name, std::string("trk_"+m_energyCalib+"_sumE_Tile_200"), "E(Tile)", nBinsE, minE, maxE); 
+  m_trk_sumE_Lar_100 = book (m_name, std::string("trk_"+m_energyCalib+"_sumE_Lar_100"), "E(Lar)", nBinsE, minE, maxE); 
+  m_trk_sumE_Lar_200 = book (m_name, std::string("trk_"+m_energyCalib+"_sumE_Lar_200"), "E(Lar)", nBinsE, minE, maxE); 
   m_trk_SumTileLayers_over_HAD_100 = book (m_name, std::string("trk_"+m_energyCalib+"_SumTileLayers_over_HAD_100"), "#Sigma Tile layers / HAD", 100, 0, 5.0); 
   m_trk_SumLarLayers_over_EM_100 = book (m_name, std::string("trk_"+m_energyCalib+"_SumLarLayers_over_EM_100"), "#Sigma Lar layers / EM", 100, 0, 5.0); 
   m_trk_SumHADLayers_over_HAD_100 = book (m_name, std::string("trk_"+m_energyCalib+"_SumHADLayers_over_HAD_100"), "#Sigma Tile+EM layers / EM", 100, 0, 5.0); 
@@ -125,7 +134,7 @@ StatusCode EoverPHists::initialize()
     m_eop_Total_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_100_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_100_vs_highE_layer = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_Total_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -148,7 +157,7 @@ StatusCode EoverPHists::initialize()
     m_eop_Total_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_200_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_200_vs_highE_layer = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_Total_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -175,7 +184,7 @@ StatusCode EoverPHists::initialize()
     m_eop_EM_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_EM_100_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_EM_100_vs_highE_layer = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_EM_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -198,7 +207,7 @@ StatusCode EoverPHists::initialize()
     m_eop_EM_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_EM_200_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_EM_200_vs_highE_layer = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_EM_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -225,7 +234,7 @@ StatusCode EoverPHists::initialize()
     m_eop_HAD_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_HAD_100_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_HAD_100_vs_highE_layer = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_HAD_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -248,7 +257,7 @@ StatusCode EoverPHists::initialize()
     m_eop_HAD_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_HAD_200_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_HAD_200_vs_highE_layer = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_HAD_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -272,7 +281,7 @@ StatusCode EoverPHists::initialize()
     m_eop_EM_BG_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG"+m_energyCalib+"_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_EM_BG_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG"+m_energyCalib+"_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_EM_BG_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_BG"+m_energyCalib+"_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_EM_BG_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -300,7 +309,7 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileA_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileA_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileA_100_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileA_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileA_100_vs_TileA_E = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileA_"+m_energyCalib+"_0_100_vs_TileA_E"), "E(Tile, layer A)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_highTileA_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -323,7 +332,7 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileB_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileB_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileB_100_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileB_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileB_100_vs_TileB_E = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileB_"+m_energyCalib+"_0_100_vs_TileB_E"), "E(Tile, layer B)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_highTileB_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -346,7 +355,7 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileD_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileD_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileD_100_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileD_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileD_100_vs_TileD_E = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileD_"+m_energyCalib+"_0_100_vs_TileD_E"), "E(Tile, layer D)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_highTileD_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -370,7 +379,7 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileA_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileA_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileA_200_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileA_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileA_200_vs_TileA_E = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileA_"+m_energyCalib+"_0_200_vs_TileA_E"), "E(Tile, layer A)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_highTileA_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray);
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -393,7 +402,7 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileB_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileB_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileB_200_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileB_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileB_200_vs_TileB_E = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileB_"+m_energyCalib+"_0_200_vs_TileB_E"), "E(Tile, layer B)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_highTileB_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray);
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -416,7 +425,7 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileD_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileD_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileD_200_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileD_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileD_200_vs_TileD_E = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_highTileD_"+m_energyCalib+"_0_200_vs_TileD_E"), "E(Tile, layer D)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtaEnergyRanges) {
+    if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
       m_eop_highTileD_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nEbinsArray);
       char buffer [200];
       for (unsigned int i=0; i<nEbinsArray; i++) {
@@ -467,7 +476,9 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
 
   // fill histos with basic track properties
   m_trk_p -> Fill(trk_p, eventWeight); 
+  if (m_doEbinsArray) m_trk_p_array -> Fill(trk_p, eventWeight); 
   m_trk_eta -> Fill(trk_etaCALO, eventWeight); 
+  if (m_doEtabinsArray) m_trk_eta_array -> Fill(trk_etaCALO, eventWeight); 
   m_trk_phi -> Fill(trk_phiCALO, eventWeight); 
   m_trk_DR_CALO_ID -> Fill(dR_CALO_ID, eventWeight); 
   m_trk_DEta_CALO_ID -> Fill(dEta_CALO_ID, eventWeight); 
@@ -475,7 +486,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_DR_CALO_ID_vs_trk_p -> Fill(trk_p, dR_CALO_ID, eventWeight);
   m_trk_DEta_CALO_ID_vs_trk_p -> Fill(trk_p, dEta_CALO_ID, eventWeight);
   m_trk_DPhi_CALO_ID_vs_trk_p -> Fill(trk_p, dPhi_CALO_ID, eventWeight);
-
+  
   // cluster energy associated with the track
   float trk_E_Total_100 = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_100"))/1e3; 
   float trk_E_Total_200 = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_200"))/1e3; 
@@ -515,6 +526,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   }
 
   // basic "sanity" checks of the E/p xAOD derivation
+  m_trk_sumE_Tile_100 -> Fill(trk_sumE_Tile_100, eventWeight);
+  m_trk_sumE_Tile_200 -> Fill(trk_sumE_Tile_200, eventWeight);
+  m_trk_sumE_Lar_100 -> Fill(trk_sumE_Lar_100, eventWeight);
+  m_trk_sumE_Lar_200 -> Fill(trk_sumE_Lar_200, eventWeight);
   m_trk_SumTileLayers_over_HAD_100 -> Fill(trk_sumE_Tile_100/trk_E_HAD_100, eventWeight);
   m_trk_SumTileLayers_over_HAD_200 -> Fill(trk_sumE_Tile_200/trk_E_HAD_200, eventWeight);
   m_trk_SumLarLayers_over_EM_100 -> Fill(trk_sumE_Lar_100/trk_E_EM_100, eventWeight);
@@ -564,7 +579,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
 
   int trk_p_i = -1;
   int trk_eta_i = -1;
-  if (m_doEtaEnergyRanges) {
+  if (m_doEtabinsArray && m_doEbinsArray && m_doExtraEtaEnergyBinHists) {
     for (unsigned int i=0; i<nEbinsArray; i++) {
       if (trk_p > EbinsArray[i] && trk_p < EbinsArray[i+1]) 
         trk_p_i = i;
@@ -603,7 +618,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_Total_100_vs_mu_avg -> Fill(mu_avg, trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_npv -> Fill(npv, trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_highE_layer -> Fill(trk_highE_100_layer, trk_E_Total_100/trk_p, eventWeight); 
-    if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+    if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_Total_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_100/trk_p, eventWeight); 
     // dR(trk,cluster) < 0.2
     m_trk_E_Total_200 -> Fill(trk_E_Total_200, eventWeight); 
@@ -615,7 +630,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_Total_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_npv -> Fill(npv, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_highE_layer -> Fill(trk_highE_200_layer, trk_E_Total_200/trk_p, eventWeight); 
-    if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+    if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_Total_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_200/trk_p, eventWeight); 
   } // END doCaloTotal
 
@@ -631,7 +646,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_EM_100_vs_mu_avg -> Fill(mu_avg, trk_E_EM_100/trk_p, eventWeight); 
     m_eop_EM_100_vs_npv -> Fill(npv, trk_E_EM_100/trk_p, eventWeight); 
     m_eop_EM_100_vs_highE_layer -> Fill(trk_highE_100_layer, trk_E_EM_100/trk_p, eventWeight); 
-    if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+    if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_EM_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_EM_100/trk_p, eventWeight); 
     // dR(trk,cluster) < 0.2
     m_trk_E_EM_200 -> Fill(trk_E_EM_200, eventWeight); 
@@ -643,7 +658,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_EM_200_vs_mu_avg -> Fill(mu_avg, trk_E_EM_200/trk_p, eventWeight); 
     m_eop_EM_200_vs_npv -> Fill(npv, trk_E_EM_200/trk_p, eventWeight); 
     m_eop_EM_200_vs_highE_layer -> Fill(trk_highE_200_layer, trk_E_EM_200/trk_p, eventWeight); 
-    if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+    if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_EM_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_EM_200/trk_p, eventWeight); 
   } // END doCaloEM
 
@@ -659,7 +674,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_HAD_100_vs_mu_avg -> Fill(mu_avg, trk_E_HAD_100/trk_p, eventWeight); 
     m_eop_HAD_100_vs_npv -> Fill(npv, trk_E_HAD_100/trk_p, eventWeight); 
     m_eop_HAD_100_vs_highE_layer -> Fill(trk_highE_100_layer, trk_E_HAD_100/trk_p, eventWeight); 
-    if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+    if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_HAD_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_HAD_100/trk_p, eventWeight); 
     // dR(trk,cluster) < 0.2
     m_trk_E_HAD_200 -> Fill(trk_E_HAD_200, eventWeight); 
@@ -671,7 +686,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_HAD_200_vs_mu_avg -> Fill(mu_avg, trk_E_HAD_200/trk_p, eventWeight); 
     m_eop_HAD_200_vs_npv -> Fill(npv, trk_E_HAD_200/trk_p, eventWeight); 
     m_eop_HAD_200_vs_highE_layer -> Fill(trk_highE_200_layer, trk_E_HAD_200/trk_p, eventWeight); 
-    if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+    if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_HAD_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_HAD_200/trk_p, eventWeight); 
   } // END doCaloHAD
 
@@ -685,17 +700,17 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_EM_BG_vs_mu -> Fill(mu, (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
       m_eop_EM_BG_vs_mu_avg -> Fill(mu_avg, (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
       m_eop_EM_BG_vs_npv -> Fill(npv, (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
-      if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+      if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_EM_BG_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill((trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
     }
   } // END doBgSubtr
 
   // E/p where E is maximum in either Tile layer A, BC, or D
   if (m_doTileLayer) {
-    int highTileLayer_100 = -1;
-    int highTileLayer_200 = -1;
-    float highTileLayer_i_100 = -1e8; 
-    float highTileLayer_i_200 = -1e8; 
+    float highTileLayer_100 = -1e8;
+    float highTileLayer_200 = -1e8;
+    int highTileLayer_i_100 = -1; 
+    int highTileLayer_i_200 = -1; 
     if (trk_highE_100_layer == 12 || trk_highE_100_layer == 18) {
       highTileLayer_100 = trk_highE_100;             
       highTileLayer_i_100 = 1;                         
@@ -727,7 +742,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileA_100_vs_mu_avg -> Fill(mu_avg, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileA_100_vs_npv -> Fill(npv, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileA_100_vs_TileA_E -> Fill(highTileLayer_100, trk_E_Total_100/trk_p, eventWeight); 
-      if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+      if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileA_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_100/trk_p, eventWeight); 
     }
     // max in Tile Layer BC
@@ -741,7 +756,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileB_100_vs_mu_avg -> Fill(mu_avg, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileB_100_vs_npv -> Fill(npv, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileB_100_vs_TileB_E -> Fill(highTileLayer_100, trk_E_Total_100/trk_p, eventWeight); 
-      if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+      if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileB_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_100/trk_p, eventWeight); 
     }
     // max in Tile Layer D
@@ -755,7 +770,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileD_100_vs_mu_avg -> Fill(mu_avg, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileD_100_vs_npv -> Fill(npv, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileD_100_vs_TileD_E -> Fill(highTileLayer_100, trk_E_Total_100/trk_p, eventWeight); 
-      if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+      if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileD_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_100/trk_p, eventWeight); 
     }
     // dR(trk,cluster) < 0.2
@@ -770,7 +785,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileA_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileA_200_vs_npv -> Fill(npv, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileA_200_vs_TileA_E -> Fill(highTileLayer_200, trk_E_Total_200/trk_p, eventWeight); 
-      if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+      if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileA_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_200/trk_p, eventWeight); 
     }
     // max in Tile Layer BC
@@ -784,7 +799,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileB_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileB_200_vs_npv -> Fill(npv, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileB_200_vs_TileB_E -> Fill(highTileLayer_200, trk_E_Total_200/trk_p, eventWeight); 
-      if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+      if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileB_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_200/trk_p, eventWeight); 
     }
     // max in Tile Layer D
@@ -798,7 +813,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileD_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileD_200_vs_npv -> Fill(npv, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileD_200_vs_TileD_E -> Fill(highTileLayer_200, trk_E_Total_200/trk_p, eventWeight); 
-      if (m_doEtaEnergyRanges && trk_p_i >= 0 && trk_eta_i >= 0)
+      if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileD_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_200/trk_p, eventWeight); 
     }
   } // END doTileLayer
@@ -827,7 +842,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
 std::vector<double> EoverPHists::str2vec(std::string str)
 {
   std::vector<double> vec;
-  if (!str.empty()) {
+  if (str.size() > 0) {
     str.erase (std::remove (str.begin(), str.end(), ' '), str.end()); // remove whitespace
     std::stringstream ss(str);
     std::string token; // split string at ','

@@ -1,3 +1,6 @@
+// E/p analysis for run 2
+// Joakim Olsson (joakim.olsson@cern.ch)
+
 #ifndef EoverP_EoverPHists_H
 #define EoverP_EoverPHists_H
 
@@ -9,7 +12,7 @@
 class EoverPHists : public HistogramManager
 {
   public:
-    EoverPHists(std::string name, std::string detailStr, std::string energyCalib = "ClusterEnergy", std::string trkExtrapol = "EMB2", bool doCaloTotal = true, bool doCaloEM = false, bool doCaloHAD = false, bool doBgSubtr = true, bool doTileLayer = false, std::string Ebins = "", bool doEbinsArray = false, std::string EbinsArray = "", std::string Etabins = "", bool doEtabinsArray = false, std::string EtabinsArray = "", bool doEtaEnergyRanges = false);
+    EoverPHists(std::string name, std::string detailStr, std::string energyCalib = "ClusterEnergy", std::string trkExtrapol = "EMB2", bool doCaloTotal = true, bool doCaloEM = false, bool doCaloHAD = false, bool doBgSubtr = true, bool doTileLayer = false, std::string Ebins = "", bool doEbinsArray = false, std::string EbinsArray = "", std::string Etabins = "", bool doEtabinsArray = false, std::string EtabinsArray = "", bool doExtraEtaEnergyBinHists = false);
     ~EoverPHists();
 
     StatusCode initialize();
@@ -40,13 +43,13 @@ class EoverPHists : public HistogramManager
     bool m_doEtaAbs; //!
     bool m_doEtabinsArray; //!
     std::string m_EtabinsArray; //!
-    std::vector<double> EbinsArray; //!
-    unsigned int nEbinsArray = 0; //!
-    std::vector<double> EtabinsArray; //!
-    unsigned int nEtabinsArray = 0; //!
+    std::vector<double> EbinsArray = {0}; //!
+    unsigned int nEbinsArray; //!
+    std::vector<double> EtabinsArray = {0}; //!
+    unsigned int nEtabinsArray; //!
 
     // save separate 1D histograms for the specified track eta and energy ranges
-    bool m_doEtaEnergyRanges; //!
+    bool m_doExtraEtaEnergyBinHists; //!
 
   private:
 
@@ -58,7 +61,9 @@ class EoverPHists : public HistogramManager
 
     // track kinematics
     TH1F* m_trk_p; //!
+    TH1F* m_trk_p_array; //!
     TH1F* m_trk_eta; //!
+    TH1F* m_trk_eta_array; //!
     TH1F* m_trk_phi; //!
 
     TH1F* m_trk_DR_CALO_ID; //!
@@ -75,6 +80,10 @@ class EoverPHists : public HistogramManager
     TH2F* m_trk_TileEfrac_200_vs_trk_p; //! 
 
     // basic "sanity" checks of the E/p xAOD derivation
+    TH1F* m_trk_sumE_Tile_100; //!
+    TH1F* m_trk_sumE_Tile_200; //!
+    TH1F* m_trk_sumE_Lar_100; //!
+    TH1F* m_trk_sumE_Lar_200; //!
     TH1F* m_trk_SumTileLayers_over_HAD_100; //! 
     TH1F* m_trk_SumLarLayers_over_EM_100; //!
     TH1F* m_trk_SumHADLayers_over_HAD_100; //!

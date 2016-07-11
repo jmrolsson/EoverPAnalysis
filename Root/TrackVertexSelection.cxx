@@ -1,3 +1,6 @@
+// E/p analysis for run 2
+// Joakim Olsson (joakim.olsson@cern.ch)
+
 // c++ include(s):
 #include <iostream>
 #include <typeinfo>
@@ -30,6 +33,7 @@ TrackVertexSelection :: TrackVertexSelection (std::string className) :
     Algorithm(className),
     m_cutflowHist(nullptr),
     m_cutflowHistW(nullptr),
+    m_trk_cutflowHist_1(nullptr),
     m_trkSelection(nullptr)
 {
   // Here you put any code for the base initialization of variables,
@@ -152,13 +156,13 @@ EL::StatusCode TrackVertexSelection :: initialize ()
     TFile *file = wk()->getOutputFile ("cutflow");
     m_cutflowHist  = (TH1D*)file->Get("cutflow");
     m_cutflowHistW = (TH1D*)file->Get("cutflow_weighted");
-    m_cutflow_bin  = m_cutflowHist->GetXaxis()->FindBin(m_name.c_str());
-    m_cutflowHistW->GetXaxis()->FindBin(m_name.c_str());
+    m_cutflow_bin  = m_cutflowHist->GetXaxis()->FindBin("track selection");
+    m_cutflowHistW->GetXaxis()->FindBin("track selection");
 
     // retrieve the object cutflow
     m_trk_cutflowHist_1  = (TH1D*)file->Get("cutflow_trks_1");
     m_trk_cutflow_all    = m_trk_cutflowHist_1->GetXaxis()->FindBin("all");
-    m_trk_cutflow_accept = m_trk_cutflowHist_1->GetXaxis()->FindBin("accept");
+    m_trk_cutflow_accept = m_trk_cutflowHist_1->GetXaxis()->FindBin("pass trk selection");
   }
 
   // parse and split by comma
@@ -330,6 +334,10 @@ EL::StatusCode TrackVertexSelection :: finalize ()
     Info("histFinalize()", "Filling cutflow");
     m_cutflowHist ->SetBinContent( m_cutflow_bin, m_numEventPass        );
     m_cutflowHistW->SetBinContent( m_cutflow_bin, m_weightNumEventPass  );
+
+    // fill cutflow bin 'all' before any cut
+    if(m_useCutFlow) m_trk_cutflowHist_1->Fill(m_trk_cutflow_all, m_numObject);
+    if(m_useCutFlow) m_trk_cutflowHist_1->Fill(m_trk_cutflow_accept, m_numObjectPass );
   }
 
   Info("finalize()", "Deleting tool instances...");
