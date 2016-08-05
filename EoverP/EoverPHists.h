@@ -62,6 +62,8 @@ class EoverPHists : public HistogramManager
     // track kinematics
     TH1F* m_trk_p; //!
     TH1F* m_trk_p_array; //!
+    TH1F* m_trk_pt; //!
+    TH1F* m_trk_pt_array; //!
     TH1F* m_trk_eta; //!
     TH1F* m_trk_eta_array; //!
     TH1F* m_trk_phi; //!

@@ -15,11 +15,15 @@ ClassImp(EoverPAnalysis)
 
   EoverPAnalysis :: EoverPAnalysis (std::string className) :
     Algorithm(className),
+    // cutflows
     m_cutflowHist(nullptr),
     m_cutflowHistW(nullptr),
     m_trk_cutflowHist_1(nullptr),
     m_trk_cutflowHist_eop(nullptr),
+    // main histograms
     m_plots_eop(nullptr),
+    // extra histograms for track isolation testing, turn on with m_doTrkIsoHists
+    m_plots_eop_trks(nullptr),
     // extra plots, turn on with m_doGlobalTileEfracRanges
     m_plots_eop_TileEfrac000(nullptr),
     m_plots_eop_TileEfrac010(nullptr),
@@ -67,10 +71,15 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
 
   // declare class and add histograms to output
   m_plots_eop = new EoverPHists(m_name, m_detailStr, m_energyCalib, m_trkExtrapol, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-
   RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop -> initialize(), "");
-
   m_plots_eop -> record( wk() );
+
+  if (m_doTrkIsoHists) {
+    // extra histograms for track isolation testing
+    m_plots_eop_trks = new EoverPHistsTrks(m_name, m_detailStr, m_trkExtrapol, m_trkIsoDRmax, m_trkIsoPfrac, m_doTrkPcut, m_trkPmin, m_trkPmax, m_doTrkEtacut, m_trkEtamin, m_trkEtamax, false); 
+    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_trks -> initialize(), "");
+    m_plots_eop_trks -> record( wk() );
+  }
 
   if (m_doGlobalTileEfracRanges) {
 
@@ -210,6 +219,11 @@ EL::StatusCode EoverPAnalysis :: execute ()
 
   const xAOD::TrackParticleContainer* trks(nullptr);
   RETURN_CHECK("EoverPAnalysis::execute()", HelperFunctions::retrieve(trks, m_inTrackContainerName, m_event, m_store, m_verbose) ,"");
+
+  // extra histograms for track isolation testing
+  if (m_doTrkIsoHists) {
+    RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_trks->execute(trks, vtxs, eventInfo, eventWeight), "");
+  }
 
   xAOD::TrackParticleContainer::const_iterator trk_itr = trks->begin();
   xAOD::TrackParticleContainer::const_iterator trk_end = trks->end();
@@ -392,6 +406,7 @@ EL::StatusCode EoverPAnalysis :: histFinalize ()
 
   // clean up memory
   if(m_plots_eop) delete m_plots_eop;
+  if(m_plots_eop_trks) delete m_plots_eop_trks;
   
   if(m_plots_eop_TileEfrac000) delete m_plots_eop_TileEfrac000;
   if(m_plots_eop_TileEfrac010) delete m_plots_eop_TileEfrac010;

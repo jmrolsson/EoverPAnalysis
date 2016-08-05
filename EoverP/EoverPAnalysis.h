@@ -12,6 +12,7 @@
 
 // Histograms
 #include "EoverP/EoverPHists.h"
+#include "EoverP/EoverPHistsTrks.h"
 
 class EoverPAnalysis : public xAH::Algorithm
 {
@@ -72,6 +73,9 @@ class EoverPAnalysis : public xAH::Algorithm
     bool m_doGlobalEnergyRanges = false; 
     bool m_doGlobalEtaRanges = false; 
 
+    // extra histograms for track isolation testing
+    bool m_doTrkIsoHists = true;
+
     // turn on cutflows
     bool m_useCutFlow = false; 
 
@@ -113,6 +117,7 @@ class EoverPAnalysis : public xAH::Algorithm
     const std::vector<std::string> m_layer_tile = {"TileBar0", "TileBar1", "TileBar2", "TileGap1", "TileGap2", "TileGap3", "TileExt0", "TileExt1", "TileExt2"}; //! array of tile layers only
 
     EoverPHists* m_plots_eop; //!
+    EoverPHistsTrks* m_plots_eop_trks; //!
 
     EoverPHists* m_plots_eop_TileEfrac000; //!
     EoverPHists* m_plots_eop_TileEfrac010; //!
