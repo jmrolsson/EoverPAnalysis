@@ -136,18 +136,6 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
   // track-track and track-cluster (outer loop over all tracks)
   for( ; trk_itr != trk_end; ++trk_itr ) {
 
-    // check track p requirement
-    if (m_doTrkPcut) {
-      if (trk_p < m_trkPmin) continue;
-      if (trk_p > m_trkPmax) continue;
-    }
-
-    // check track eta requirement
-    if (m_doTrkEtacut) {
-      if (TMath::Abs(trk_etaCALO) < m_trkEtamin) continue;
-      if (TMath::Abs(trk_etaCALO) > m_trkEtamax) continue;
-    }
-
     // count the number of tracks passing all selections
     trk_n += 1;
     const xAOD::TrackParticle* trk = (*trk_itr);
@@ -165,6 +153,18 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
 
     dR_CALO_ID = sqrt( pow(dEta_CALO_ID, 2) + pow(dPhi_CALO_ID, 2) );
 
+    // check track p requirement
+    if (m_doTrkPcut) {
+      if (trk_p < m_trkPmin) continue;
+      if (trk_p > m_trkPmax) continue;
+    }
+
+    // check track eta requirement
+    if (m_doTrkEtacut) {
+      if (TMath::Abs(trk_etaCALO) < m_trkEtamin) continue;
+      if (TMath::Abs(trk_etaCALO) > m_trkEtamax) continue;
+    }
+
     // keep track of the number of tracks within a certain dR from the selected track
     int trk_ntrks_maxDR[10] = {0};
     trk2_p = 0.;
@@ -172,19 +172,18 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
     surr_trk_leading_p = 0.;
     trk2_itr = trks->begin();
     for( ; trk2_itr != trk2_end; ++trk2_itr ) {
-      const xAOD::TrackParticle* trk2 = (*trk2_itr);
-      trk2_etaCALO = trk2->auxdata<float>(std::string("CALO_trkEta_"+m_trkExtrapol));
-      trk2_phiCALO = trk2->auxdata<float>(std::string("CALO_trkPhi_"+m_trkExtrapol));
-      trk_trk2_dEta= TMath::Abs(trk2_etaCALO - trk_etaCALO);
-      if (TMath::Abs(trk2_phiCALO - trk_phiCALO) < TMath::Pi())
-        trk_trk2_dPhi = TMath::Abs(trk2_phiCALO - trk_phiCALO);
-      else
-        trk_trk2_dPhi = 2*TMath::Pi() - TMath::Abs(trk2_phiCALO - trk_phiCALO);
-      trk_trk2_dR = sqrt( pow(trk_trk2_dEta, 2) + pow(trk_trk2_dPhi, 2) );
-      m_trk_trk2_dR -> Fill(trk_trk2_dR, eventWeight);
-      m_trk_trk2_dR_vs_trk_p -> Fill(trk_p, trk_trk2_dR, eventWeight);
-
       if (trk_itr != trk2_itr) { // do not double count the selected track 
+        const xAOD::TrackParticle* trk2 = (*trk2_itr);
+        trk2_etaCALO = trk2->auxdata<float>(std::string("CALO_trkEta_"+m_trkExtrapol));
+        trk2_phiCALO = trk2->auxdata<float>(std::string("CALO_trkPhi_"+m_trkExtrapol));
+        trk_trk2_dEta= TMath::Abs(trk2_etaCALO - trk_etaCALO);
+        if (TMath::Abs(trk2_phiCALO - trk_phiCALO) < TMath::Pi())
+          trk_trk2_dPhi = TMath::Abs(trk2_phiCALO - trk_phiCALO);
+        else
+          trk_trk2_dPhi = 2*TMath::Pi() - TMath::Abs(trk2_phiCALO - trk_phiCALO);
+        trk_trk2_dR = sqrt( pow(trk_trk2_dEta, 2) + pow(trk_trk2_dPhi, 2) );
+        m_trk_trk2_dR -> Fill(trk_trk2_dR, eventWeight);
+        m_trk_trk2_dR_vs_trk_p -> Fill(trk_p, trk_trk2_dR, eventWeight);
 
         // count the number of track wihin a given radius
         for (int i = 0; i < 10; ++i) {
@@ -205,8 +204,6 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
         }
       }
     } // END looping trk2
-
-    if ((m_doTrkIsocut) && (TMath::Abs(surr_trk_sum_p/trk_p) > m_trkIsoPfrac)) continue;
 
     // plots of the number of close-by tracks within a certain radius
     m_trk_ntrks_maxDR01 -> Fill(trk_ntrks_maxDR[0], eventWeight);
@@ -245,6 +242,8 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
     m_trk_ntrks_trkIsoDRmax_leading_surr_trk_p_over_trk_p -> Fill(surr_trk_leading_p/trk_p, eventWeight);
 
   } // END loop tracks 
+
+  m_trk_n-> Fill(trk_n);
 
   return StatusCode::SUCCESS;
 }

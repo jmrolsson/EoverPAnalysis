@@ -110,6 +110,16 @@ StatusCode EoverPHists::initialize()
   m_trk_EMandHAD_over_Total_200 = book (m_name, std::string("trk_"+m_energyCalib+"_EMandHAD_over_Total_200"), "(EM+HAD) / Total", 100, 0, 5.0); 
   m_trk_SumAllLayers_over_Total_200 = book (m_name, std::string("trk_"+m_energyCalib+"_SumAllLayers_over_Total_200"), "#Sigma all layers / Total", 100, 0, 5.0); 
 
+  // calo layer with the highest cluster energy
+  m_trk_E_100_highElayer = book (m_name, std::string("trk_"+m_energyCalib+"_E_100_highElayer"), "Calorimeter layer with highest E", 21, 0, 21); 
+  m_trk_E_200_highElayer = book (m_name, std::string("trk_"+m_energyCalib+"_E_200_highElayer"), "Calorimeter layer with highest E", 21, 0, 21); 
+  m_trk_E_100_highElayer_vs_E = book (m_name, std::string("trk_"+m_energyCalib+"_E_100_highElayer_vs_E"), "E [GeV]", nBinsE, minE, maxE, "Calorimeter layer", 21, 0, 21); 
+  m_trk_E_200_highElayer_vs_E = book (m_name, std::string("trk_"+m_energyCalib+"_E_200_highElayer_vs_E"), "E [GeV]", nBinsE, minE, maxE, "Calorimeter layer", 21, 0, 21); 
+
+  // sum of the energy of clusters matched to tracks vs. calo layer
+  m_trk_E_100_vs_layer = book(m_name, std::string("trk_"+m_energyCalib+"_E_100_vs_layer"), "Calorimeter layer", 21, 0, 21, "E (#DeltaR<0.4)", nBinsE, minE, maxE); 
+  m_trk_E_200_vs_layer = book(m_name, std::string("trk_"+m_energyCalib+"_E_200_vs_layer"), "Calorimeter layer", 21, 0, 21, "E (#DeltaR<0.4)", nBinsE, minE, maxE); 
+
   // create E/p histograms
 
   // total calorimeter energy
@@ -452,9 +462,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
 
   float trk_p = 0;
   if (TMath::Abs(trk->qOverP())>0.) trk_p = (1./TMath::Abs(trk->qOverP()))/1e3; 
-  std::cout << "beginning of EoverPHists::execute" << std::endl;
-  // float trk_pt = trk->pt()/1e3;
-  std::cout << "after trk->pt() in EoverPHists::execute" << std::endl;
+  float trk_pt = trk->pt()/1e3;
   // coordinates of the track in the ID
   float trk_etaID = trk->eta();
   float trk_phiID = trk->phi();
@@ -470,11 +478,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   if (m_doEtaAbs) trk_etaCALO = TMath::Abs(trk_etaCALO);
 
   // fill histos with basic track properties
-  std::cout << "before filling trk hists, EoverPHists::execute" << std::endl;
   m_trk_p -> Fill(trk_p, eventWeight); 
   if (m_doEbinsArray) m_trk_p_array -> Fill(trk_p, eventWeight); 
-  // m_trk_pt -> Fill(trk_pt, eventWeight); 
-  // if (m_doEbinsArray) m_trk_pt_array -> Fill(trk_pt, eventWeight); 
+  m_trk_pt -> Fill(trk_pt, eventWeight); 
+  if (m_doEbinsArray) m_trk_pt_array -> Fill(trk_pt, eventWeight); 
   m_trk_eta -> Fill(trk_etaCALO, eventWeight); 
   if (m_doEtabinsArray) m_trk_eta_array -> Fill(trk_etaCALO, eventWeight); 
   m_trk_phi -> Fill(trk_phiCALO, eventWeight); 
@@ -484,7 +491,6 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_DR_CALO_ID_vs_trk_p -> Fill(trk_p, dR_CALO_ID, eventWeight);
   m_trk_DEta_CALO_ID_vs_trk_p -> Fill(trk_p, dEta_CALO_ID, eventWeight);
   m_trk_DPhi_CALO_ID_vs_trk_p -> Fill(trk_p, dPhi_CALO_ID, eventWeight);
-  std::cout << "after filling trk hists, EoverPHists::execute" << std::endl;
   
   // cluster energy associated with the track
   float trk_E_Total_100 = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_100"))/1e3; 
@@ -524,7 +530,6 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     trk_sumE_EM_200 += trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_em[i]+"_200"))/1e3; 
   }
 
-  std::cout << "before filling sum hists, EoverPHists::execute" << std::endl;
   // basic "sanity" checks of the E/p xAOD derivation
   m_trk_sumE_Tile_100 -> Fill(trk_sumE_Tile_100, eventWeight);
   m_trk_sumE_Tile_200 -> Fill(trk_sumE_Tile_200, eventWeight);
@@ -540,7 +545,6 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_SumEMLayers_over_EM_200 -> Fill(trk_sumE_EM_200/trk_E_EM_200, eventWeight);
   m_trk_EMandHAD_over_Total_100 -> Fill((trk_E_EM_100+trk_E_HAD_100)/trk_E_Total_100, eventWeight);
   m_trk_EMandHAD_over_Total_200 -> Fill((trk_E_EM_200+trk_E_HAD_200)/trk_E_Total_200, eventWeight);
-  std::cout << "after filling sum hists, EoverPHists::execute" << std::endl;
 
   // determine which layer has the highest energy deposit 
   int trk_highE_100_layer = 0;
@@ -554,8 +558,8 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   float trk_sumEg0_Total_100 = 0.;
   float trk_sumEg0_Total_200 = 0.;
   for (unsigned int i=0; i<m_layer.size(); i++) { 
-    trk_E_100_tmp = 0.; // trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer[i]+"_100"))/1e3; 
-    trk_E_200_tmp = 0.; // trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer[i]+"_200"))/1e3; 
+    trk_E_100_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer[i]+"_100"))/1e3; 
+    trk_E_200_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer[i]+"_200"))/1e3; 
     trk_sumE_Total_100 += trk_E_100_tmp; 
     trk_sumE_Total_200 += trk_E_200_tmp; 
     if (trk_E_100_tmp > 0.) 
@@ -574,7 +578,6 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       trk_highE_200_layer = i; 
     }
   }
-  std::cout << "after m_layer looping, EoverPHists::execute" << std::endl;
 
   float trk_TileEfrac_100 = trk_sumE_Tile_100/trk_sumEg0_Total_100;    
   float trk_TileEfrac_200 = trk_sumE_Tile_200/trk_sumEg0_Total_200;    
@@ -591,7 +594,6 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
         trk_eta_i = i; 
     }
   }
-  std::cout << "after array stuff, EoverPHists::execute" << std::endl;
 
   // fill histos with Tile energy fractions
   m_trk_TileEfrac_100 -> Fill(trk_TileEfrac_100, eventWeight);
@@ -607,6 +609,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_E_200_highElayer -> Fill(trk_highE_200_layer, eventWeight);
   m_trk_E_100_highElayer_vs_E -> Fill(trk_highE_100, trk_highE_100_layer, eventWeight);
   m_trk_E_200_highElayer_vs_E -> Fill(trk_highE_200, trk_highE_200_layer, eventWeight);
+
 
   // fill E/p histograms
   // Total calorimeter energy
@@ -708,7 +711,6 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     }
   } // END doBgSubtr
 
-  std::cout << "after doBgSubtr, EoverPHists::execute" << std::endl;
 
   // E/p where E is maximum in either Tile layer A, BC, or D
   if (m_doTileLayer) {
