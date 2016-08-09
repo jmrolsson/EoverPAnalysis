@@ -17,8 +17,8 @@ if [ $# -eq 0 ]
     mkdir -p results
 
     echo "---> Running JZxW pileup MC samples:"
-    echo xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data.py --submitDir results/condor_all_eop_pileup_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
-    xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data.py --submitDir results/condor_all_eop_pileup_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    echo xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_pileup.py --submitDir results/condor_all_eop_pileup_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_pileup.py --submitDir results/condor_all_eop_pileup_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
     echo xAH_run.py --files ${files_JZ0W} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_pileup_JZ0W_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
     xAH_run.py --files ${files_JZ0W} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_pileup_JZ0W_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
     echo xAH_run.py --files ${files_JZ1W} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_pileup_JZ1W_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
