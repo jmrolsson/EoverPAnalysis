@@ -1,6 +1,6 @@
 # EoverPAnalysis
 
-<a href="http://eoverp.readthedocs.io/en/latest/">The documentation is hosted on ReadTheDocs.org</a> 
+<a href="http://eoverp.readthedocs.io/en/latest/">The complete documentation is hosted on ReadTheDocs.org</a> 
 
 <h2>Setup</h2>
 <p>mkdir myAnalysis; cd myAnalysis</p>
