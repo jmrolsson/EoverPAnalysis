@@ -16,7 +16,7 @@ trks_run1 = trks+"Run1"
 ''' Set up all the algorithms '''
 c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
                                  "m_applyGRLCut": True,
-                                 "m_GRLxml": "$ROOTCOREBIN/data/data15_13TeV.periodAllYear_DetStatus-v79-repro20-02_DQDefects-00-02-02_PHYS_StandardGRL_All_Good_25ns.xml",
+                                 "m_GRLxml": "$ROOTCOREBIN/../EoverPAnalysis/data/data15_13TeV.periodAllYear_DetStatus-v79-repro20-02_DQDefects-00-02-02_PHYS_StandardGRL_All_Good_25ns.xml",
                                  "m_doPUreweighting": False,
                                  "m_applyPrimaryVertexCut": True,
                                  "m_PVNTrack": 4,
