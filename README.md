@@ -1,5 +1,5 @@
 # EoverPAnalysis
-For questions please contact: joakim.olsson[AT]cern.ch
+For questions please contact: joakim.olsson[at]cern.ch
 
 <a href="http://eoverp.readthedocs.io/en/latest/">The complete documentation is hosted on ReadTheDocs.org</a> 
 
