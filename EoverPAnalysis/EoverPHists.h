@@ -1,8 +1,8 @@
 // E/p analysis for run 2
 // Joakim Olsson (joakim.olsson@cern.ch)
 
-#ifndef EoverP_EoverPHists_H
-#define EoverP_EoverPHists_H
+#ifndef EoverPAnalysis_EoverPHists_H
+#define EoverPAnalysis_EoverPHists_H
 
 #include "xAODAnaHelpers/HistogramManager.h"
 #include "xAODTracking/VertexContainer.h"

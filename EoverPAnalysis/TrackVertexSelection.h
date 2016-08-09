@@ -1,8 +1,8 @@
 // E/p analysis for run 2
 // Joakim Olsson (joakim.olsson@cern.ch)
 
-#ifndef EoverP_TrackVertexSelection_H
-#define EoverP_TrackVertexSelection_H
+#ifndef EoverPAnalysis_TrackVertexSelection_H
+#define EoverPAnalysis_TrackVertexSelection_H
 
 // EDM include(s):
 #include "xAODTracking/VertexContainer.h"

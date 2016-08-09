@@ -7,7 +7,7 @@
 #include "AthContainers/ConstDataVector.h"
 #include "xAODEventInfo/EventInfo.h"
 #include "xAODAnaHelpers/HelperFunctions.h"
-#include <EoverP/EoverPAnalysis.h>
+#include <EoverPAnalysis/EoverPAnalysis.h>
 #include <xAODAnaHelpers/tools/ReturnCheck.h>
 
 // this is needed to distribute the algorithm to the workers

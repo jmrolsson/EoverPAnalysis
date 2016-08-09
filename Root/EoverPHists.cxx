@@ -1,7 +1,7 @@
 // E/p analysis for run 2
 // Joakim Olsson (joakim.olsson@cern.ch)
 
-#include "EoverP/EoverPHists.h"
+#include "EoverPAnalysis/EoverPHists.h"
 #include "xAODAnaHelpers/tools/ReturnCheck.h"
 #include "xAODAnaHelpers/HelperFunctions.h"
 #include <regex>

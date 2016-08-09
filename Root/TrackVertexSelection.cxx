@@ -17,7 +17,7 @@
 // package include(s):
 #include "xAODEventInfo/EventInfo.h"
 #include "xAODAnaHelpers/HelperFunctions.h"
-#include "EoverP/TrackVertexSelection.h"
+#include "EoverPAnalysis/TrackVertexSelection.h"
 #include <xAODAnaHelpers/tools/ReturnCheck.h>
 
 // ROOT include(s):

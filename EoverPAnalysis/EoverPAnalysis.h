@@ -1,8 +1,8 @@
 // E/p analysis for run 2
 // Joakim Olsson (joakim.olsson@cern.ch)
 
-#ifndef EoverP_EoverPAnalysis_H
-#define EoverP_EoverPAnalysis_H
+#ifndef EoverPAnalysis_EoverPAnalysis_H
+#define EoverPAnalysis_EoverPAnalysis_H
 
 #include "xAODTracking/VertexContainer.h"
 #include "xAODTracking/TrackParticleContainer.h"
@@ -11,8 +11,8 @@
 #include "xAODAnaHelpers/Algorithm.h"
 
 // Histograms
-#include "EoverP/EoverPHists.h"
-#include "EoverP/EoverPHistsTrks.h"
+#include "EoverPAnalysis/EoverPHists.h"
+#include "EoverPAnalysis/EoverPHistsTrks.h"
 
 class EoverPAnalysis : public xAH::Algorithm
 {
@@ -36,7 +36,7 @@ class EoverPAnalysis : public xAH::Algorithm
     bool m_doCaloEM= false;
     bool m_doCaloHAD= false;
     bool m_doBgSubtr = false;
-    bool m_doTileLayer = true;
+    bool m_doTileLayer = false;
 
     // global track p cuts
     bool m_doTrkPcut = false;
@@ -79,7 +79,7 @@ class EoverPAnalysis : public xAH::Algorithm
     // turn on cutflows
     bool m_useCutFlow = false; 
 
-    // energy calibration, either "ClusterEnergy", "ClusterEnergyLCW", or "Cells"
+    // energy calibration, either "ClusterEnergy", "ClusterEnergyLCW", or "CellEnergy"
     std::string m_energyCalib = "ClusterEnergy";
 
   private:
@@ -116,6 +116,8 @@ class EoverPAnalysis : public xAH::Algorithm
     const std::vector<std::string> m_layer_lar = {"EMB1", "EMB2", "EMB3", "EME1", "EME2", "EME3", "HEC0", "HEC1", "HEC2", "HEC3"}; //! array of lar layers only
     const std::vector<std::string> m_layer_tile = {"TileBar0", "TileBar1", "TileBar2", "TileGap1", "TileGap2", "TileGap3", "TileExt0", "TileExt1", "TileExt2"}; //! array of tile layers only
 
+
+    // histogram making classes 
     EoverPHists* m_plots_eop; //!
     EoverPHistsTrks* m_plots_eop_trks; //!
 

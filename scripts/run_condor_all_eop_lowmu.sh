@@ -10,18 +10,18 @@ if [ $# -eq 0 ]
 
     tag=$1
     today=$(date +"%Y%m%d")
-    files_data=EoverP/filelists/data15_13TeV_lowmu_all.txt
-    files_mc=EoverP/filelists/mc15_13TeV_lowmu_all.txt
+    files_data=EoverPAnalysis/filelists/data15_13TeV_lowmu_all.txt
+    files_mc=EoverPAnalysis/filelists/mc15_13TeV_lowmu_all.txt
 
     mkdir -p results
 
     echo "---> Running data:"
-    echo xAH_run.py --files ${files_data} --inputList --config EoverP/scripts/config_eop_data.py --submitDir results/condor_all_eop_lowmu_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 50
-    xAH_run.py --files ${files_data} --inputList --config EoverP/scripts/config_eop_data.py --submitDir results/condor_all_eop_lowmu_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 50
+    echo xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data.py --submitDir results/condor_all_eop_lowmu_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 50
+    xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data.py --submitDir results/condor_all_eop_lowmu_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 50
 
     echo "---> Running MC:"
-    echo xAH_run.py --files ${files_mc} --inputList --config EoverP/scripts/config_eop_mc.py --submitDir results/condor_all_eop_lowmu_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 50
-    xAH_run.py --files ${files_mc} --inputList --config EoverP/scripts/config_eop_mc.py --submitDir results/condor_all_eop_lowmu_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 50
+    echo xAH_run.py --files ${files_mc} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_lowmu_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 50
+    xAH_run.py --files ${files_mc} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_lowmu_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 50
 
     echo "---> Write to logfile:"
     echo "# ---> "$(date +"%Y-%m-%d:%H:%M:%S") >> results/run_condor_eop_lowmu.log
@@ -35,6 +35,6 @@ if [ $# -eq 0 ]
     echo results/condor_all_eop_lowmu_mc_${today}_${tag} >> results/run_condor_eop_lowmu_latest.log
 
     echo "--> Jobs submitted!"
-    echo "python scripts/merge_condor_eop.py results/run_condor_eop_lowmu_latest.log' # when condor jobs are finished to merge output files"
+    echo "source $ROOTCOREBIN/../EoverPAnalysis/scripts/merge_condor_eop.py $ROOTCOREBIN/../results/run_condor_eop_lowmu_latest.log # when condor jobs are finished to merge output files"
 
 fi

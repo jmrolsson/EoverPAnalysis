@@ -1,5 +1,5 @@
-#ifndef EoverP_EoverPHistsTrks_H
-#define EoverP_EoverPHistsTrks_H
+#ifndef EoverPAnalysis_EoverPHistsTrks_H
+#define EoverPAnalysis_EoverPHistsTrks_H
 
 #include "xAODAnaHelpers/HistogramManager.h"
 #include "xAODTracking/VertexContainer.h"
