@@ -1,5 +1,5 @@
-#include <EoverP/TrackVertexSelection.h>
-#include <EoverP/EoverPAnalysis.h>
+#include <EoverPAnalysis/TrackVertexSelection.h>
+#include <EoverPAnalysis/EoverPAnalysis.h>
 
 #ifdef __CINT__
 
