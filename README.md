@@ -21,7 +21,7 @@ For questions please contact: joakim.olsson[AT]cern.ch
 <h4>The output will then be located in 'results'</h4>
 <p>E.g. results/condor_test_eop_lowmu_{mc,data}_YYYYMMDD_0/</p>
 <h4>The condor output histograms and cutflows can easily be merged, just run (after condor has finished)</h4> 
-<p>source $RootCoreBin/../EoverPAnalysis/scripts/merge_condor_eop.py $RootCoreBin/../results/run_condor_eop_lowmu_latest.log
+<p>source $ROOTCOREBIN/../EoverPAnalysis/scripts/merge_condor_eop.py $ROOTCOREBIN/../results/run_condor_eop_lowmu_latest.log
 
 <h2>Configuration</h2>
 
