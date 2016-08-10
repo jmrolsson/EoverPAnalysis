@@ -37,6 +37,6 @@ if [ $# -eq 0 ]
     echo results/condor_all_eop_tile_OF2_mc_${today}_${tag} >> results/run_condor_eop_tile_latest.log
 
     echo "--> Jobs submitted!"
-    echo "source $ROOTCOREBIN/../EoverPAnalysis/scripts/merge_condor_eop.py $ROOTCOREBIN/../results/run_condor_eop_tile_latest.log # when condor jobs are finished to merge output files"
+    echo "source $ROOTCOREBIN/../EoverPAnalysis/scripts/merge_condor_eop.sh $ROOTCOREBIN/../results/run_condor_eop_tile_latest.log # when condor jobs are finished to merge output files"
 
 fi

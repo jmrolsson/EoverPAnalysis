@@ -3,7 +3,7 @@
 if [ $# -eq 0 ]
 
 then
-  echo "Usage: merge_condor_eop.sh run_condor_eop_logfile_name"
+  echo "Usage: merge_condor_eop.sh run_condor_eop_xyz_latest.log"
 
 else
 
@@ -23,15 +23,16 @@ else
     else
       condor_output=${line}
       echo "condor output files: "${condor_output}
-      echo "merging files:"
-      echo hadd -f ${condor_output}-cutflows.root ${condor_output}/fetch/data-cutflow/hist-${file_tag}-*.root
+      # echo "merging files:"
+      # echo hadd -f ${condor_output}.root ${condor_output}/fetch/hist-${file_tag}-*.root
+      # hadd -f ${condor_output}.root ${condor_output}/fetch/hist-${file_tag}-*.root
+      echo "merging cutflows"
+      echo hadd -f ${condor_output}-cutflows.root ${condor_output}/fetch/data-cutflow/${file_tag}-*.root
+      hadd -f ${condor_output}-cutflows.root ${condor_output}/fetch/data-cutflow/${file_tag}-*.root
       echo "writing to logfile:"
-      if [ $((count)) -eq 1 ]
-      then
-        echo ${condor_output}.root | sed -e 's/^results\///g' > results/merge_condor_eop_lowmu_latest.log
-      else
-        echo ${condor_output}.root | sed -e 's/^results\///g' >> results/merge_condor_eop_lowmu_latest.log
-      fi
+      echo "# ---> "$(date +"%Y-%m-%d:%H:%M:%S") -- merge >> results/run_condor_eop.log
+      # echo ${condor_output}.root | sed -e 's/^results\///g' >> results/merge_condor_eop.log
+      echo ${condor_output}-cutflows.root | sed -e 's/^results\///g' >> results/merge_condor_eop.log
     fi
     ((count++));
   done <${logfile};
