@@ -1,7 +1,7 @@
 # EoverPAnalysis
-[The complete documentation of this package is hosted on ReadTheDocs.org](http://eoverp.readthedocs.io/en/latest/)
+[The complete documentation of this package is hosted on ReadTheDocs.org](http://eoverp.readthedocs.io/en/latest/).
 
-This package is based on the xAODAnaHelpers (xAH) RootCore package, thus I strongly recommend you check out the [xAH documentation first](https://github.com/UCATLAS/xAODAnaHelpers)
+This package is based on the xAODAnaHelpers (xAH) RootCore package, thus I strongly recommend you check out the [xAH documentation first](https://github.com/UCATLAS/xAODAnaHelpers).
 
 For questions please contact: joakim.olsson[at]cern.ch
 
