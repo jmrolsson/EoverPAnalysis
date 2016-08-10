@@ -7,7 +7,7 @@ Checking out packages
 ::
 
     setupATLAS
-    rcSetup Base,X.Y.Z
+    lsetup 'rcsetup Base,X.Y.Z'
     git clone https://github.com/UCATLAS/xAODAnaHelpers
     git clone http://github.com/jmrolsson/EoverPAnalysis EoverPAnalysis
 

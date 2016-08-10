@@ -1,6 +1,22 @@
 Running
 ========
 
+Grid proxy
+----------
+
+If your datasets are located on the grid (the ones in the file lists that comes with this package are), you need to have a valid grid proxy in order to access them.
+
+::
+
+    voms-proxy-init -voms atlas
+
+If you haven't done so already, you might want to add the following lines to your ~/.bash_profile:
+
+::
+
+    alias grid="voms-proxy-init -voms atlas -out $HOME/.globus/gridproxy.cert -valid 1000:00"
+    export X509_USER_PROXY=$HOME/.globus/gridproxy.cert
+
 Local test run
 --------------
 

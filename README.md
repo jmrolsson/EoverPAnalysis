@@ -11,11 +11,26 @@ For questions please contact: joakim.olsson[at]cern.ch
 mkdir myAnalysis; cd myAnalysis
 git clone http://github.com/UCATLAS/xAODAnaHelpers xAODAnaHelpers
 git clone http://github.com/jmrolsson/EoverPAnalysis EoverPAnalysis
-rcSetup Base,2.4.15 # or later version of (Ath)AnalysisBase
+lsetup 'rcsetup Base,2.4.15' # or later version of (Ath)AnalysisBase
 rc clean && rc find_packages && rc compile && rc make_par
 ```
 
 ## Running
+
+### Grid proxy
+
+If your datasets are located on the grid (the ones in the file lists that comes with this package are), you need to have a valid grid proxy in order to access them.
+
+```
+voms-proxy-init -voms atlas
+``` 
+
+If you haven't done so already, you might want to add the following lines to your ~/.bash_profile:
+
+```
+echo alias grid="voms-proxy-init -voms atlas -out $HOME/.globus/gridproxy.cert -valid 1000:00"
+export X509_USER_PROXY=$HOME/.globus/gridproxy.cert
+```
 
 ### Local test run
 
