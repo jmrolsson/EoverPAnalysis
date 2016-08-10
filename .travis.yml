@@ -8,6 +8,7 @@ before_install:
 install:
   - export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
   - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh --quiet
+  - git clone http://github.com/UCATLAS/xAODAnaHelpers xAODAnaHelpers
   - rcSetup Base,${ABV}
   - git clone http://github.com/UCATLAS/xAODAnaHelpers xAODAnaHelpers
   - python xAODAnaHelpers/scripts/checkoutASGtags.py ${ABV}
