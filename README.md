@@ -35,17 +35,18 @@ export X509_USER_PROXY=$HOME/.globus/gridproxy.cert
 ### Local test run
 
 ```
+lsetup fax; fax-get-best-redirector
 mkdir results
-xAH_run.py --files EoverPAnalysis/filelists/data15_13TeV_lowmu_test1.txt --inputList --config EoverPAnalysis/scripts/config_eop_data_lowmu.py --submitDir results/eop_data_test_0 --verbose --force direct
+xAH_run.py --files $ROOTCOREBIN/../EoverPAnalysis/filelists/data15_13TeV_lowmu_test1.txt --inputList --config $ROOTCOREBIN/../EoverPAnalysis/scripts/config_eop_data_lowmu.py --submitDir $ROOTCOREBIN/../results/eop_data_test_0 --verbose --force direct
 ```
 
 ### First condor test run
 
 ```
-source EoverPAnalysis/scripts/run_condor_test_eop_lowmu.sh 0 # where '0' is a tag for the run
+source $ROOTCOREBIN/../EoverPAnalysis/scripts/run_condor_test_eop_lowmu.sh 0 # where '0' is a tag for the run
 ```
 
-The output will then be located in 'results', e.g. results/condor_test_eop_lowmu_{mc,data}_YYYYMMDD_0/
+The output will then be located in 'results', e.g. $ROOTCOREBIN/../results/condor_test_eop_lowmu_{mc,data}_YYYYMMDD_0/
 
 The condor output histograms and cutflows can easily be merged, just run the script below after your condor jobs have finished
 
