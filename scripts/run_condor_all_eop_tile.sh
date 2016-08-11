@@ -18,8 +18,11 @@ if [ $# -eq 0 ]
 
     echo "---> Running tile COF, OF1, and OF2 samples:"
     echo xAH_run.py --files ${files_COF} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_tile_COF_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    xAH_run.py --files ${files_COF} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_tile_COF_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
     echo xAH_run.py --files ${files_OF1} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_tile_OF1_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    xAH_run.py --files ${files_OF1} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_tile_OF1_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
     echo xAH_run.py --files ${files_OF2} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_tile_OF2_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    xAH_run.py --files ${files_OF2} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_tile_OF2_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
 
     echo "---> Write to logfile:"
     echo "# ---> "$(date +"%Y-%m-%d:%H:%M:%S") >> results/run_condor_eop_tile.log

@@ -4,10 +4,10 @@
 <?xml-stylesheet type="text/xsl" href="/atlasdqm/grlview/grl.xsl" title="grlview" ?>
 <LumiRangeCollection>
 <NamedLumiRange>
-<Name>PHYS_StandardGRL_All_Good</Name>
+<Name>PHYS_StandardModel_MinimuBias2010</Name>
 <Version>2.1</Version>
-<Metadata Name="ARQEquivalentQuery">find run data15_13TeV.periodB1 and dq PHYS_StandardGRL_All_Good DEFECTS#DetStatus-v62-pro18 g</Metadata>
-<Metadata Name="Query">Period: data15_13TeV.B1; Defect: PHYS_StandardGRL_All_Good; Defect tag: DetStatus-v62-pro18; Ignoring None</Metadata>
+<Metadata Name="ARQEquivalentQuery">find run data15_13TeV.periodB1 and dq PHYS_StandardModel_MinimuBias2010 DEFECTS#DetStatus-v62-pro18 g</Metadata>
+<Metadata Name="Query">Period: data15_13TeV.B1; Defect: PHYS_StandardModel_MinimuBias2010; Defect tag: DetStatus-v62-pro18; Ignoring None</Metadata>
 <Metadata Name="RQTSVNVersion">DQDefects-00-01-02</Metadata>
 <Metadata Name="RunList">267358,267359,267360,267367,267385,267599</Metadata>
 <LumiBlockCollection>
