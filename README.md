@@ -32,10 +32,15 @@ echo alias grid="voms-proxy-init -voms atlas -out $HOME/.globus/gridproxy.cert -
 export X509_USER_PROXY=$HOME/.globus/gridproxy.cert
 ```
 
-### Local test run
+The datasets that come with the default package are located on MWT2_UC_LOCALGROUPDISK, and are accessed via FAX. To set up fax, do:
 
 ```
 lsetup fax; fax-get-best-redirector
+```
+
+### Local test run
+
+```
 mkdir results
 xAH_run.py --files $ROOTCOREBIN/../EoverPAnalysis/filelists/data15_13TeV_lowmu_test1.txt --inputList --config $ROOTCOREBIN/../EoverPAnalysis/scripts/config_eop_data_lowmu.py --submitDir $ROOTCOREBIN/../results/eop_data_test_0 --verbose --force direct
 ```
