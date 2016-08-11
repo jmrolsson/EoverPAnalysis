@@ -16,7 +16,8 @@ trks_run1 = trks+"Run1"
 ''' Set up all the algorithms '''
 c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
                                  "m_applyGRLCut": True,
-                                 "m_GRLxml": "EoverPAnalysis/data/data15_13TeV.periodAllYear_DetStatus-v75-repro20-01_DQDefects-00-02-02_PHYS_StandardModel_MinimuBias2010_tolerable_L1CALmisconfigSatBCID.xml",
+                                 # "m_GRLxml": "EoverPAnalysis/data/data15_13TeV.periodAllYear_DetStatus-v75-repro20-01_DQDefects-00-02-02_PHYS_StandardModel_MinimuBias2010_tolerable_L1CALmisconfigSatBCID.xml",
+                                 "m_GRLxml": "EoverPAnalysis/data/data15_13TeV.periodAllYear_DetStatus-v79-repro20-02_DQDefects-00-02-02_PHYS_StandardGRL_All_Good_25ns.xml",
                                  "m_doPUreweighting": False,
                                  "m_applyPrimaryVertexCut": True,
                                  "m_PVNTrack": 4,
@@ -163,7 +164,7 @@ c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_Run1paper",
 
 ''' E/p histograms with LoosePrimary track selection'''
 c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_EMcalib_Tile_noLar_noTileEfrac",
-                            "m_inTrackContainerName": trks_loose,
+                            "m_inTrackContainerName": trks,
                             "m_trkExtrapol": "EMB2",
                             "m_energyCalib": "ClusterEnergy", # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
                             "m_doCaloTotal": True,
