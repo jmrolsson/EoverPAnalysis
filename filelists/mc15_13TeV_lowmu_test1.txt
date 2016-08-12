@@ -1,3 +1,7 @@
-root://faxbox.usatlas.org://faxbox2/user/jolsson/run2/eoverp/datasets/eop_xAOD_lowmu/user.emcdonal.EOverPAnalysis.mc15_13TeV_361203_date20052016_EXT0/user.emcdonal.8449721.EXT0._006391.TrackCaloDxAOD.pool.root
-root://faxbox.usatlas.org://faxbox2/user/jolsson/run2/eoverp/datasets/eop_xAOD_lowmu/user.emcdonal.EOverPAnalysis.mc15_13TeV_361203_date20052016_EXT0/user.emcdonal.8449721.EXT0._007813.TrackCaloDxAOD.pool.root
-root://faxbox.usatlas.org://faxbox2/user/jolsson/run2/eoverp/datasets/eop_xAOD_lowmu/user.emcdonal.EOverPAnalysis.mc15_13TeV_361203_date20052016_EXT0/user.emcdonal.8449721.EXT0._005302.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8449721.EXT0._000001.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8449721.EXT0._000002.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8449721.EXT0._000003.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8449721.EXT0._000004.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8449721.EXT0._000005.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8449721.EXT0._000006.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8449721.EXT0._000007.TrackCaloDxAOD.pool.root
