@@ -111,6 +111,20 @@ class EoverPAnalysis : public xAH::Algorithm
     int m_numEventPass;     //!
     int m_weightNumEventPass; //!
 
+    // number of tracks per event, after each selection
+    TH1D* m_trk_n_all; //!
+    TH1D* m_trk_n_pass_p; //!
+    TH1D* m_trk_n_pass_eta; //!
+    TH1D* m_trk_n_pass_iso; //!
+    TH1D* m_trk_n_pass_larEmax; //!
+    TH1D* m_trk_n_pass_tileEfrac; //!
+    int m_trk_n_all_tmp; //!
+    int m_trk_n_pass_p_tmp; //!
+    int m_trk_n_pass_eta_tmp; //!
+    int m_trk_n_pass_iso_tmp; //!
+    int m_trk_n_pass_larEmax_tmp; //!
+    int m_trk_n_pass_tileEfrac_tmp; //!
+
     // list of calo layers
     const std::vector<std::string> m_layer = {"PreSamplerB","PreSamplerE", "EMB1", "EMB2", "EMB3", "EME1", "EME2", "EME3", "HEC0", "HEC1", "HEC2", "HEC3", "TileBar0", "TileBar1", "TileBar2", "TileGap1", "TileGap2", "TileGap3", "TileExt0", "TileExt1", "TileExt2"}; //! array of all the calo layers
     const std::vector<std::string> m_layer_lar = {"EMB1", "EMB2", "EMB3", "EME1", "EME2", "EME3", "HEC0", "HEC1", "HEC2", "HEC3"}; //! array of lar layers only

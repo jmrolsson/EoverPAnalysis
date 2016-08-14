@@ -40,7 +40,6 @@ StatusCode EoverPHistsTrks::initialize()
 
   // track plots
   m_trk_n_nocut = book(m_name, "trk_n_nocut", "N_{trk}", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_n = book(m_name, "trk_n", "N_{trk}", nBinsTrkN, minTrkN, maxTrkN); 
 
   m_trk_trk2_dR = book(m_name, "trk_trk2_dR", "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
   m_trk_trk2_dR_vs_trk_p = book(m_name, "trk_trk2_dR_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
@@ -103,7 +102,7 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
   m_npv -> Fill(npv, eventWeight);
 
   // number of tracks
-  m_trk_n_nocut-> Fill(trks->size());
+  // m_trk_n_nocut-> Fill(trks->size());
 
   // track-cluster plots
   float trk_n = 0.;
@@ -243,7 +242,7 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
 
   } // END loop tracks 
 
-  m_trk_n-> Fill(trk_n);
+  m_trk_n_nocut-> Fill(trk_n);
 
   return StatusCode::SUCCESS;
 }

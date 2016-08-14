@@ -40,7 +40,6 @@ class EoverPHistsTrks : public HistogramManager
 
     // track plots
     TH1F* m_trk_n_nocut; //!
-    TH1F* m_trk_n; //!
 
     TH1F* m_trk_trk2_dR; //!
     TH2F* m_trk_trk2_dR_vs_trk_p; //!
