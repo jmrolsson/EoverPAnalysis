@@ -170,7 +170,7 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   m_trk_n_pass_eta = new TH1D((std::string(m_name+"/trk_n_pass_eta")).c_str(), "trk_n_pass_eta", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_iso = new TH1D((std::string(m_name+"/trk_n_pass_iso")).c_str(), "trk_n_pass_iso", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_larEmax = new TH1D((std::string(m_name+"/trk_n_pass_larEmax")).c_str(), "trk_n_pass_larEmax", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_n_pass_tileEfrac = new TH1D((std::string(m_name+"/trk_n_tileEfrac")).c_str(), "trk_n_pass_tileEfrac", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_tileEfrac = new TH1D((std::string(m_name+"/trk_n_pass_tileEfrac")).c_str(), "trk_n_pass_tileEfrac", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_all->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_p->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_eta->GetXaxis()->SetTitle("N_trks");
@@ -455,13 +455,6 @@ EL::StatusCode EoverPAnalysis :: histFinalize ()
   if(m_plots_eop) delete m_plots_eop;
   if(m_plots_eop_trks) delete m_plots_eop_trks;
 
-  if(m_trk_n_all) delete m_trk_n_all;
-  if(m_trk_n_pass_p) delete m_trk_n_pass_p;
-  if(m_trk_n_pass_eta) delete m_trk_n_pass_eta;
-  if(m_trk_n_pass_iso) delete m_trk_n_pass_iso;
-  if(m_trk_n_pass_larEmax) delete m_trk_n_pass_larEmax;
-  if(m_trk_n_pass_tileEfrac) delete m_trk_n_pass_tileEfrac;
-  
   if(m_plots_eop_TileEfrac000) delete m_plots_eop_TileEfrac000;
   if(m_plots_eop_TileEfrac010) delete m_plots_eop_TileEfrac010;
   if(m_plots_eop_TileEfrac030) delete m_plots_eop_TileEfrac030;

@@ -1,7 +1,2 @@
 root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8058761.EXT0._001029.TrackCaloDxAOD.pool.root
 root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8058761.EXT0._001030.TrackCaloDxAOD.pool.root
-root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8058761.EXT0._001031.TrackCaloDxAOD.pool.root
-root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8058761.EXT0._001032.TrackCaloDxAOD.pool.root
-root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8058761.EXT0._001033.TrackCaloDxAOD.pool.root
-root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8058761.EXT0._001034.TrackCaloDxAOD.pool.root
-root://fax.mwt2.org:1094//atlas/rucio/user.emcdonal:user.emcdonal.8058761.EXT0._001035.TrackCaloDxAOD.pool.root
