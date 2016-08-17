@@ -73,6 +73,9 @@ class EoverPAnalysis : public xAH::Algorithm
     bool m_doGlobalEnergyRanges = false; 
     bool m_doGlobalEtaRanges = false; 
 
+    // extra ranges for comparisons with Run 1 studies
+    bool m_doGlobalExtraRanges = false; 
+
     // extra histograms for track isolation testing
     bool m_doTrkIsoHists = true;
 
@@ -144,14 +147,25 @@ class EoverPAnalysis : public xAH::Algorithm
     EoverPHists* m_plots_eop_TileEfrac075; //!
     EoverPHists* m_plots_eop_TileEfrac080; //!
 
-    EoverPHists* m_plots_eop_pL4; //!
-    EoverPHists* m_plots_eop_pG4L8; //!
-    EoverPHists* m_plots_eop_pG8L12; //!
-    EoverPHists* m_plots_eop_pG12; //!
+    EoverPHists* m_plots_eop_pL4000; //!
+    EoverPHists* m_plots_eop_pG4000L8000; //!
+    EoverPHists* m_plots_eop_pG8000L12000; //!
+    EoverPHists* m_plots_eop_pG12000; //!
 
     EoverPHists* m_plots_eop_etaL05; //!
     EoverPHists* m_plots_eop_etaG05L07; //!
     EoverPHists* m_plots_eop_etaG07; //!
+
+    // extra ranges for comparisons with Run 1 studies
+    EoverPHists* m_plots_eop_pG1200L1800; //!
+    EoverPHists* m_plots_eop_pG1800L2200; //!
+    EoverPHists* m_plots_eop_pG3600L4600; //!
+    EoverPHists* m_plots_eop_pG4600L5600; //!
+    EoverPHists* m_plots_eop_etaL06; //!
+    EoverPHists* m_plots_eop_etaG06L11; //!
+    EoverPHists* m_plots_eop_etaG11L14; //!
+    EoverPHists* m_plots_eop_etaG14L15; //!
+    EoverPHists* m_plots_eop_etaG15L18; //!
 
     // variables that don't get filled at submission time should be
     // protected from being send from the submission node to the worker

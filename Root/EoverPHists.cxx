@@ -74,8 +74,8 @@ StatusCode EoverPHists::initialize()
   // track kinematics
   m_trk_p = book(m_name, "trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE); 
   if (m_doEbinsArray) m_trk_p_array = book(m_name, "trk_p_EbinsArray", "p_{trk} [GeV]", nEbinsArray, &EbinsArray[0]); 
-  m_trk_pt = book(m_name, "trk_pt", "p_{trk} [GeV]", nBinsE, minE, maxE); 
-  if (m_doEbinsArray) m_trk_pt_array = book(m_name, "trk_pt_EbinsArray", "p_{trk} [GeV]", nEbinsArray, &EbinsArray[0]); 
+  m_trk_pt = book(m_name, "trk_pt", "p_{T,trk} [GeV]", nBinsE, minE, maxE); 
+  if (m_doEbinsArray) m_trk_pt_array = book(m_name, "trk_pt_EbinsArray", "p_{T,trk} [GeV]", nEbinsArray, &EbinsArray[0]); 
   m_trk_eta = book(m_name, "trk_eta", "#eta_{trk}", nBinsEta, minEta, maxEta); 
   if (m_doEtabinsArray) m_trk_eta_array = book(m_name, "trk_eta_EtabinsArray", "#eta_{trk}", nEtabinsArray, &EtabinsArray[0]); 
   m_trk_phi = book(m_name, "trk_phi", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
