@@ -274,8 +274,8 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_EtabinsArray": "",
                                 "m_doExtraEtaEnergyBinHists": False,
                                 "m_doGlobalTileEfracRanges": False,
-                                "m_doGlobalEnergyRanges": False,
-                                "m_doGlobalEtaRanges": False,
+                                "m_doGlobalEnergyRanges": True,
+                                "m_doGlobalEtaRanges": True,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": False,
                                 "m_debug": False})
