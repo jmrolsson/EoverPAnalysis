@@ -318,22 +318,6 @@ EL::StatusCode EoverPAnalysis :: execute ()
     float trk_etaCALO = trk->auxdata<float>(std::string("CALO_trkEta_"+m_trkExtrapol));
     float trk_phiCALO = trk->auxdata<float>(std::string("CALO_trkPhi_"+m_trkExtrapol));
 
-    // check track p requirement
-    if (m_doTrkPcut) {
-      if (trk_p < m_trkPmin) continue;
-      if (trk_p > m_trkPmax) continue;
-    }
-    m_trk_cutflow_eop_pass_p++;
-    m_trk_n_pass_p_tmp++;
-
-    // check track eta requirement
-    if (m_doTrkEtacut) {
-      if (TMath::Abs(trk_etaCALO) < m_trkEtamin) continue;
-      if (TMath::Abs(trk_etaCALO) > m_trkEtamax) continue;
-    }
-    m_trk_cutflow_eop_pass_eta++;
-    m_trk_n_pass_eta_tmp++;
-
     // track isolation: p(cone of DR='m_trkIsoDRmax')/p(track) < 'm_trkIsoPfrac' 
     float surr_trk_sum_p = 0.;
     trk2_itr = trks->begin();
@@ -361,6 +345,22 @@ EL::StatusCode EoverPAnalysis :: execute ()
 
     m_trk_cutflow_eop_pass_iso++;
     m_trk_n_pass_iso_tmp++;
+
+    // check track p requirement
+    if (m_doTrkPcut) {
+      if (trk_p < m_trkPmin) continue;
+      if (trk_p > m_trkPmax) continue;
+    }
+    m_trk_cutflow_eop_pass_p++;
+    m_trk_n_pass_p_tmp++;
+
+    // check track eta requirement
+    if (m_doTrkEtacut) {
+      if (TMath::Abs(trk_etaCALO) < m_trkEtamin) continue;
+      if (TMath::Abs(trk_etaCALO) > m_trkEtamax) continue;
+    }
+    m_trk_cutflow_eop_pass_eta++;
+    m_trk_n_pass_eta_tmp++;
 
     if (m_doTileCuts) {
 
@@ -395,6 +395,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
       
       // Make all the histograms for different TileEfrac selections
       if (m_doGlobalTileEfracRanges && trk_TileEfrac_200 >= 0. && trk_TileEfrac_200 < 1.) {
+        if (m_doGlobalTileEfracRanges && trk_TileEfrac_200 == 0.)
           RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac000->execute(trk, vtxs, eventInfo, eventWeight), "");
         if (trk_TileEfrac_200 >= .1) {
           RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac010->execute(trk, vtxs, eventInfo, eventWeight), "");
