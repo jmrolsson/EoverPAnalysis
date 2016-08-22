@@ -33,12 +33,6 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_BasicEvtSel",
                             "m_detailStr": "2D IPDetails HitCounts Chi2Details",
                             "m_debug": False})
 
-''' Fill histograms with tracking details, passing only basic event selection'''
-c.setalg("TrackHistsAlgo", {"m_name": "Tracks_BasicEvtSel",
-                            "m_inContainerName": trks,
-                            "m_detailStr": "2D IPDetails HitCounts Chi2Details",
-                            "m_debug": False})
-
 ''' Select tracks passing the "LoosePrimary" Tracking CP Recommendations (Moriond 2016)'''
 # https://twiki.cern.ch/twiki/bin/view/AtlasProtected/TrackingCPMoriond2016
 c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimary",

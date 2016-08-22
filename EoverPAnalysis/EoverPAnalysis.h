@@ -98,9 +98,9 @@ class EoverPAnalysis : public xAH::Algorithm
     TH1D* m_trk_cutflowHist_eop;  //!
 
     int m_trk_cutflow_eop_all_bin; //!
+    int m_trk_cutflow_eop_pass_iso_bin; //!
     int m_trk_cutflow_eop_pass_p_bin; //!
     int m_trk_cutflow_eop_pass_eta_bin; //!
-    int m_trk_cutflow_eop_pass_iso_bin; //!
     int m_trk_cutflow_eop_pass_larEmax_bin; //!
     int m_trk_cutflow_eop_pass_tileEfrac_bin; //!
     int m_trk_cutflow_eop_all; //!
