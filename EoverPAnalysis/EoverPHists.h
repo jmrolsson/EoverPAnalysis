@@ -157,6 +157,11 @@ class EoverPHists : public HistogramManager
     TH2F* m_eop_EM_200_vs_highE_layer; //!
     std::vector<std::vector<TH1F*> > m_eop_EM_200_EtaEnergyRanges; //!
 
+    // No clusters in HAD matched to trk 
+    TH1F* m_eop_Total_200_noHAD; //!
+    TH1F* m_eop_EM_200_noHAD; //!
+    TH1F* m_eop_HAD_200_noHAD; //!
+
     // HAD calorimeter (HEC+TileBarrel+TileGap+TileExtBarrel)
     TH1F* m_trk_E_HAD_100; //!
     TH1F* m_eop_HAD_100; //!
@@ -179,6 +184,11 @@ class EoverPHists : public HistogramManager
     TH2F* m_eop_HAD_200_vs_npv; //!
     TH2F* m_eop_HAD_200_vs_highE_layer; //!
     std::vector<std::vector<TH1F*> > m_eop_HAD_200_EtaEnergyRanges; //!
+
+    // MIP requirement for HAD calorimeter
+    TH1F* m_eop_Total_200_MIP; //!
+    TH1F* m_eop_EM_200_MIP; //!
+    TH1F* m_eop_HAD_200_MIP; //!
 
     // background subtraction, the way it was done in run 1
     TH1F* m_eop_EM_BG; //!

@@ -159,8 +159,12 @@ class EoverPAnalysis : public xAH::Algorithm
     // extra ranges for comparisons with Run 1 studies
     EoverPHists* m_plots_eop_pG1200L1800; //!
     EoverPHists* m_plots_eop_pG1800L2200; //!
+    EoverPHists* m_plots_eop_pG2200L2800; //!
+    EoverPHists* m_plots_eop_pG2800L3600; //!
     EoverPHists* m_plots_eop_pG3600L4600; //!
     EoverPHists* m_plots_eop_pG4600L5600; //!
+    EoverPHists* m_plots_eop_etaL06_pG2200L4600; //!
+    EoverPHists* m_plots_eop_etaL06_pG4600L50000; //!
     EoverPHists* m_plots_eop_etaL06; //!
     EoverPHists* m_plots_eop_etaG06L11; //!
     EoverPHists* m_plots_eop_etaG11L14; //!

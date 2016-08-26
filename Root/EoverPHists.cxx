@@ -220,6 +220,12 @@ StatusCode EoverPHists::initialize()
         }
       }
     }
+
+    // No clusters in HAD matched to trk 
+    m_eop_Total_200_noHAD = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_noHAD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+    m_eop_EM_200_noHAD = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_noHAD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+    m_eop_HAD_200_noHAD = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_noHAD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+
   } // doCaloEM
 
   // HAD calorimeter (HEC+TileBarrel+TileGap+TileExtBarrel)
@@ -270,6 +276,12 @@ StatusCode EoverPHists::initialize()
         }
       }
     }
+
+    // MIP requirement for HAD calorimeter
+    m_eop_Total_200_MIP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_MIP_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+    m_eop_EM_200_MIP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_EM_MIP_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+    m_eop_HAD_200_MIP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_HAD_MIP_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+
   } // doCaloHAD
 
   // background subtraction, the way it was done in run 1
@@ -491,7 +503,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_DR_CALO_ID_vs_trk_p -> Fill(trk_p, dR_CALO_ID, eventWeight);
   m_trk_DEta_CALO_ID_vs_trk_p -> Fill(trk_p, dEta_CALO_ID, eventWeight);
   m_trk_DPhi_CALO_ID_vs_trk_p -> Fill(trk_p, dPhi_CALO_ID, eventWeight);
-  
+
   // cluster energy associated with the track
   float trk_E_Total_100 = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_100"))/1e3; 
   float trk_E_Total_200 = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_200"))/1e3; 
@@ -666,6 +678,14 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_EM_200_vs_highE_layer -> Fill(trk_highE_200_layer, trk_E_EM_200/trk_p, eventWeight); 
     if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_EM_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_EM_200/trk_p, eventWeight); 
+
+    // No clusters in HAD matched to trk 
+    if (trk_E_HAD_200 <=0) {
+      m_eop_Total_200_noHAD -> Fill(trk_E_Total_200/trk_p, eventWeight);
+      m_eop_EM_200_noHAD -> Fill(trk_E_EM_200/trk_p, eventWeight);
+      m_eop_HAD_200_noHAD -> Fill(trk_E_HAD_200/trk_p, eventWeight);
+    }
+
   } // END doCaloEM
 
   // HAD calorimeter (HEC+TileBarrel+TileGap+TileExtBarrel)
@@ -694,6 +714,13 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_HAD_200_vs_highE_layer -> Fill(trk_highE_200_layer, trk_E_HAD_200/trk_p, eventWeight); 
     if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_HAD_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_HAD_200/trk_p, eventWeight); 
+    // MIP requirement for HAD calorimeter
+    if (trk_E_EM_100 < 1.1 && trk_E_HAD_100/trk_p > 0.4) {
+      m_eop_Total_200_MIP -> Fill(trk_E_Total_200/trk_p, eventWeight);
+      m_eop_EM_200_MIP -> Fill(trk_E_EM_200/trk_p, eventWeight);
+      m_eop_HAD_200_MIP -> Fill(trk_E_HAD_200/trk_p, eventWeight);
+    }
+
   } // END doCaloHAD
 
   // background subtraction, the way it was done in run 1
