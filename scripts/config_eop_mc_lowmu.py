@@ -21,7 +21,7 @@ c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
                                  "m_applyEventCleaningCut": True,
                                  "m_applyCoreFlagsCut": False,
                                  "m_applyTriggerCut": False,
-                                 "m_PVNTrack": 4,
+                                 "m_PVNTrack": 2,
                                  "m_useMetaData": False,
                                  "m_checkDuplicatesData": False,
                                  "m_checkDuplicatesMC": False})

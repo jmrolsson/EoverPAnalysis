@@ -36,7 +36,12 @@ class EoverPHistsTrks : public HistogramManager
     // event level plots
     TH1F* m_mu; //!
     TH1F* m_mu_avg; //!
+    TH1F* m_mu_avg_many; //!
+    TH1F* m_mu_avg_0; //!
     TH1F* m_npv; //!
+
+    TH2F* m_mu_avg_vs_npv; //!
+    TH2F* m_mu_avg_vs_trk_n_nocut; //!
 
     // track plots
     TH1F* m_trk_n_nocut; //!

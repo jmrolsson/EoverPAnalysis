@@ -26,6 +26,8 @@ StatusCode EoverPHistsTrks::initialize()
 
   // number of bins and ranges for histograms
   int nBinsMu = 50;           float minMu = -0.5;    float maxMu = 49.5;
+  int nBinsMu_many = 500;
+  float minMu_0 = 0.0;        float maxMu_0 = 50.0;
   int nBinsNPV = 50;          float minNPV = -0.5;   float maxNPV = 49.5;
   int nBinsTrkN = 200;        float minTrkN = -0.5;  float maxTrkN = 199.5;
   int nBinsE = 300;           float minE = 0;        float maxE = 30;
@@ -36,6 +38,10 @@ StatusCode EoverPHistsTrks::initialize()
   // event level plots
   m_mu = book(m_name, "mu", "#mu", nBinsMu, minMu, maxMu); 
   m_mu_avg = book(m_name, "mu_avg", "<#mu>", nBinsMu, minMu, maxMu); 
+  m_mu_avg_many = book(m_name, "mu_avg_many", "<#mu>", nBinsMu_many, minMu, maxMu); 
+  m_mu_avg_0 = book(m_name, "mu_avg_0", "<#mu>", nBinsMu, minMu_0, maxMu_0); 
+  m_mu_avg_vs_npv = book(m_name, "mu_avg_vs_npv", "NPV", nBinsNPV, minNPV, maxNPV, "<#mu>", nBinsMu, minMu, maxMu); 
+  m_mu_avg_vs_trk_n_nocut = book(m_name, "mu_avg_vs_trk_n_nocut", "N_{trk}", nBinsTrkN, minTrkN, maxTrkN, "<#mu>", nBinsMu, minMu, maxMu); 
   m_npv = book(m_name, "npv", "NPV", nBinsNPV, minNPV, maxNPV); 
 
   // track plots
@@ -96,10 +102,14 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
   }
   m_mu -> Fill(mu, eventWeight);
   m_mu_avg -> Fill(mu_avg, eventWeight);
+  m_mu_avg_many -> Fill(mu_avg, eventWeight);
+  m_mu_avg_0 -> Fill(mu_avg, eventWeight);
 
   // get number of primary vtxs 
   float npv = HelperFunctions::countPrimaryVertices(vtxs, 2);
   m_npv -> Fill(npv, eventWeight);
+
+  m_mu_avg_vs_npv -> Fill(npv, mu_avg, eventWeight);
 
   // number of tracks
   // m_trk_n_nocut-> Fill(trks->size());
@@ -243,6 +253,7 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
   } // END loop tracks 
 
   m_trk_n_nocut-> Fill(trk_n);
+  m_mu_avg_vs_trk_n_nocut -> Fill(trk_n, mu_avg, eventWeight);
 
   return StatusCode::SUCCESS;
 }

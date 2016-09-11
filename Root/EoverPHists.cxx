@@ -126,6 +126,8 @@ StatusCode EoverPHists::initialize()
   if (m_doCaloTotal) {
     // dR(trk,cluster) < 0.1
     m_trk_E_Total_100 = book(m_name, std::string("trk_E_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100"), "E", nBinsE, minE, maxE);
+    m_trk_E_Total_100_vs_mu_avg = book(m_name, std::string("trk_E_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E", nBinsE, minE, maxE);
+
     m_eop_Total_100 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
     if (m_doEbinsArray) m_eop_Total_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
     else m_eop_Total_100_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
@@ -149,6 +151,7 @@ StatusCode EoverPHists::initialize()
     }
     // dR(trk,cluster) < 0.2
     m_trk_E_Total_200 = book(m_name, std::string("trk_E_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200"), "E", nBinsE, minE, maxE);
+    m_trk_E_Total_200_vs_mu_avg = book(m_name, std::string("trk_E_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E", nBinsE, minE, maxE);
     m_eop_Total_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
     if (m_doEbinsArray) m_eop_Total_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
     else m_eop_Total_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
@@ -628,6 +631,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   if (m_doCaloTotal) {
     // dR(trk,cluster) < 0.1
     m_trk_E_Total_100 -> Fill(trk_E_Total_100, eventWeight); 
+    m_trk_E_Total_100_vs_mu_avg -> Fill(mu_avg, trk_E_Total_100, eventWeight); 
     m_eop_Total_100 -> Fill(trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_trkP -> Fill(trk_p, trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_trkEta -> Fill(trk_etaCALO, trk_E_Total_100/trk_p, eventWeight); 
@@ -640,6 +644,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_Total_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_100/trk_p, eventWeight); 
     // dR(trk,cluster) < 0.2
     m_trk_E_Total_200 -> Fill(trk_E_Total_200, eventWeight); 
+    m_trk_E_Total_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200, eventWeight); 
     m_eop_Total_200 -> Fill(trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_trkP -> Fill(trk_p, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_trkEta -> Fill(trk_etaCALO, trk_E_Total_200/trk_p, eventWeight); 

@@ -113,6 +113,7 @@ class EoverPHists : public HistogramManager
 
     // total calorimeter energy
     TH1F* m_trk_E_Total_100; //!
+    TH2F* m_trk_E_Total_100_vs_mu_avg; //!
     TH1F* m_eop_Total_100; //!
     TH2F* m_eop_Total_100_vs_trkP; //!
     TH2F* m_eop_Total_100_vs_trkEta; //!
@@ -124,6 +125,7 @@ class EoverPHists : public HistogramManager
     std::vector<std::vector<TH1F*> > m_eop_Total_100_EtaEnergyRanges; //!
 
     TH1F* m_trk_E_Total_200; //!
+    TH2F* m_trk_E_Total_200_vs_mu_avg; //!
     TH1F* m_eop_Total_200; //!
     TH2F* m_eop_Total_200_vs_trkP; //!
     TH2F* m_eop_Total_200_vs_trkEta; //!

@@ -297,6 +297,8 @@ EL::StatusCode EoverPAnalysis :: execute ()
   if( eventInfo->isAvailable< float >( "mcEventWeight" ) ) {
     eventWeight = eventInfo->auxdecor< float >( "mcEventWeight" );
   }
+  // std::cout << "eventWeight: " << eventWeight << std::endl;
+  
 
   m_numEvent++;
 
