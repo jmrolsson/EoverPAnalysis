@@ -20,6 +20,8 @@ ClassImp(EoverPAnalysis)
     m_cutflowHistW(nullptr),
     m_trk_cutflowHist_1(nullptr),
     m_trk_cutflowHist_eop(nullptr),
+    // pileup reweighting
+    m_puwHist(nullptr),
     // number of tracks per event, after each selection
     m_trk_n_all(nullptr),
     m_trk_n_pass_p(nullptr),
@@ -195,7 +197,7 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG11L14-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG14L15-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG15L18-> initialize(), "");
-    
+
     m_plots_eop_pG1200L1800 -> record( wk() );
     m_plots_eop_pG1800L2200 -> record( wk() );
     m_plots_eop_pG2200L2800 -> record( wk() );
@@ -273,6 +275,18 @@ EL::StatusCode EoverPAnalysis :: initialize ()
 
   }
 
+  // pileup reweighting
+  const xAOD::EventInfo* eventInfo(nullptr);
+  RETURN_CHECK("EoverPAnalysis::execute()", HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store, m_verbose) ,"");
+  if (m_doCustomPUreweighting && eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) {
+    TFile *f_prw = wk()->getOutputFile ("pileup");
+    // std::cout << "Before pileup" << std::endl;
+    // std::cout << "f_prw->GetName()" << f_prw->GetName() << std::endl;
+    m_puwHist = (TH1D*)f_prw->Get("pileup_weights");
+    // std::cout << "m_puwHist->GetName()" << m_puwHist->GetName() << std::endl;
+    // std::cout << "m_puwHist->GetNbinsX()" << m_puwHist->GetNbinsX() << std::endl;
+  }
+
   m_numEvent = 0;
   m_numEventPass = 0;
   m_weightNumEventPass = 0;
@@ -293,12 +307,30 @@ EL::StatusCode EoverPAnalysis :: execute ()
   const xAOD::EventInfo* eventInfo(nullptr);
   RETURN_CHECK("EoverPAnalysis::execute()", HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store, m_verbose) ,"");
 
-  float eventWeight(1);
+  //  1.) the PU weight ("PileupWeight")
+  //  2.) the corrected mu ("corrected_averageInteractionsPerCrossing")
+  float eventWeight(1.);
   if( eventInfo->isAvailable< float >( "mcEventWeight" ) ) {
     eventWeight = eventInfo->auxdecor< float >( "mcEventWeight" );
+    std::cout << "eventWeight, before PRW: " << eventWeight << std::endl;
+    int mu_avg(1e8); // initialize with a that won't pass the selection
+    if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) ) 
+      mu_avg = eventInfo->auxdata< float >( "corrected_averageInteractionsPerCrossing" );
+    else if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) )
+      mu_avg = eventInfo->averageInteractionsPerCrossing();
+    float pileupWeight(0.);
+    if (m_doCustomPUreweighting) {
+      if (mu_avg <= m_puwHist->GetNbinsX())
+        pileupWeight = m_puwHist->GetBinContent(mu_avg);
+      eventWeight *= pileupWeight;
+    }
+    else if (eventInfo->isAvailable< float >( "PileupWeight" )) {
+      pileupWeight = eventInfo->auxdata< float >( "PileupWeight" );
+      eventWeight *= pileupWeight;
+    }
+    std::cout << "pileupWeight: " << pileupWeight << std::endl;
+    std::cout << "eventWeight, after PRW: " << eventWeight << std::endl;
   }
-  // std::cout << "eventWeight: " << eventWeight << std::endl;
-  
 
   m_numEvent++;
 
@@ -410,7 +442,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
       float trk_TileEfrac_200 = 0.;
       if (trk_sumE_Total_200 > 0.)  
         trk_TileEfrac_200 = trk_sumE_Tile_200/trk_sumE_Total_200;
-      
+
       // Make all the histograms for different TileEfrac selections
       if (m_doGlobalTileEfracRanges && trk_TileEfrac_200 >= 0. && trk_TileEfrac_200 < 1.) {
         if (m_doGlobalTileEfracRanges && trk_TileEfrac_200 == 0.)
@@ -530,7 +562,7 @@ EL::StatusCode EoverPAnalysis :: finalize () {
     m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_pass_tileEfrac_bin, m_trk_cutflow_eop_pass_tileEfrac );
 
   }
-  
+
   return EL::StatusCode::SUCCESS; 
 }
 

@@ -35,6 +35,7 @@ StatusCode EoverPHists::initialize()
   unsigned int nBinsNPV = 50;       float minNPV = -0.5;           float maxNPV = 49.5;
   unsigned int nBinsDR = 60;        float minDR = 0;               float maxDR = 3;
   unsigned int nBinsPhi = 128;      float minPhi = -3.2;           float maxPhi = 3.2; 
+  unsigned int nBinsPhiExtra = 800; float minPhiExtra = -4.0;      float maxPhiExtra = 4.0; 
   unsigned int nBinsEop = 250;      float minEop = -5;             float maxEop = 20;
 
   unsigned int nBinsE = 300;        float minE = 0;                float maxE = 30;
@@ -79,6 +80,7 @@ StatusCode EoverPHists::initialize()
   m_trk_eta = book(m_name, "trk_eta", "#eta_{trk}", nBinsEta, minEta, maxEta); 
   if (m_doEtabinsArray) m_trk_eta_array = book(m_name, "trk_eta_EtabinsArray", "#eta_{trk}", nEtabinsArray, &EtabinsArray[0]); 
   m_trk_phi = book(m_name, "trk_phi", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
+  m_trk_phi_extra = book(m_name, "trk_phi_extra", "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra); 
   m_trk_DR_CALO_ID = book(m_name, std::string("trk_DR_"+m_trkExtrapol+"_ID"), std::string("#Delta R_{trk}("+m_trkExtrapol+", ID)"), nBinsDR, minDR, maxDR); 
   m_trk_DEta_CALO_ID = book(m_name, std::string("trk_DEta_"+m_trkExtrapol+"_ID"), std::string("#Delta #eta_{trk}("+m_trkExtrapol+", ID)"), nBinsEta, minEta, maxEta); 
   m_trk_DPhi_CALO_ID = book(m_name, std::string("trk_DPhi_"+m_trkExtrapol+"_ID"), std::string("#Delta #phi_{trk}("+m_trkExtrapol+", ID)"), nBinsPhi, minPhi, maxPhi); 
@@ -468,9 +470,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     mu = eventInfo->actualInteractionsPerCrossing();
   }
   float mu_avg(-1.);
-  if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) ) {
+  if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) ) 
+    mu_avg = eventInfo->auxdata< float >( "corrected_averageInteractionsPerCrossing" );
+  else if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) )
     mu_avg = eventInfo->averageInteractionsPerCrossing();
-  }
 
   // get number of primary vtxs 
   float npv = HelperFunctions::countPrimaryVertices(vtxs, 2);
@@ -500,6 +503,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_eta -> Fill(trk_etaCALO, eventWeight); 
   if (m_doEtabinsArray) m_trk_eta_array -> Fill(trk_etaCALO, eventWeight); 
   m_trk_phi -> Fill(trk_phiCALO, eventWeight); 
+  m_trk_phi_extra -> Fill(trk_phiCALO, eventWeight); 
   m_trk_DR_CALO_ID -> Fill(dR_CALO_ID, eventWeight); 
   m_trk_DEta_CALO_ID -> Fill(dEta_CALO_ID, eventWeight); 
   m_trk_DPhi_CALO_ID -> Fill(dPhi_CALO_ID, eventWeight); 

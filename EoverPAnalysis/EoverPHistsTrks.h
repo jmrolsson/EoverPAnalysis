@@ -39,6 +39,7 @@ class EoverPHistsTrks : public HistogramManager
     TH1F* m_mu_avg_many; //!
     TH1F* m_mu_avg_0; //!
     TH1F* m_npv; //!
+    TH1F* m_npv_trks; //!
 
     TH2F* m_mu_avg_vs_npv; //!
     TH2F* m_mu_avg_vs_trk_n_nocut; //!

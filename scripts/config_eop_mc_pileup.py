@@ -51,9 +51,10 @@ c.setalg("EoverPAnalysis", {"m_name": "EoverP_noSelection",
 ''' Set up all the algorithms '''
 c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
                                  "m_applyGRLCut": False,
-                                 "m_doPUreweighting": False,
+                                 "m_doPUreweighting": True,
+                                 "m_doCustomPUreweighting": False,
+                                 "m_PRWHistName": "pileup_chan361021_run284500",
                                  "m_PRWFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/group.phys-susy.PRW.mc15c.3_METADATA.merged.root",
-                                 # "m_PRWFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/prw_JZ1W_Kevin_renamed.root",
                                  "m_lumiCalcFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/ilumicalc_histograms_HLT_noalg_zb_L1ZB_276262-284484_OflLumi-13TeV-005.root",
                                  "m_useMetaData" : True,
                                  "m_applyPrimaryVertexCut": True,
@@ -79,7 +80,7 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimary",
                                   "m_createSelectedContainer": True,
                                   "m_pass_min": 1.0,
                                   "m_cutLevel": "LoosePrimary",
-                                  "m_minPt": 0.5,
+                                  "m_minPt": 0.4,
                                   "m_maxAbsEta": 2.5,
                                   "m_maxD0": 2.0,
                                   "m_maxZ0SinTheta": 3.0,
@@ -102,7 +103,7 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_LoosePrimary_nTRTG20",
                                   "m_createSelectedContainer": True,
                                   "m_pass_min": 1.0,
                                   "m_cutLevel": "LoosePrimary",
-                                  "m_minPt": 0.5,
+                                  "m_minPt": 0.4,
                                   "m_maxAbsEta": 2.5,
                                   "m_maxD0": 2.0,
                                   "m_maxZ0SinTheta": 3.0,
@@ -125,7 +126,7 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_TightPrimary",
                                   "m_createSelectedContainer": True,
                                   "m_pass_min": 1.0,
                                   "m_cutLevel": "TightPrimary",
-                                  "m_minPt": 0.5,
+                                  "m_minPt": 0.4,
                                   "m_maxAbsEta": 2.5,
                                   "m_maxD0": 2.0,
                                   "m_maxZ0SinTheta": 3.0,
@@ -148,7 +149,7 @@ c.setalg("TrackVertexSelection", {"m_name": "TrackSel_Run1",
                                   "m_createSelectedContainer": True,
                                   "m_pass_min": 1.0,
                                   "m_cutLevel": "NoCut",
-                                  "m_minPt": 0.5,
+                                  "m_minPt": 0.4,
                                   "m_maxAbsEta": 2.3,
                                   "m_maxD0": 1.5,
                                   "m_maxZ0SinTheta": 1.5,
@@ -164,6 +165,45 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_Run1",
                             "m_inContainerName": trks_run1,
                             "m_detailStr": "2D IPDetails HitCounts Chi2Details",
                             "m_debug": False})
+
+### TEST
+# #E/p with TileCal selections
+# ''' E/p histograms with LoosePrimary track selection'''
+# c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_ClusterEnergy_Tile_notrkP_noLar_noTileEfrac",
+#                             "m_inTrackContainerName": trks_loose,
+#                             "m_trkExtrapol": "EMB2",
+#                             "m_energyCalib": "ClusterEnergy", # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
+#                             "m_doCaloTotal": True,
+#                             "m_doCaloEM": True,
+#                             "m_doCaloHAD": True,
+#                             "m_doBgSubtr" : False,
+#                             "m_doTileLayer": True,
+#                             "m_trkIsoDRmax": .4,
+#                             "m_trkIsoPfrac": 0.,
+#                             "m_doTrkPcut": True,
+#                             "m_trkPmin": 0.,
+#                             "m_trkPmax": 1e8,
+#                             "m_doTrkEtacut": True,
+#                             "m_trkEtamin": 0.,
+#                             "m_trkEtamax": 1.7,
+#                             "m_doTileCuts": True,
+#                             "m_LarEmax": 1e8,
+#                             "m_TileEfracmin": -1,
+#                             "m_Ebins": "30, 0., 30.",
+#                             "m_doEbinsArray": True,
+#                             "m_EbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
+#                             "m_Etabins": "17, -1.7, 1.7",
+#                             "m_doEtabinsArray": False,
+#                             "m_EtabinsArray": "",
+#                             "m_doExtraEtaEnergyBinHists": False,
+#                             "m_doGlobalTileEfracRanges": False,
+#                             "m_doGlobalEnergyRanges": True,
+#                             "m_doGlobalEtaRanges": True,
+#                             "m_detailStr": "all",
+#                             "m_useCutFlow": False,
+#                             "m_doCustomPUreweighting": True,
+#                             "m_debug": False})
+### TEST
 
 #### Make E/p plots
 
@@ -204,6 +244,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalExtraRanges": True,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": False,
+                                "m_doCustomPUreweighting": True,
                                 "m_debug": False})
 
     #E/p with TileCal selections
@@ -240,6 +281,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalEtaRanges": True,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": False,
+                                "m_doCustomPUreweighting": True,
                                 "m_debug": False})
 
     ''' E/p histograms with LoosePrimary track selection'''
@@ -275,6 +317,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalEtaRanges": False,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": False,
+                                "m_doCustomPUreweighting": True,
                                 "m_debug": False})
 
     ''' E/p histograms with LoosePrimary track selection'''
@@ -310,6 +353,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalEtaRanges": True,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": False,
+                                "m_doCustomPUreweighting": True,
                                 "m_debug": False})
 
     if energy_calib == "ClusterEnergy":
@@ -349,4 +393,5 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalEtaRanges": True,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": useCutFlow,
+                                "m_doCustomPUreweighting": True,
                                 "m_debug": False})

@@ -85,12 +85,18 @@ class EoverPAnalysis : public xAH::Algorithm
     // energy calibration, either "ClusterEnergy", "ClusterEnergyLCW", or "CellEnergy"
     std::string m_energyCalib = "ClusterEnergy";
 
+    // pileup reweighting
+    bool m_doCustomPUreweighting = false;
+
   private:
 
     // cutflow
     TH1D* m_cutflowHist; //!
     TH1D* m_cutflowHistW; //!
     int   m_cutflow_bin; //!
+
+    // pileup reweighting
+    TH1D* m_puwHist; //! 
 
     /* object-level cutflow */
 

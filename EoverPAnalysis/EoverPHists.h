@@ -67,6 +67,7 @@ class EoverPHists : public HistogramManager
     TH1F* m_trk_eta; //!
     TH1F* m_trk_eta_array; //!
     TH1F* m_trk_phi; //!
+    TH1F* m_trk_phi_extra; //!
 
     TH1F* m_trk_DR_CALO_ID; //!
     TH1F* m_trk_DEta_CALO_ID; //!

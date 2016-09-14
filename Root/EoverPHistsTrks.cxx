@@ -43,6 +43,7 @@ StatusCode EoverPHistsTrks::initialize()
   m_mu_avg_vs_npv = book(m_name, "mu_avg_vs_npv", "NPV", nBinsNPV, minNPV, maxNPV, "<#mu>", nBinsMu, minMu, maxMu); 
   m_mu_avg_vs_trk_n_nocut = book(m_name, "mu_avg_vs_trk_n_nocut", "N_{trk}", nBinsTrkN, minTrkN, maxTrkN, "<#mu>", nBinsMu, minMu, maxMu); 
   m_npv = book(m_name, "npv", "NPV", nBinsNPV, minNPV, maxNPV); 
+  m_npv_trks = book(m_name, "npv_trks", "N_{trks} associated with a PV", nBinsTrkN, minTrkN, maxTrkN); 
 
   // track plots
   m_trk_n_nocut = book(m_name, "trk_n_nocut", "N_{trk}", nBinsTrkN, minTrkN, maxTrkN); 
@@ -97,9 +98,11 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
     mu = eventInfo->actualInteractionsPerCrossing();
   }
   float mu_avg(-1.);
-  if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) ) {
+  if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) ) 
+    mu_avg = eventInfo->auxdata< float >( "corrected_averageInteractionsPerCrossing" );
+  else if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) )
     mu_avg = eventInfo->averageInteractionsPerCrossing();
-  }
+
   m_mu -> Fill(mu, eventWeight);
   m_mu_avg -> Fill(mu_avg, eventWeight);
   m_mu_avg_many -> Fill(mu_avg, eventWeight);
@@ -108,7 +111,8 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
   // get number of primary vtxs 
   float npv = HelperFunctions::countPrimaryVertices(vtxs, 2);
   m_npv -> Fill(npv, eventWeight);
-
+  for( auto vtx_itr : *vtxs)
+    m_npv_trks->Fill(vtx_itr->nTrackParticles());
   m_mu_avg_vs_npv -> Fill(npv, mu_avg, eventWeight);
 
   // number of tracks
