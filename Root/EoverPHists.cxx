@@ -470,7 +470,8 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     mu = eventInfo->actualInteractionsPerCrossing();
   }
   float mu_avg(-1.);
-  if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) ) 
+  if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) &&
+      !eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) 
     mu_avg = eventInfo->auxdata< float >( "corrected_averageInteractionsPerCrossing" );
   else if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) )
     mu_avg = eventInfo->averageInteractionsPerCrossing();

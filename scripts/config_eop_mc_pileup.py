@@ -13,7 +13,6 @@ trks_loose_ntrtG20 = trks+"LoosePrimary_nTRTG20"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
 
-# TEST
 c.setalg("EoverPAnalysis", {"m_name": "EoverP_noSelection",
                             "m_inTrackContainerName": trks,
                             "m_trkExtrapol": "EMB2",
@@ -52,8 +51,8 @@ c.setalg("EoverPAnalysis", {"m_name": "EoverP_noSelection",
 c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
                                  "m_applyGRLCut": False,
                                  "m_doPUreweighting": True,
-                                 "m_doCustomPUreweighting": False,
-                                 "m_PRWHistName": "pileup_chan361021_run284500",
+                                 # "m_doCustomPUreweighting": False,
+                                 # "m_PRWHistName": "pileup_chan361021_run284500",
                                  "m_PRWFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/group.phys-susy.PRW.mc15c.3_METADATA.merged.root",
                                  "m_lumiCalcFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/ilumicalc_histograms_HLT_noalg_zb_L1ZB_276262-284484_OflLumi-13TeV-005.root",
                                  "m_useMetaData" : True,
@@ -201,7 +200,7 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_Run1",
 #                             "m_doGlobalEtaRanges": True,
 #                             "m_detailStr": "all",
 #                             "m_useCutFlow": False,
-#                             "m_doCustomPUreweighting": True,
+#                             "m_doCustomPUreweighting": False,
 #                             "m_debug": False})
 ### TEST
 
@@ -244,7 +243,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalExtraRanges": True,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": False,
-                                "m_doCustomPUreweighting": True,
+                                "m_doCustomPUreweighting": False,
                                 "m_debug": False})
 
     #E/p with TileCal selections
@@ -281,7 +280,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalEtaRanges": True,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": False,
-                                "m_doCustomPUreweighting": True,
+                                "m_doCustomPUreweighting": False,
                                 "m_debug": False})
 
     ''' E/p histograms with LoosePrimary track selection'''
@@ -317,7 +316,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalEtaRanges": False,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": False,
-                                "m_doCustomPUreweighting": True,
+                                "m_doCustomPUreweighting": False,
                                 "m_debug": False})
 
     ''' E/p histograms with LoosePrimary track selection'''
@@ -353,7 +352,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalEtaRanges": True,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": False,
-                                "m_doCustomPUreweighting": True,
+                                "m_doCustomPUreweighting": False,
                                 "m_debug": False})
 
     if energy_calib == "ClusterEnergy":
@@ -393,5 +392,5 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalEtaRanges": True,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": useCutFlow,
-                                "m_doCustomPUreweighting": True,
+                                "m_doCustomPUreweighting": False,
                                 "m_debug": False})

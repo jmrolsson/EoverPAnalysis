@@ -280,11 +280,7 @@ EL::StatusCode EoverPAnalysis :: initialize ()
   RETURN_CHECK("EoverPAnalysis::execute()", HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store, m_verbose) ,"");
   if (m_doCustomPUreweighting && eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) {
     TFile *f_prw = wk()->getOutputFile ("pileup");
-    // std::cout << "Before pileup" << std::endl;
-    // std::cout << "f_prw->GetName()" << f_prw->GetName() << std::endl;
     m_puwHist = (TH1D*)f_prw->Get("pileup_weights");
-    // std::cout << "m_puwHist->GetName()" << m_puwHist->GetName() << std::endl;
-    // std::cout << "m_puwHist->GetNbinsX()" << m_puwHist->GetNbinsX() << std::endl;
   }
 
   m_numEvent = 0;
@@ -312,13 +308,14 @@ EL::StatusCode EoverPAnalysis :: execute ()
   float eventWeight(1.);
   if( eventInfo->isAvailable< float >( "mcEventWeight" ) ) {
     eventWeight = eventInfo->auxdecor< float >( "mcEventWeight" );
-    std::cout << "eventWeight, before PRW: " << eventWeight << std::endl;
+    // std::cout << "eventWeight, before PRW: " << eventWeight << std::endl;
     int mu_avg(1e8); // initialize with a that won't pass the selection
-    if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) ) 
-      mu_avg = eventInfo->auxdata< float >( "corrected_averageInteractionsPerCrossing" );
-    else if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) )
+    // if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) ) 
+    //   mu_avg = eventInfo->auxdata< float >( "corrected_averageInteractionsPerCrossing" );
+    if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) )
       mu_avg = eventInfo->averageInteractionsPerCrossing();
     float pileupWeight(0.);
+    // std::cout << "before getting PileupWeight" << std::endl;
     if (m_doCustomPUreweighting) {
       if (mu_avg <= m_puwHist->GetNbinsX())
         pileupWeight = m_puwHist->GetBinContent(mu_avg);
@@ -328,8 +325,8 @@ EL::StatusCode EoverPAnalysis :: execute ()
       pileupWeight = eventInfo->auxdata< float >( "PileupWeight" );
       eventWeight *= pileupWeight;
     }
-    std::cout << "pileupWeight: " << pileupWeight << std::endl;
-    std::cout << "eventWeight, after PRW: " << eventWeight << std::endl;
+    // std::cout << "pileupWeight: " << pileupWeight << std::endl;
+    // std::cout << "eventWeight, after PRW: " << eventWeight << std::endl;
   }
 
   m_numEvent++;

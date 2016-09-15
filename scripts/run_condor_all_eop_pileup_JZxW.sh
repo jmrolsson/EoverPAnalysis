@@ -22,17 +22,17 @@ if [ $# -eq 0 ]
     xAH_run.py --files ${files_JZ1W} --inputList --config EoverPAnalysis/scripts/config_eop_mc.py --submitDir results/condor_all_eop_pileup_JZ1W_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
 
     echo "---> Write to logfile:"
-    echo "# ---> "$(date +"%Y-%m-%d:%H:%M:%S") >> results/run_condor_eop_pileup.log
+    # echo "# ---> "$(date +"%Y-%m-%d:%H:%M:%S") >> results/run_condor_eop_pileup.log
     # echo ${files_JZ0W} >> results/run_condor_eop_pileup.log
+    # echo results/condor_all_eop_pileup_JZ0W_${today}_${tag} >> results/run_condor_eop_pileup.log
+    # echo ${files_JZ1W} >> results/run_condor_eop_pileup.log
+    # echo results/condor_all_eop_pileup_JZ1W_${today}_${tag} >> results/run_condor_eop_pileup.log
+    # echo ${files_JZ0W} > results/run_condor_eop_pileup.log
     # echo results/condor_all_eop_pileup_JZ0W_${today}_${tag} >> results/run_condor_eop_pileup.log
     echo ${files_JZ1W} >> results/run_condor_eop_pileup.log
     echo results/condor_all_eop_pileup_JZ1W_${today}_${tag} >> results/run_condor_eop_pileup.log
-    # echo ${files_JZ0W} > results/run_condor_eop_pileup_latest.log
-    # echo results/condor_all_eop_pileup_JZ0W_${today}_${tag} >> results/run_condor_eop_pileup_latest.log
-    echo ${files_JZ1W} >> results/run_condor_eop_pileup_latest.log
-    echo results/condor_all_eop_pileup_JZ1W_${today}_${tag} >> results/run_condor_eop_pileup_latest.log
 
     echo "--> Jobs submitted!"
-    echo "source $ROOTCOREBIN/../EoverPAnalysis/scripts/merge_condor_eop.sh $ROOTCOREBIN/../results/run_condor_eop_pileup_latest.log # when condor jobs are finished to merge output files"
+    echo "source $ROOTCOREBIN/../EoverPAnalysis/scripts/merge_condor_eop.sh $ROOTCOREBIN/../results/run_condor_eop_pileup.log # when condor jobs are finished to merge output files"
 
 fi
