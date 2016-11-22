@@ -3,7 +3,7 @@
 if [ $# -eq 0 ]
 
 then
-  echo "Usage: merge_condor_eop.sh run_condor_eop_xyz_latest.log"
+  echo "Usage: merge_condor_eop.sh run_condor_eop_xyz.log"
 
 else
 
@@ -25,10 +25,10 @@ else
       echo "condor output files: "${condor_output}
       echo "merging files:"
       echo hadd -f ${condor_output}.root ${condor_output}/fetch/hist-${file_tag}-*.root
-      hadd -f ${condor_output}.root ${condor_output}/fetch/hist-${file_tag}-*.root
+      hadd -f ${condor_output}.root ${condor_output}/fetch/hist-${file_tag}-*.root > /dev/null 2>&1
       echo "merging cutflows"
       echo hadd -f ${condor_output}-cutflows.root ${condor_output}/fetch/data-cutflow/${file_tag}-*.root
-      hadd -f ${condor_output}-cutflows.root ${condor_output}/fetch/data-cutflow/${file_tag}-*.root
+      hadd -f ${condor_output}-cutflows.root ${condor_output}/fetch/data-cutflow/${file_tag}-*.root > /dev/null 2>&1
       echo "writing to logfile:"
       echo "# ---> "$(date +"%Y-%m-%d:%H:%M:%S") -- merge >> results/run_condor_eop.log
       echo ${condor_output}.root | sed -e 's/^results\///g' >> results/merge_condor_eop.log

@@ -128,6 +128,7 @@ class EoverPHists : public HistogramManager
     TH1F* m_trk_E_Total_200; //!
     TH2F* m_trk_E_Total_200_vs_mu_avg; //!
     TH1F* m_eop_Total_200; //!
+    TH1F* m_eop_Total_200_l; //!
     TH2F* m_eop_Total_200_vs_trkP; //!
     TH2F* m_eop_Total_200_vs_trkEta; //!
     TH2F* m_eop_Total_200_vs_trkPhi; //!

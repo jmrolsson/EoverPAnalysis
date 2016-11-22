@@ -24,11 +24,6 @@ if [ $# -eq 0 ]
     xAH_run.py --files ${files_mc} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu.py --submitDir results/condor_all_eop_lowmu_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 50
 
     echo "---> Write to logfile:"
-    # echo "# ---> "$(date +"%Y-%m-%d:%H:%M:%S") >> results/run_condor_eop_lowmu.log
-    # echo ${files_data} >> results/run_condor_eop_lowmu.log
-    # echo results/condor_all_eop_lowmu_data_${today}_${tag} >> results/run_condor_eop_lowmu.log
-    # echo ${files_mc} >> results/run_condor_eop_lowmu.log
-    # echo results/condor_all_eop_lowmu_mc_${today}_${tag} >> results/run_condor_eop_lowmu.log
     echo ${files_data} > results/run_condor_eop_lowmu.log
     echo results/condor_all_eop_lowmu_data_${today}_${tag} >> results/run_condor_eop_lowmu.log
     echo ${files_mc} >> results/run_condor_eop_lowmu.log

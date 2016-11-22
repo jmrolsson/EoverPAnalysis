@@ -31,6 +31,9 @@ class EoverPAnalysis : public xAH::Algorithm
     float m_trkIsoDRmax = .4;
     float m_trkIsoPfrac = 0.;
 
+    int m_mu_avg_min = 0;
+    int m_mu_avg_max = 1e8;
+
     // what plots to make (eop from clusters in entire calo, EM calo, HAD calo, with background subtraction, for maximum energy in tile)
     bool m_doCaloTotal= true;
     bool m_doCaloEM= false;
@@ -176,6 +179,8 @@ class EoverPAnalysis : public xAH::Algorithm
     EoverPHists* m_plots_eop_etaG11L14; //!
     EoverPHists* m_plots_eop_etaG14L15; //!
     EoverPHists* m_plots_eop_etaG15L18; //!
+    EoverPHists* m_plots_eop_etaG18L19; //!
+    EoverPHists* m_plots_eop_etaG19L23; //!
 
     // variables that don't get filled at submission time should be
     // protected from being send from the submission node to the worker

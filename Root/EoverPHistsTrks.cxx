@@ -25,9 +25,9 @@ StatusCode EoverPHistsTrks::initialize()
 {
 
   // number of bins and ranges for histograms
-  int nBinsMu = 50;           float minMu = -0.5;    float maxMu = 49.5;
+  int nBinsMu = 50;           float minMu = 0.0;    float maxMu = 50.0;
   int nBinsMu_many = 500;
-  float minMu_0 = 0.0;        float maxMu_0 = 50.0;
+  float minMu_shift = -0.5;   float maxMu_shift = 49.5;
   int nBinsNPV = 50;          float minNPV = -0.5;   float maxNPV = 49.5;
   int nBinsTrkN = 200;        float minTrkN = -0.5;  float maxTrkN = 199.5;
   int nBinsE = 300;           float minE = 0;        float maxE = 30;
@@ -39,7 +39,7 @@ StatusCode EoverPHistsTrks::initialize()
   m_mu = book(m_name, "mu", "#mu", nBinsMu, minMu, maxMu); 
   m_mu_avg = book(m_name, "mu_avg", "<#mu>", nBinsMu, minMu, maxMu); 
   m_mu_avg_many = book(m_name, "mu_avg_many", "<#mu>", nBinsMu_many, minMu, maxMu); 
-  m_mu_avg_0 = book(m_name, "mu_avg_0", "<#mu>", nBinsMu, minMu_0, maxMu_0); 
+  m_mu_avg_shift = book(m_name, "mu_avg_shift", "<#mu>", nBinsMu, minMu_shift, maxMu_shift); 
   m_mu_avg_vs_npv = book(m_name, "mu_avg_vs_npv", "NPV", nBinsNPV, minNPV, maxNPV, "<#mu>", nBinsMu, minMu, maxMu); 
   m_mu_avg_vs_trk_n_nocut = book(m_name, "mu_avg_vs_trk_n_nocut", "N_{trk}", nBinsTrkN, minTrkN, maxTrkN, "<#mu>", nBinsMu, minMu, maxMu); 
   m_npv = book(m_name, "npv", "NPV", nBinsNPV, minNPV, maxNPV); 
@@ -85,6 +85,7 @@ StatusCode EoverPHistsTrks::initialize()
   m_trk_ntrks_trkIsoDRmax_avg_surr_trk_p_over_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_avg_surr_trk_p_over_trk_p", "p_{trk,#DeltaR<0.4}^{avg} / p_{trk}", 100, 0, 5.0); 
   m_trk_ntrks_trkIsoDRmax_leading_surr_trk_p_over_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_leading_surr_trk_p_over_trk_p", "p_{trk,#DeltaR<0.4}^{leading} / p_{trk}", 100, 0, 5.0); 
 
+
   // if worker is passed to the class add histograms to the output
   return StatusCode::SUCCESS;
 }
@@ -107,7 +108,7 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
   m_mu -> Fill(mu, eventWeight);
   m_mu_avg -> Fill(mu_avg, eventWeight);
   m_mu_avg_many -> Fill(mu_avg, eventWeight);
-  m_mu_avg_0 -> Fill(mu_avg, eventWeight);
+  m_mu_avg_shift -> Fill(mu_avg, eventWeight);
 
   // get number of primary vtxs 
   float npv = HelperFunctions::countPrimaryVertices(vtxs, 2);

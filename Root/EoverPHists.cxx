@@ -31,14 +31,15 @@ EoverPHists :: ~EoverPHists () {}
 StatusCode EoverPHists::initialize()
 {
   // number of bins and ranges for histograms
-  unsigned int nBinsMu = 50;        float minMu = -0.5;            float maxMu = 49.5;
-  unsigned int nBinsNPV = 50;       float minNPV = -0.5;           float maxNPV = 49.5;
-  unsigned int nBinsDR = 60;        float minDR = 0;               float maxDR = 3;
-  unsigned int nBinsPhi = 128;      float minPhi = -3.2;           float maxPhi = 3.2; 
-  unsigned int nBinsPhiExtra = 800; float minPhiExtra = -4.0;      float maxPhiExtra = 4.0; 
-  unsigned int nBinsEop = 250;      float minEop = -5;             float maxEop = 20;
+  unsigned int nBinsMu = 50;          float minMu = 0;                  float maxMu = 50;
+  unsigned int nBinsNPV = 50;         float minNPV = -0.5;              float maxNPV = 49.5;
+  unsigned int nBinsDR = 60;          float minDR = 0;                  float maxDR = 3;
+  unsigned int nBinsPhi = 32;         float minPhi = -TMath::Pi();      float maxPhi = TMath::Pi(); 
+  unsigned int nBinsPhiExtra = 256;   float minPhiExtra = -TMath::Pi(); float maxPhiExtra = TMath::Pi(); 
+  unsigned int nBinsEop = 300;        float minEop = -4;                float maxEop = 20;
+  unsigned int nBinsEop_l = 255;      float minEop_l = -100;            float maxEop_l = 5000;
 
-  unsigned int nBinsE = 300;        float minE = 0;                float maxE = 30;
+  unsigned int nBinsE = 300;          float minE = 0;                   float maxE = 30;
   std::vector<double> Ebins = str2vec(m_Ebins);
   if (Ebins.size() > 2) {
     nBinsE = (int) Ebins[0];
@@ -155,6 +156,7 @@ StatusCode EoverPHists::initialize()
     m_trk_E_Total_200 = book(m_name, std::string("trk_E_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200"), "E", nBinsE, minE, maxE);
     m_trk_E_Total_200_vs_mu_avg = book(m_name, std::string("trk_E_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E", nBinsE, minE, maxE);
     m_eop_Total_200 = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+    m_eop_Total_200_l = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_l"), "E/p", nBinsEop_l, minEop_l, maxEop_l);
     if (m_doEbinsArray) m_eop_Total_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nEbinsArray, &EbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
     else m_eop_Total_200_vs_trkP = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
     if(m_doEtabinsArray) m_eop_Total_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
@@ -651,6 +653,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_trk_E_Total_200 -> Fill(trk_E_Total_200, eventWeight); 
     m_trk_E_Total_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200, eventWeight); 
     m_eop_Total_200 -> Fill(trk_E_Total_200/trk_p, eventWeight); 
+    m_eop_Total_200_l -> Fill(trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_trkP -> Fill(trk_p, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_trkEta -> Fill(trk_etaCALO, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_trkPhi -> Fill(trk_phiCALO, trk_E_Total_200/trk_p, eventWeight); 
@@ -725,7 +728,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_HAD_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_HAD_200/trk_p, eventWeight); 
     // MIP requirement for HAD calorimeter
-    if (trk_E_EM_100 < 1.1 && trk_E_HAD_100/trk_p > 0.4) {
+    if (trk_E_EM_100 < 1.1 && trk_E_HAD_100/trk_p > 0.4 && trk_E_HAD_100/trk_p < 0.9) {
       m_eop_Total_200_MIP -> Fill(trk_E_Total_200/trk_p, eventWeight);
       m_eop_EM_200_MIP -> Fill(trk_E_EM_200/trk_p, eventWeight);
       m_eop_HAD_200_MIP -> Fill(trk_E_HAD_200/trk_p, eventWeight);
@@ -735,7 +738,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
 
   // background subtraction, the way it was done in run 1
   if (m_doBgSubtr) {
-    if (trk_E_EM_100 < 1.1 && trk_E_HAD_100/trk_p > 0.4) {
+    if (trk_E_EM_100 < 1.1 && trk_E_HAD_100/trk_p > 0.4 && trk_E_HAD_100/trk_p < 0.9) {
       m_eop_EM_BG -> Fill( (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
       m_eop_EM_BG_vs_trkP -> Fill(trk_p, (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
       m_eop_EM_BG_vs_trkEta -> Fill(trk_etaCALO, (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 

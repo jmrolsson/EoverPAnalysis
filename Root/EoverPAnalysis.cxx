@@ -64,7 +64,9 @@ ClassImp(EoverPAnalysis)
     m_plots_eop_etaG06L11(nullptr),
     m_plots_eop_etaG11L14(nullptr),
     m_plots_eop_etaG14L15(nullptr),
-    m_plots_eop_etaG15L18(nullptr)
+    m_plots_eop_etaG15L18(nullptr),
+    m_plots_eop_etaG18L19(nullptr),
+    m_plots_eop_etaG19L23(nullptr)
 {
   m_inTrackContainerName    = "";
   m_detailStr               = "";
@@ -183,6 +185,8 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
     m_plots_eop_etaG11L14 = new EoverPHists(m_name+"_etaG11L14", m_detailStr, m_energyCalib, m_trkExtrapol, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
     m_plots_eop_etaG14L15 = new EoverPHists(m_name+"_etaG14L15", m_detailStr, m_energyCalib, m_trkExtrapol, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
     m_plots_eop_etaG15L18 = new EoverPHists(m_name+"_etaG15L18", m_detailStr, m_energyCalib, m_trkExtrapol, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaG18L19 = new EoverPHists(m_name+"_etaG18L19", m_detailStr, m_energyCalib, m_trkExtrapol, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaG19L23 = new EoverPHists(m_name+"_etaG19L23", m_detailStr, m_energyCalib, m_trkExtrapol, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
 
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG1200L1800-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG1800L2200-> initialize(), "");
@@ -197,6 +201,8 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG11L14-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG14L15-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG15L18-> initialize(), "");
+    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG18L19-> initialize(), "");
+    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG19L23-> initialize(), "");
 
     m_plots_eop_pG1200L1800 -> record( wk() );
     m_plots_eop_pG1800L2200 -> record( wk() );
@@ -211,6 +217,8 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
     m_plots_eop_etaG11L14 -> record( wk() );
     m_plots_eop_etaG14L15 -> record( wk() );
     m_plots_eop_etaG15L18 -> record( wk() );
+    m_plots_eop_etaG18L19 -> record( wk() );
+    m_plots_eop_etaG19L23 -> record( wk() );
 
   }
 
@@ -306,14 +314,14 @@ EL::StatusCode EoverPAnalysis :: execute ()
   //  1.) the PU weight ("PileupWeight")
   //  2.) the corrected mu ("corrected_averageInteractionsPerCrossing")
   float eventWeight(1.);
+  int mu_avg(1e8); // initialize with a that won't pass the selection
+  if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) )
+    mu_avg = eventInfo->averageInteractionsPerCrossing();
   if( eventInfo->isAvailable< float >( "mcEventWeight" ) ) {
     eventWeight = eventInfo->auxdecor< float >( "mcEventWeight" );
     // std::cout << "eventWeight, before PRW: " << eventWeight << std::endl;
-    int mu_avg(1e8); // initialize with a that won't pass the selection
     // if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) ) 
     //   mu_avg = eventInfo->auxdata< float >( "corrected_averageInteractionsPerCrossing" );
-    if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) )
-      mu_avg = eventInfo->averageInteractionsPerCrossing();
     float pileupWeight(0.);
     // std::cout << "before getting PileupWeight" << std::endl;
     if (m_doCustomPUreweighting) {
@@ -330,6 +338,8 @@ EL::StatusCode EoverPAnalysis :: execute ()
   }
 
   m_numEvent++;
+
+  if (mu_avg < m_mu_avg_min || mu_avg >= m_mu_avg_max) return EL::StatusCode::SUCCESS;
 
   m_trk_n_all_tmp = 0;
   m_trk_n_pass_p_tmp = 0;
@@ -525,6 +535,10 @@ EL::StatusCode EoverPAnalysis :: execute ()
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG14L15 -> execute(trk, vtxs, eventInfo, eventWeight), "");
       if (TMath::Abs(trk_etaCALO) >= 1.5 && TMath::Abs(trk_etaCALO) < 1.8) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG15L18 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+      if (TMath::Abs(trk_etaCALO) >= 1.8 && TMath::Abs(trk_etaCALO) < 1.9) 
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG18L19 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+      if (TMath::Abs(trk_etaCALO) >= 1.9 && TMath::Abs(trk_etaCALO) < 2.3) 
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG19L23 -> execute(trk, vtxs, eventInfo, eventWeight), "");
     }
 
   } // END looping trk
@@ -607,6 +621,8 @@ EL::StatusCode EoverPAnalysis :: histFinalize ()
   if(m_plots_eop_etaG11L14) delete m_plots_eop_etaG11L14;
   if(m_plots_eop_etaG14L15) delete m_plots_eop_etaG14L15;
   if(m_plots_eop_etaG15L18) delete m_plots_eop_etaG15L18;
+  if(m_plots_eop_etaG18L19) delete m_plots_eop_etaG18L19;
+  if(m_plots_eop_etaG19L23) delete m_plots_eop_etaG19L23;
 
   RETURN_CHECK("xAH::Algorithm::algFinalize()", xAH::Algorithm::algFinalize(), "");
   return EL::StatusCode::SUCCESS;

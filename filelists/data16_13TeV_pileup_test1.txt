@@ -1,0 +1,10 @@
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.9682949.EXT0._000001.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.9682949.EXT0._000002.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.9682949.EXT0._000003.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.9682949.EXT0._000004.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.9682949.EXT0._000005.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.9682949.EXT0._000006.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.9682949.EXT0._000007.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.9682949.EXT0._000008.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.9682949.EXT0._000009.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.9682949.EXT0._000010.TrackCaloDxAOD.pool.root

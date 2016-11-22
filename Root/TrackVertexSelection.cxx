@@ -190,7 +190,7 @@ EL::StatusCode TrackVertexSelection :: initialize ()
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNSiHits", static_cast<int>(m_minNSiHits)), "failed to set minNSiHits property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxTrtEtaAcceptance", 0.0), "failed to set property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxEtaForTrtHitCuts", 2.0), "failed to set property"); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNTrtHits", static_cast<int>(m_minNTrtHits)), "failed to set minNTrtHits property"); 
+  if (m_minNTrtHits =! -1) RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNTrtHits", static_cast<int>(m_minNTrtHits)), "failed to set minNTrtHits property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("CutLevel", m_cutLevel.c_str()), "failed to set CutLevel property");
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->initialize(), ""); 
 

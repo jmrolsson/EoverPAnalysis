@@ -3,7 +3,7 @@
 if [ $# -eq 0 ]
 
 then
-  echo "Usage: merge_condor_eop.sh run_condor_eop_xyz_latest.log"
+  echo "Usage: merge_condor_eop.sh run_condor_eop_xyz.log"
 
 else
 
