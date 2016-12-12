@@ -67,7 +67,9 @@ class EoverPHists : public HistogramManager
     TH1F* m_trk_eta; //!
     TH1F* m_trk_eta_array; //!
     TH1F* m_trk_phi; //!
+    TH1F* m_trk_phiID; //!
     TH1F* m_trk_phi_extra; //!
+    TH1F* m_trk_phi_extra2; //!
 
     TH1F* m_trk_DR_CALO_ID; //!
     TH1F* m_trk_DEta_CALO_ID; //!
@@ -119,6 +121,9 @@ class EoverPHists : public HistogramManager
     TH2F* m_eop_Total_100_vs_trkP; //!
     TH2F* m_eop_Total_100_vs_trkEta; //!
     TH2F* m_eop_Total_100_vs_trkPhi; //!
+    TH2F* m_eop_Total_100_vs_trkPhiID; //!
+    TH2F* m_eop_Total_100_vs_trkPhi_extra; //!
+    TH2F* m_eop_Total_100_vs_trkPhi_extra2; //!
     TH2F* m_eop_Total_100_vs_mu; //!
     TH2F* m_eop_Total_100_vs_mu_avg; //!
     TH2F* m_eop_Total_100_vs_npv; //!
@@ -132,6 +137,9 @@ class EoverPHists : public HistogramManager
     TH2F* m_eop_Total_200_vs_trkP; //!
     TH2F* m_eop_Total_200_vs_trkEta; //!
     TH2F* m_eop_Total_200_vs_trkPhi; //!
+    TH2F* m_eop_Total_200_vs_trkPhiID; //!
+    TH2F* m_eop_Total_200_vs_trkPhi_extra; //!
+    TH2F* m_eop_Total_200_vs_trkPhi_extra2; //!
     TH2F* m_eop_Total_200_vs_mu; //!
     TH2F* m_eop_Total_200_vs_mu_avg; //!
     TH2F* m_eop_Total_200_vs_npv; //!

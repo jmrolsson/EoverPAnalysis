@@ -35,7 +35,8 @@ StatusCode EoverPHists::initialize()
   unsigned int nBinsNPV = 50;         float minNPV = -0.5;              float maxNPV = 49.5;
   unsigned int nBinsDR = 60;          float minDR = 0;                  float maxDR = 3;
   unsigned int nBinsPhi = 32;         float minPhi = -TMath::Pi();      float maxPhi = TMath::Pi(); 
-  unsigned int nBinsPhiExtra = 256;   float minPhiExtra = -TMath::Pi(); float maxPhiExtra = TMath::Pi(); 
+  unsigned int nBinsPhiExtra = 1024;  float minPhiExtra = -TMath::Pi(); float maxPhiExtra = TMath::Pi(); 
+  unsigned int nBinsPhiExtra2 = 800;  float minPhiExtra2 = -4.0;        float maxPhiExtra2 = 4.0; 
   unsigned int nBinsEop = 300;        float minEop = -4;                float maxEop = 20;
   unsigned int nBinsEop_l = 255;      float minEop_l = -100;            float maxEop_l = 5000;
 
@@ -81,7 +82,9 @@ StatusCode EoverPHists::initialize()
   m_trk_eta = book(m_name, "trk_eta", "#eta_{trk}", nBinsEta, minEta, maxEta); 
   if (m_doEtabinsArray) m_trk_eta_array = book(m_name, "trk_eta_EtabinsArray", "#eta_{trk}", nEtabinsArray, &EtabinsArray[0]); 
   m_trk_phi = book(m_name, "trk_phi", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
+  m_trk_phiID = book(m_name, "trk_phi_ID", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
   m_trk_phi_extra = book(m_name, "trk_phi_extra", "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra); 
+  m_trk_phi_extra2 = book(m_name, "trk_phi_extra2", "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2); 
   m_trk_DR_CALO_ID = book(m_name, std::string("trk_DR_"+m_trkExtrapol+"_ID"), std::string("#Delta R_{trk}("+m_trkExtrapol+", ID)"), nBinsDR, minDR, maxDR); 
   m_trk_DEta_CALO_ID = book(m_name, std::string("trk_DEta_"+m_trkExtrapol+"_ID"), std::string("#Delta #eta_{trk}("+m_trkExtrapol+", ID)"), nBinsEta, minEta, maxEta); 
   m_trk_DPhi_CALO_ID = book(m_name, std::string("trk_DPhi_"+m_trkExtrapol+"_ID"), std::string("#Delta #phi_{trk}("+m_trkExtrapol+", ID)"), nBinsPhi, minPhi, maxPhi); 
@@ -137,6 +140,9 @@ StatusCode EoverPHists::initialize()
     if(m_doEtabinsArray) m_eop_Total_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
     else m_eop_Total_100_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_100_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
+    m_eop_Total_100_vs_trkPhiID = book(m_name, std::string("eop_trkEtaPhi_ID_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
+    m_eop_Total_100_vs_trkPhi_extra = book(m_name, std::string("eop_trkEtaPhi_extra_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra, "E/p", nBinsEop, minEop, maxEop);
+    m_eop_Total_100_vs_trkPhi_extra2 = book(m_name, std::string("eop_trkEtaPhi_extra2_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_100_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_100_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_100_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
@@ -162,6 +168,9 @@ StatusCode EoverPHists::initialize()
     if(m_doEtabinsArray) m_eop_Total_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
     else m_eop_Total_200_vs_trkEta = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_200_vs_trkPhi = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
+    m_eop_Total_200_vs_trkPhiID = book(m_name, std::string("eop_trkEtaPhi_ID_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
+    m_eop_Total_200_vs_trkPhi_extra = book(m_name, std::string("eop_trkEtaPhi_extra_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra, "E/p", nBinsEop, minEop, maxEop);
+    m_eop_Total_200_vs_trkPhi_extra2 = book(m_name, std::string("eop_trkEtaPhi_extra2_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_200_vs_mu = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_200_vs_mu_avg = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_200_vs_npv = book(m_name, std::string("eop_trkEtaPhi_"+m_trkExtrapol+"_Total_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
@@ -506,7 +515,9 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_eta -> Fill(trk_etaCALO, eventWeight); 
   if (m_doEtabinsArray) m_trk_eta_array -> Fill(trk_etaCALO, eventWeight); 
   m_trk_phi -> Fill(trk_phiCALO, eventWeight); 
+  m_trk_phiID -> Fill(trk_phiID, eventWeight); 
   m_trk_phi_extra -> Fill(trk_phiCALO, eventWeight); 
+  m_trk_phi_extra2 -> Fill(trk_phiCALO, eventWeight); 
   m_trk_DR_CALO_ID -> Fill(dR_CALO_ID, eventWeight); 
   m_trk_DEta_CALO_ID -> Fill(dEta_CALO_ID, eventWeight); 
   m_trk_DPhi_CALO_ID -> Fill(dPhi_CALO_ID, eventWeight); 
@@ -643,6 +654,9 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_Total_100_vs_trkP -> Fill(trk_p, trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_trkEta -> Fill(trk_etaCALO, trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_trkPhi -> Fill(trk_phiCALO, trk_E_Total_100/trk_p, eventWeight); 
+    m_eop_Total_100_vs_trkPhiID -> Fill(trk_phiID, trk_E_Total_100/trk_p, eventWeight); 
+    m_eop_Total_100_vs_trkPhi_extra -> Fill(trk_phiCALO, trk_E_Total_100/trk_p, eventWeight); 
+    m_eop_Total_100_vs_trkPhi_extra2 -> Fill(trk_phiCALO, trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_mu -> Fill(mu, trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_mu_avg -> Fill(mu_avg, trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_npv -> Fill(npv, trk_E_Total_100/trk_p, eventWeight); 
@@ -657,6 +671,9 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_Total_200_vs_trkP -> Fill(trk_p, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_trkEta -> Fill(trk_etaCALO, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_trkPhi -> Fill(trk_phiCALO, trk_E_Total_200/trk_p, eventWeight); 
+    m_eop_Total_200_vs_trkPhiID -> Fill(trk_phiID, trk_E_Total_200/trk_p, eventWeight); 
+    m_eop_Total_200_vs_trkPhi_extra -> Fill(trk_phiCALO, trk_E_Total_200/trk_p, eventWeight); 
+    m_eop_Total_200_vs_trkPhi_extra2 -> Fill(trk_phiCALO, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_mu -> Fill(mu, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_npv -> Fill(npv, trk_E_Total_200/trk_p, eventWeight); 

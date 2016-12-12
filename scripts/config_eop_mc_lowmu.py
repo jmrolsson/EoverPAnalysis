@@ -165,45 +165,46 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_Run1",
 
 #### Make E/p plots
 
-for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
+# for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
+for energy_calib in ["ClusterEnergy"]:
 
-    # E/p for comparisons with the Run 1 paper
-    ''' E/p histograms with LoosePrimary track selection'''
-    c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_"+energy_calib+"_Run1paper",
-                                "m_inTrackContainerName": trks_loose_ntrtG20,
-                                # "m_inTrackContainerName": trks_loose,
-                                "m_trkExtrapol": "EMB2",
-                                "m_energyCalib": energy_calib, # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
-                                "m_doCaloTotal": True,
-                                "m_doCaloEM": True,
-                                "m_doCaloHAD": True,
-                                "m_doBgSubtr" : True,
-                                "m_doTileLayer": False,
-                                "m_trkIsoDRmax": .4,
-                                "m_trkIsoPfrac": 0.,
-                                "m_doTrkPcut": True,
-                                "m_trkPmin": 0.,
-                                "m_trkPmax": 1e8,
-                                "m_doTrkEtacut": True,
-                                "m_trkEtamin": 0.,
-                                "m_trkEtamax": 1e8,
-                                "m_doTileCuts": False,
-                                "m_LarEmax": 1e8,
-                                "m_TileEfracmin": -1,
-                                "m_Ebins": "30, 0., 30",
-                                "m_doEbinsArray": True,
-                                "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30.",
-                                "m_Etabins": "50, 0., 2.5",
-                                "m_doEtabinsArray": True,
-                                "m_EtabinsArray": "0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3",
-                                "m_doExtraEtaEnergyBinHists": True,
-                                "m_doGlobalTileEfracRanges": False,
-                                "m_doGlobalEnergyRanges": False,
-                                "m_doGlobalEtaRanges": False,
-                                "m_doGlobalExtraRanges": True,
-                                "m_detailStr": "all",
-                                "m_useCutFlow": False,
-                                "m_debug": False})
+    # # E/p for comparisons with the Run 1 paper
+    # ''' E/p histograms with LoosePrimary track selection'''
+    # c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_"+energy_calib+"_Run1paper",
+    #                             "m_inTrackContainerName": trks_loose_ntrtG20,
+    #                             # "m_inTrackContainerName": trks_loose,
+    #                             "m_trkExtrapol": "EMB2",
+    #                             "m_energyCalib": energy_calib, # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
+    #                             "m_doCaloTotal": True,
+    #                             "m_doCaloEM": True,
+    #                             "m_doCaloHAD": True,
+    #                             "m_doBgSubtr" : True,
+    #                             "m_doTileLayer": False,
+    #                             "m_trkIsoDRmax": .4,
+    #                             "m_trkIsoPfrac": 0.,
+    #                             "m_doTrkPcut": True,
+    #                             "m_trkPmin": 0.,
+    #                             "m_trkPmax": 1e8,
+    #                             "m_doTrkEtacut": True,
+    #                             "m_trkEtamin": 0.,
+    #                             "m_trkEtamax": 1e8,
+    #                             "m_doTileCuts": False,
+    #                             "m_LarEmax": 1e8,
+    #                             "m_TileEfracmin": -1,
+    #                             "m_Ebins": "30, 0., 30",
+    #                             "m_doEbinsArray": True,
+    #                             "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30.",
+    #                             "m_Etabins": "50, 0., 2.5",
+    #                             "m_doEtabinsArray": True,
+    #                             "m_EtabinsArray": "0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3",
+    #                             "m_doExtraEtaEnergyBinHists": True,
+    #                             "m_doGlobalTileEfracRanges": False,
+    #                             "m_doGlobalEnergyRanges": False,
+    #                             "m_doGlobalEtaRanges": False,
+    #                             "m_doGlobalExtraRanges": True,
+    #                             "m_detailStr": "all",
+    #                             "m_useCutFlow": False,
+    #                             "m_debug": False})
 
     #E/p with TileCal selections
     ''' E/p histograms with LoosePrimary track selection'''
