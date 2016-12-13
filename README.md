@@ -10,8 +10,8 @@ For questions please contact: joakim.olsson[at]cern.ch
 ```
 mkdir myAnalysis; cd myAnalysis
 git clone http://github.com/UCATLAS/xAODAnaHelpers xAODAnaHelpers
-git clone http://github.com/jmrolsson/EoverPAnalysis EoverPAnalysis
-lsetup 'rcsetup Base,2.4.15' # or later version of (Ath)AnalysisBase
+git clone http://github.com/UCATLAS/EoverPAnalysis EoverPAnalysis
+lsetup 'rcsetup Base,2.4.20' # or later version of (Ath)AnalysisBase
 rc clean && rc find_packages && rc compile && rc make_par
 ```
 
