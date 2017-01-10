@@ -372,6 +372,10 @@ EL::StatusCode EoverPAnalysis :: execute ()
     const xAOD::TrackParticle* trk = (*trk_itr);
     float trk_p = 0;
     if (TMath::Abs(trk->qOverP())>0.) trk_p = (1./TMath::Abs(trk->qOverP()))/1e3; 
+    // coordinates of the track in the ID
+    float trk_etaID = trk->eta();
+    // float trk_phiID = trk->phi();
+    // coordinates of the track extrapolated to the calorimeter
     float trk_etaCALO = trk->auxdata<float>(std::string("CALO_trkEta_"+m_trkExtrapol));
     float trk_phiCALO = trk->auxdata<float>(std::string("CALO_trkPhi_"+m_trkExtrapol));
 
@@ -413,8 +417,8 @@ EL::StatusCode EoverPAnalysis :: execute ()
 
     // check track eta requirement
     if (m_doTrkEtacut) {
-      if (TMath::Abs(trk_etaCALO) < m_trkEtamin) continue;
-      if (TMath::Abs(trk_etaCALO) > m_trkEtamax) continue;
+      if (TMath::Abs(trk_etaID) < m_trkEtamin) continue;
+      if (TMath::Abs(trk_etaID) > m_trkEtamax) continue;
     }
     m_trk_cutflow_eop_pass_eta++;
     m_trk_n_pass_eta_tmp++;
@@ -499,11 +503,11 @@ EL::StatusCode EoverPAnalysis :: execute ()
     }
     // fill eop histograms for different trk eta ranges
     if (m_doGlobalEtaRanges) {
-      if (TMath::Abs(trk_etaCALO) < .5) 
+      if (TMath::Abs(trk_etaID) < .5) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL05 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (TMath::Abs(trk_etaCALO) >= .5 && TMath::Abs(trk_etaCALO) < .7) 
+      if (TMath::Abs(trk_etaID) >= .5 && TMath::Abs(trk_etaID) < .7) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG05L07 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (TMath::Abs(trk_etaCALO) >= .7) 
+      if (TMath::Abs(trk_etaID) >= .7) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG07 -> execute(trk, vtxs, eventInfo, eventWeight), "");
     }
 
@@ -520,24 +524,24 @@ EL::StatusCode EoverPAnalysis :: execute ()
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG3600L4600 -> execute(trk, vtxs, eventInfo, eventWeight), "");
       if (trk_p >= 4.6 && trk_p < 5.6)
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG4600L5600 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (TMath::Abs(trk_etaCALO) < .6){
+      if (TMath::Abs(trk_etaID) < .6){
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06 -> execute(trk, vtxs, eventInfo, eventWeight), "");
         if (trk_p >= 2.2 && trk_p < 4.6)
           RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG2200L4600 -> execute(trk, vtxs, eventInfo, eventWeight), "");
         if (trk_p >= 4.6 && trk_p < 50.)
           RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG4600L50000 -> execute(trk, vtxs, eventInfo, eventWeight), "");
       }
-      if (TMath::Abs(trk_etaCALO) >= .6 && TMath::Abs(trk_etaCALO) < 1.1) 
+      if (TMath::Abs(trk_etaID) >= .6 && TMath::Abs(trk_etaID) < 1.1) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG06L11 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (TMath::Abs(trk_etaCALO) >= 1.1 && TMath::Abs(trk_etaCALO) < 1.4) 
+      if (TMath::Abs(trk_etaID) >= 1.1 && TMath::Abs(trk_etaID) < 1.4) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG11L14 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (TMath::Abs(trk_etaCALO) >= 1.4 && TMath::Abs(trk_etaCALO) < 1.5) 
+      if (TMath::Abs(trk_etaID) >= 1.4 && TMath::Abs(trk_etaID) < 1.5) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG14L15 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (TMath::Abs(trk_etaCALO) >= 1.5 && TMath::Abs(trk_etaCALO) < 1.8) 
+      if (TMath::Abs(trk_etaID) >= 1.5 && TMath::Abs(trk_etaID) < 1.8) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG15L18 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (TMath::Abs(trk_etaCALO) >= 1.8 && TMath::Abs(trk_etaCALO) < 1.9) 
+      if (TMath::Abs(trk_etaID) >= 1.8 && TMath::Abs(trk_etaID) < 1.9) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG18L19 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (TMath::Abs(trk_etaCALO) >= 1.9 && TMath::Abs(trk_etaCALO) < 2.3) 
+      if (TMath::Abs(trk_etaID) >= 1.9 && TMath::Abs(trk_etaID) < 2.3) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG19L23 -> execute(trk, vtxs, eventInfo, eventWeight), "");
     }
 
