@@ -9,7 +9,7 @@
 class EoverPHistsTrks : public HistogramManager
 {
   public:
-    EoverPHistsTrks(std::string name, std::string detailStr, std::string trkExtrapol = "EMB2", float trkIsoDRmax = .4, float trkIsoPfrac = 0., bool doTrkPcut = false, float trkPmin = 0., float trkPmax = 1e8, bool doTrkEtacut = false, float trkEtamin = 0., float trkEtamax = 1e8, bool doTrkIsocut = false);
+    EoverPHistsTrks(std::string name, std::string detailStr, float trkIsoDRmax = .4, float trkIsoPfrac = 0., bool doTrkPcut = false, float trkPmin = 0., float trkPmax = 1e8, bool doTrkEtacut = false, float trkEtamin = 0., float trkEtamax = 1e8, bool doTrkIsocut = false);
     ~EoverPHistsTrks();
 
     StatusCode initialize();
@@ -20,7 +20,6 @@ class EoverPHistsTrks : public HistogramManager
 
   protected:
     
-    std::string m_trkExtrapol; //! layer where tracks are extrapolated
     float m_trkIsoDRmax; //! track isolation max DR
     float m_trkIsoPfrac; //! track isolation max p fraction
     bool m_doTrkPcut; //!
@@ -46,9 +45,24 @@ class EoverPHistsTrks : public HistogramManager
 
     // track plots
     TH1F* m_trk_n_nocut; //!
+    TH1F* m_trk_p_noiso; //!
+    TH1F* m_trk_etaID_noiso; //!
+    TH1F* m_trk_etaEMB2_noiso; //!
+    TH1F* m_trk_etaEME2_noiso; //!
+    TH1F* m_trk_phiID_noiso; //!
+    TH1F* m_trk_phiEMB2_noiso; //!
+    TH1F* m_trk_phiEME2_noiso; //!
 
-    TH1F* m_trk_trk2_dR; //!
-    TH2F* m_trk_trk2_dR_vs_trk_p; //!
+    TH2F* m_trk_etaEMB2_vs_etaID_noiso; //!
+    TH2F* m_trk_etaEME2_vs_etaID_noiso; //!
+    TH2F* m_trk_etaEME2_vs_etaEMB2_noiso; //!
+
+    TH1F* m_trk_trk2_dR_ID; //!
+    TH2F* m_trk_trk2_dR_ID_vs_trk_p; //!
+    TH1F* m_trk_trk2_dR_EMB2; //!
+    TH2F* m_trk_trk2_dR_EMB2_vs_trk_p; //!
+    TH1F* m_trk_trk2_dR_EME2; //!
+    TH2F* m_trk_trk2_dR_EME2_vs_trk_p; //!
 
     TH1F* m_trk_ntrks_maxDR01; //!
     TH1F* m_trk_ntrks_maxDR02; //!

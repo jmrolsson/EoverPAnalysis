@@ -24,9 +24,6 @@ class EoverPAnalysis : public xAH::Algorithm
     // configuration variables
     std::string m_detailStr;
 
-    // calorimeter layer to which tracks are extrapolated (for track eta, phi)
-    std::string m_trkExtrapol ="EMB2";
-
     // track isolation settings
     float m_trkIsoDRmax = .4;
     float m_trkIsoPfrac = 0.;

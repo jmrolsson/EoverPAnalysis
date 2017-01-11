@@ -12,7 +12,7 @@
 class EoverPHists : public HistogramManager
 {
   public:
-    EoverPHists(std::string name, std::string detailStr, std::string energyCalib = "ClusterEnergy", std::string trkExtrapol = "EMB2", bool doCaloTotal = true, bool doCaloEM = false, bool doCaloHAD = false, bool doBgSubtr = true, bool doTileLayer = false, std::string Ebins = "", bool doEbinsArray = false, std::string EbinsArray = "", std::string Etabins = "", bool doEtabinsArray = false, std::string EtabinsArray = "", bool doExtraEtaEnergyBinHists = false);
+    EoverPHists(std::string name, std::string detailStr, std::string energyCalib = "ClusterEnergy", bool doCaloTotal = true, bool doCaloEM = false, bool doCaloHAD = false, bool doBgSubtr = true, bool doTileLayer = false, std::string Ebins = "", bool doEbinsArray = false, std::string EbinsArray = "", std::string Etabins = "", bool doEtabinsArray = false, std::string EtabinsArray = "", bool doExtraEtaEnergyBinHists = false);
     ~EoverPHists();
 
     StatusCode initialize();
@@ -34,7 +34,6 @@ class EoverPHists : public HistogramManager
     bool m_doBgSubtr; //!
     bool m_doTileLayer; //!
 
-    std::string m_trkExtrapol; //! layer where tracks are extrapolated
     std::string m_energyCalib; //! what type of energy calibration to use (EM, LCW, cells)
     std::string m_Ebins; //!
     bool m_doEbinsArray; //!
@@ -65,19 +64,21 @@ class EoverPHists : public HistogramManager
     TH1F* m_trk_pt; //!
     TH1F* m_trk_pt_array; //!
     TH1F* m_trk_etaID; //!
-    TH1F* m_trk_etaCALO; //!
+    TH1F* m_trk_etaEMB2; //!
+    TH1F* m_trk_etaEME2; //!
     TH1F* m_trk_eta_array; //!
     TH1F* m_trk_phiID; //!
-    TH1F* m_trk_phiCALO; //!
+    TH1F* m_trk_phiEMB2; //!
+    TH1F* m_trk_phiEME2; //!
     TH1F* m_trk_phi_extra; //!
     TH1F* m_trk_phi_extra2; //!
 
-    TH1F* m_trk_DR_CALO_ID; //!
-    TH1F* m_trk_DEta_CALO_ID; //!
-    TH1F* m_trk_DPhi_CALO_ID; //!
-    TH2F* m_trk_DR_CALO_ID_vs_trk_p; //!
-    TH2F* m_trk_DEta_CALO_ID_vs_trk_p; //!
-    TH2F* m_trk_DPhi_CALO_ID_vs_trk_p; //!
+    TH1F* m_trk_DR_EMB2_ID; //!
+    TH1F* m_trk_DEta_EMB2_ID; //!
+    TH1F* m_trk_DPhi_EMB2_ID; //!
+    TH2F* m_trk_DR_EMB2_ID_vs_trk_p; //!
+    TH2F* m_trk_DEta_EMB2_ID_vs_trk_p; //!
+    TH2F* m_trk_DPhi_EMB2_ID_vs_trk_p; //!
 
     // Tile energy fractions
     TH1F* m_trk_TileEfrac_100; //! 
@@ -112,6 +113,12 @@ class EoverPHists : public HistogramManager
     // sum of the energy of clusters matched to tracks vs. calo layer
     TH2F* m_trk_E_100_vs_layer; //! 
     TH2F* m_trk_E_200_vs_layer; //! 
+
+    // zero fraction histograms
+    TH2F* m_trk_n_E_200; //!
+    TH2F* m_trk_n_E_200_l0; //!
+    TH2F* m_trk_n_E_200_eq0; //!
+    TH2F* m_trk_n_E_200_leq0; //!
 
     // E/p histos
 

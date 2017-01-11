@@ -17,7 +17,6 @@ trks_run1 = trks+"Run1"
 ''' E/p histograms with LoosePrimary track selection'''
 c.setalg("EoverPAnalysis", {"m_name": "EoverP_Run1paper_noSelection",
                             "m_inTrackContainerName": trks,
-                            "m_trkExtrapol": "EMB2",
                             "m_energyCalib": "ClusterEnergy",
                             "m_doCaloTotal": True,
                             "m_doCaloEM": True,
@@ -173,7 +172,6 @@ for energy_calib in ["ClusterEnergy"]:
    c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_"+energy_calib+"_Run1paper",
                                "m_inTrackContainerName": trks_loose_ntrtG20,
                                # "m_inTrackContainerName": trks_loose,
-                               "m_trkExtrapol": "EMB2",
                                "m_energyCalib": energy_calib, # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
                                "m_doCaloTotal": True,
                                "m_doCaloEM": True,
@@ -210,42 +208,6 @@ for energy_calib in ["ClusterEnergy"]:
     # ''' E/p histograms with LoosePrimary track selection'''
     # c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_"+energy_calib+"_Tile_notrkP_noLar_noTileEfrac",
     #                             "m_inTrackContainerName": trks_loose,
-    #                             "m_trkExtrapol": "EMB2",
-    #                             "m_energyCalib": energy_calib, # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
-    #                             "m_doCaloTotal": True,
-    #                             "m_doCaloEM": True,
-    #                             "m_doCaloHAD": True,
-    #                             "m_doBgSubtr" : False,
-    #                             "m_doTileLayer": True,
-    #                             "m_trkIsoDRmax": .4,
-    #                             "m_trkIsoPfrac": 0.,
-    #                             "m_doTrkPcut": True,
-    #                             "m_trkPmin": 0.,
-    #                             "m_trkPmax": 1e8,
-    #                             "m_doTrkEtacut": True,
-    #                             "m_trkEtamin": 0.,
-    #                             "m_trkEtamax": 1.7,
-    #                             "m_doTileCuts": True,
-    #                             "m_LarEmax": 1e8,
-    #                             "m_TileEfracmin": -1,
-    #                             "m_Ebins": "30, 0., 30.",
-    #                             "m_doEbinsArray": True,
-    #                             "m_EbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
-    #                             "m_Etabins": "17, -1.7, 1.7",
-    #                             "m_doEtabinsArray": False,
-    #                             "m_EtabinsArray": "",
-    #                             "m_doExtraEtaEnergyBinHists": False,
-    #                             "m_doGlobalTileEfracRanges": False,
-    #                             "m_doGlobalEnergyRanges": True,
-    #                             "m_doGlobalEtaRanges": True,
-    #                             "m_detailStr": "all",
-    #                             "m_useCutFlow": False,
-    #                             "m_debug": False})
-    #
-    # ''' E/p histograms with LoosePrimary track selection'''
-    # c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_"+energy_calib+"_Tile_2GeVTrkP_noLar_noTileEfrac",
-    #                             "m_inTrackContainerName": trks_loose,
-    #                             "m_trkExtrapol": "EMB2",
     #                             "m_energyCalib": energy_calib, # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
     #                             "m_doCaloTotal": True,
     #                             "m_doCaloEM": True,
@@ -280,7 +242,6 @@ for energy_calib in ["ClusterEnergy"]:
     # ''' E/p histograms with LoosePrimary track selection'''
     # c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_"+energy_calib+"_Tile_2GeVTrkP_1GeVLar_noTileEfrac",
     #                             "m_inTrackContainerName": trks_loose,
-    #                             "m_trkExtrapol": "EMB2",
     #                             "m_energyCalib": energy_calib, # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
     #                             "m_doCaloTotal": True,
     #                             "m_doCaloEM": True,
@@ -319,7 +280,6 @@ for energy_calib in ["ClusterEnergy"]:
     # ''' E/p histograms with LoosePrimary track selection'''
     # c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_"+energy_calib+"_Tile_defaultCuts",
     #                             "m_inTrackContainerName": trks_loose,
-    #                             "m_trkExtrapol": "EMB2",
     #                             "m_energyCalib": energy_calib, # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
     #                             "m_doCaloTotal": True,
     #                             "m_doCaloEM": True,

@@ -4,10 +4,9 @@
 #include <regex>
 #include <math.h>
 
-EoverPHistsTrks :: EoverPHistsTrks (std::string name, std::string detailStr, std::string trkExtrapol, float trkIsoDRmax, float trkIsoPfrac, bool doTrkPcut, float trkPmin, float trkPmax, bool doTrkEtacut, float trkEtamin, float trkEtamax, bool doTrkIsocut) :
+EoverPHistsTrks :: EoverPHistsTrks (std::string name, std::string detailStr, float trkIsoDRmax, float trkIsoPfrac, bool doTrkPcut, float trkPmin, float trkPmax, bool doTrkEtacut, float trkEtamin, float trkEtamax, bool doTrkIsocut) :
   HistogramManager(name, detailStr)
 {
-  m_trkExtrapol = trkExtrapol; 
   m_trkIsoDRmax = trkIsoDRmax; 
   m_trkIsoPfrac = trkIsoPfrac; 
   m_doTrkPcut = doTrkPcut;
@@ -25,13 +24,15 @@ StatusCode EoverPHistsTrks::initialize()
 {
 
   // number of bins and ranges for histograms
-  int nBinsMu = 50;           float minMu = 0.0;    float maxMu = 50.0;
-  int nBinsMu_many = 500;
-  float minMu_shift = -0.5;   float maxMu_shift = 49.5;
-  int nBinsNPV = 50;          float minNPV = -0.5;   float maxNPV = 49.5;
-  int nBinsTrkN = 200;        float minTrkN = -0.5;  float maxTrkN = 199.5;
-  int nBinsE = 300;           float minE = 0;        float maxE = 30;
-  unsigned int nBinsDR = 60;  float minDR = 0;       float maxDR = 3;
+  unsigned int nBinsMu = 50;           float minMu = 0.0;           float maxMu = 50.0;
+  unsigned int nBinsMu_many = 500;
+  float minMu_shift = -0.5; float maxMu_shift = 49.5;
+  unsigned int nBinsNPV = 50;          float minNPV = -0.5;         float maxNPV = 49.5;
+  unsigned int nBinsTrkN = 200;        float minTrkN = -0.5;        float maxTrkN = 199.5;
+  unsigned int nBinsE = 300;           float minE = 0;              float maxE = 30;
+  unsigned int nBinsDR = 60;           float minDR = 0;             float maxDR = 3;
+  unsigned int nBinsPhi = 32;          float minPhi = -TMath::Pi(); float maxPhi = TMath::Pi(); 
+  unsigned int nBinsEta = 100;         float minEta = -2.5;         float maxEta = 2.5;
 
   //// Book histograms
 
@@ -46,10 +47,25 @@ StatusCode EoverPHistsTrks::initialize()
   m_npv_trks = book(m_name, "npv_trks", "N_{trks} associated with a PV", nBinsTrkN, minTrkN, maxTrkN); 
 
   // track plots
-  m_trk_n_nocut = book(m_name, "trk_n_nocut", "N_{trk}", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_nocut       = book(m_name, "trk_n_nocut", "N_{trk}", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_p_noiso       = book(m_name, "trk_p_noiso", "p_{trk} [GeV]", nBinsE, minE, maxE); 
+  m_trk_etaID_noiso   = book(m_name, "trk_etaID_noiso", "#eta_{trk}", nBinsEta, minEta, maxEta); 
+  m_trk_etaEMB2_noiso = book(m_name, "trk_etaEMB2_noiso", "#eta_{trk}", nBinsEta, minEta, maxEta); 
+  m_trk_etaEME2_noiso = book(m_name, "trk_etaEME2_noiso", "#eta_{trk}", nBinsEta, minEta, maxEta); 
+  m_trk_phiID_noiso   = book(m_name, "trk_phiID_noiso", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
+  m_trk_phiEMB2_noiso = book(m_name, "trk_phiEMB2_noiso", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
+  m_trk_phiEME2_noiso = book(m_name, "trk_phiEME2_noiso", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
 
-  m_trk_trk2_dR = book(m_name, "trk_trk2_dR", "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
-  m_trk_trk2_dR_vs_trk_p = book(m_name, "trk_trk2_dR_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
+  m_trk_etaEMB2_vs_etaID_noiso = book(m_name, "trk_etaEMB2_vs_etaID_noiso", "#eta_{trk,ID}", nBinsEta, minEta, maxEta, "#eta_{trk,EMB2}", nBinsEta, minEta, maxEta); 
+  m_trk_etaEME2_vs_etaID_noiso = book(m_name, "trk_etaEME2_vs_etaID_noiso", "#eta_{trk,ID}", nBinsEta, minEta, maxEta, "#eta_{trk,EME2}", nBinsEta, minEta, maxEta); 
+  m_trk_etaEME2_vs_etaEMB2_noiso = book(m_name, "trk_etaEME2_vs_etaEMB2_noiso", "#eta_{trk,EMB2}", nBinsEta, minEta, maxEta, "#eta_{trk,EME2}", nBinsEta, minEta, maxEta); 
+
+  m_trk_trk2_dR_ID = book(m_name, "trk_trk2_dR_ID", "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_ID_vs_trk_p = book(m_name, "trk_trk2_dR_ID_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_EMB2 = book(m_name, "trk_trk2_dR_EMB2", "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_EMB2_vs_trk_p = book(m_name, "trk_trk2_dR_EMB2_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_EME2 = book(m_name, "trk_trk2_dR_EME2", "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_EME2_vs_trk_p = book(m_name, "trk_trk2_dR_EME2_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
 
   m_trk_ntrks_maxDR01 = book(m_name, "trk_ntrks_maxDR01", "N_{trks} within #Delta R<0.1 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_ntrks_maxDR02 = book(m_name, "trk_ntrks_maxDR02", "N_{trks} within #Delta R<0.2 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
@@ -121,26 +137,9 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
   // m_trk_n_nocut-> Fill(trks->size());
 
   // track-cluster plots
-  float trk_n = 0.;
-  float trk_p = 0.;
-  float trk_etaID = 0; 
-  float trk_phiID = 0; 
-  float trk_etaCALO = 0; 
-  float trk_phiCALO = 0; 
-  float dR_CALO_ID = 0; 
-  float dEta_CALO_ID = 0; 
-  float dPhi_CALO_ID = 0; 
-  float trk2_p = 0.;
-  float trk2_etaCALO = 0; 
-  float trk2_phiCALO = 0; 
-  float trk_trk2_dR = 0; 
-  float trk_trk2_dEta = 0; 
-  float trk_trk2_dPhi = 0; 
-  float surr_trk_sum_p = 0.;
-  float surr_trk_avg_p = 0.;
-  float surr_trk_leading_p = 0.;
 
   // loop over tracks and clusters around a selected track, plot how many tracks (clusters) fall within a certain dR
+  float trk_n = 0.;
   float maxDR_ranges[] = {.1, .2, .3, .4, .5, .6, .7, .8, .9, 1.0};
 
   xAOD::TrackParticleContainer::const_iterator trk_itr = trks->begin();
@@ -154,19 +153,27 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
     // count the number of tracks passing all selections
     trk_n += 1;
     const xAOD::TrackParticle* trk = (*trk_itr);
+    float trk_p = 0;
     if (TMath::Abs(trk->qOverP())>0.) trk_p = (1./TMath::Abs(trk->qOverP()))/1e3; 
-    trk_etaID = trk->eta();
-    trk_phiID = trk->phi();
-    trk_etaCALO = trk->auxdata<float>(std::string("CALO_trkEta_"+m_trkExtrapol));
-    trk_phiCALO = trk->auxdata<float>(std::string("CALO_trkPhi_"+m_trkExtrapol));
+    m_trk_p_noiso->Fill(trk_p, eventWeight);
 
-    dEta_CALO_ID = TMath::Abs(trk_etaCALO - trk_etaID);
-    if (TMath::Abs(trk_phiCALO - trk_phiID) < TMath::Pi())
-      dPhi_CALO_ID = TMath::Abs(trk_phiCALO - trk_phiID);
-    else
-      dPhi_CALO_ID = 2*TMath::Pi() - TMath::Abs(trk_phiCALO - trk_phiID);
+    float trk_etaID = trk->eta();
+    float trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
+    float trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
+    float trk_phiID = trk->phi();
+    float trk_phiEMB2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
+    float trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
 
-    dR_CALO_ID = sqrt( pow(dEta_CALO_ID, 2) + pow(dPhi_CALO_ID, 2) );
+    m_trk_etaID_noiso->Fill(trk_etaID, eventWeight);
+    m_trk_etaEMB2_noiso->Fill(trk_etaEMB2, eventWeight);
+    m_trk_etaEME2_noiso->Fill(trk_etaEME2, eventWeight);
+    m_trk_phiID_noiso->Fill(trk_phiID, eventWeight);
+    m_trk_phiEMB2_noiso->Fill(trk_phiEMB2, eventWeight);
+    m_trk_phiEME2_noiso->Fill(trk_phiEME2, eventWeight);
+
+    m_trk_etaEMB2_vs_etaID_noiso->Fill(trk_etaID, trk_etaEMB2, eventWeight);
+    m_trk_etaEME2_vs_etaID_noiso->Fill(trk_etaID, trk_etaEME2, eventWeight);
+    m_trk_etaEME2_vs_etaEMB2_noiso->Fill(trk_etaEMB2, trk_etaEME2, eventWeight);
 
     // check track p requirement
     if (m_doTrkPcut) {
@@ -176,39 +183,70 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
 
     // check track eta requirement
     if (m_doTrkEtacut) {
-      if (TMath::Abs(trk_etaCALO) < m_trkEtamin) continue;
-      if (TMath::Abs(trk_etaCALO) > m_trkEtamax) continue;
+      if (TMath::Abs(trk_etaID) < m_trkEtamin) continue;
+      if (TMath::Abs(trk_etaID) > m_trkEtamax) continue;
     }
 
     // keep track of the number of tracks within a certain dR from the selected track
     int trk_ntrks_maxDR[10] = {0};
-    trk2_p = 0.;
-    surr_trk_sum_p = 0.;
-    surr_trk_leading_p = 0.;
+    float trk2_p = 0.;
+    float surr_trk_sum_p = 0.;
+    float surr_trk_leading_p = 0.;
     trk2_itr = trks->begin();
     for( ; trk2_itr != trk2_end; ++trk2_itr ) {
       if (trk_itr != trk2_itr) { // do not double count the selected track 
         const xAOD::TrackParticle* trk2 = (*trk2_itr);
-        trk2_etaCALO = trk2->auxdata<float>(std::string("CALO_trkEta_"+m_trkExtrapol));
-        trk2_phiCALO = trk2->auxdata<float>(std::string("CALO_trkPhi_"+m_trkExtrapol));
-        trk_trk2_dEta= TMath::Abs(trk2_etaCALO - trk_etaCALO);
-        if (TMath::Abs(trk2_phiCALO - trk_phiCALO) < TMath::Pi())
-          trk_trk2_dPhi = TMath::Abs(trk2_phiCALO - trk_phiCALO);
-        else
-          trk_trk2_dPhi = 2*TMath::Pi() - TMath::Abs(trk2_phiCALO - trk_phiCALO);
-        trk_trk2_dR = sqrt( pow(trk_trk2_dEta, 2) + pow(trk_trk2_dPhi, 2) );
-        m_trk_trk2_dR -> Fill(trk_trk2_dR, eventWeight);
-        m_trk_trk2_dR_vs_trk_p -> Fill(trk_p, trk_trk2_dR, eventWeight);
+
+        float trk2_etaID  = trk2->eta();
+        float trk2_phiID  = trk2->phi();
+        float trk_trk2_dEta_ID = TMath::Abs(trk2_etaID - trk_etaID);
+        float trk_trk2_dPhi_ID = TMath::Abs(trk2_phiID - trk_phiID);
+        if (trk_trk2_dPhi_ID > TMath::Pi())
+          trk_trk2_dPhi_ID = 2*TMath::Pi() - trk_trk2_dPhi_ID;
+        float trk_trk2_dR_ID = sqrt( pow(trk_trk2_dEta_ID, 2) + pow(trk_trk2_dPhi_ID, 2) );
+
+        m_trk_trk2_dR_ID -> Fill(trk_trk2_dR_ID, eventWeight);
+        m_trk_trk2_dR_ID_vs_trk_p -> Fill(trk_p, trk_trk2_dR_ID, eventWeight);
+
+        // tracks extrapolated to EMB2
+        float trk_trk2_dR_EMB2 = 1e8; // initialize to a large value, in case there is no extrapolation
+        float trk2_etaEMB2 = trk2->auxdata<float>("CALO_trkEta_EMB2");
+        float trk2_phiEMB2 = trk2->auxdata<float>("CALO_trkPhi_EMB2");
+        if (TMath::Abs(trk_etaEMB2) < 4.0 && TMath::Abs(trk2_etaEMB2) < 4.0) {
+          float trk_trk2_dEta_EMB2 = TMath::Abs(trk2_etaEMB2 - trk_etaEMB2);
+          float trk_trk2_dPhi_EMB2 = TMath::Abs(trk2_phiEMB2 - trk_phiEMB2);
+          if (trk_trk2_dPhi_EMB2 > TMath::Pi())
+            trk_trk2_dPhi_EMB2 = 2*TMath::Pi() - trk_trk2_dPhi_EMB2;
+          trk_trk2_dR_EMB2 = sqrt( pow(trk_trk2_dEta_EMB2, 2) + pow(trk_trk2_dPhi_EMB2, 2) );
+        } 
+
+        m_trk_trk2_dR_EMB2 -> Fill(trk_trk2_dR_EMB2, eventWeight);
+        m_trk_trk2_dR_EMB2_vs_trk_p -> Fill(trk_p, trk_trk2_dR_EMB2, eventWeight);
+
+        // tracks extrapolated to EME2
+        float trk_trk2_dR_EME2 = 1e8; // initialize to a large value, in case there is no extrapolation
+        float trk2_etaEME2 = trk2->auxdata<float>("CALO_trkEta_EME2");
+        float trk2_phiEME2 = trk2->auxdata<float>("CALO_trkPhi_EME2");
+        if (TMath::Abs(trk_etaEME2) < 4.0 && TMath::Abs(trk2_etaEME2) < 4.0) {
+          float trk_trk2_dEta_EME2 = TMath::Abs(trk2_etaEME2 - trk_etaEME2);
+          float trk_trk2_dPhi_EME2 = TMath::Abs(trk2_phiEME2 - trk_phiEME2);
+          if (trk_trk2_dPhi_EME2 > TMath::Pi())
+            trk_trk2_dPhi_EME2 = 2*TMath::Pi() - trk_trk2_dPhi_EME2;
+          trk_trk2_dR_EME2 = sqrt( pow(trk_trk2_dEta_EME2, 2) + pow(trk_trk2_dPhi_EME2, 2) );
+        } 
+
+        m_trk_trk2_dR_EME2 -> Fill(trk_trk2_dR_EME2, eventWeight);
+        m_trk_trk2_dR_EME2_vs_trk_p -> Fill(trk_p, trk_trk2_dR_EME2, eventWeight);
 
         // count the number of track wihin a given radius
         for (int i = 0; i < 10; ++i) {
-          if (trk_trk2_dR < maxDR_ranges[i]) {
+          if (trk_trk2_dR_ID < maxDR_ranges[i]) {
             trk_ntrks_maxDR[i]++;
           }
         }
 
         // track isolation
-        if (trk_trk2_dR < m_trkIsoDRmax) { // check if trk2 falls within DRmax of trk 
+        if (trk_trk2_dR_EMB2 < m_trkIsoDRmax || trk_trk2_dR_EME2 < m_trkIsoDRmax) { // check if trk2 falls within DRmax of trk 
 
           // calculate the leading and avg p of the surrounding tracks
           if (TMath::Abs(trk2->qOverP())>0.) trk2_p = (1./TMath::Abs(trk2->qOverP()))/1e3; 
@@ -245,7 +283,7 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
     m_trk_ntrks_maxDR10_vs_trk_p -> Fill(trk_p, trk_ntrks_maxDR[9], eventWeight);
 
     // plots of leading p and avg p of the tracks surrounding the selected track 
-    surr_trk_avg_p = surr_trk_sum_p/(trks->size()-1); // calculate avg p of the surrounding tracks 
+    float surr_trk_avg_p = surr_trk_sum_p/(trks->size()-1); // calculate avg p of the surrounding tracks 
     m_trk_ntrks_trkIsoDRmax_vs_sum_surr_trk_p -> Fill(surr_trk_sum_p, trk_ntrks_maxDR[3], eventWeight);
     m_trk_ntrks_trkIsoDRmax_vs_avg_surr_trk_p -> Fill(surr_trk_avg_p, trk_ntrks_maxDR[3], eventWeight);
     m_trk_ntrks_trkIsoDRmax_vs_leading_surr_trk_p -> Fill(surr_trk_leading_p, trk_ntrks_maxDR[3], eventWeight);
