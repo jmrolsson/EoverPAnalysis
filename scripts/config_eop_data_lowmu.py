@@ -13,6 +13,9 @@ trks_loose_ntrtG20 = trks+"LoosePrimary_nTRTG20"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
 
+eta_bins_runII_general = ".0, .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.5"
+p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30., 40., 50., 100., 200., 1000., 10000."
+
 # E/p for comparisons with the Run 1 paper
 ''' E/p histograms with LoosePrimary track selection'''
 c.setalg("EoverPAnalysis", {"m_name": "EoverP_Run1paper_noSelection",
@@ -36,10 +39,10 @@ c.setalg("EoverPAnalysis", {"m_name": "EoverP_Run1paper_noSelection",
                            "m_TileEfracmin": -1,
                            "m_Ebins": "30, 0., 30",
                            "m_doEbinsArray": True,
-                           "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30.",
+                           "m_EbinsArray": p_bins_runII_general,
                            "m_Etabins": "50, 0., 2.5",
                            "m_doEtabinsArray": True,
-                           "m_EtabinsArray": "0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3",
+                           "m_EtabinsArray": eta_bins,
                            "m_doExtraEtaEnergyBinHists": False,
                            "m_doGlobalTileEfracRanges": False,
                            "m_doGlobalEnergyRanges": False,
@@ -193,10 +196,10 @@ for energy_calib in ["ClusterEnergy"]:
                                 "m_TileEfracmin": -1,
                                 "m_Ebins": "30, 0., 30",
                                 "m_doEbinsArray": True,
-                                "m_EbinsArray": "0.5, 0.8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30.",
+                                "m_EbinsArray": p_bins_runII_general,
                                 "m_Etabins": "50, 0., 2.5",
                                 "m_doEtabinsArray": True,
-                                "m_EtabinsArray": "0., .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3",
+                                "m_EtabinsArray": eta_bins_runII_general,
                                 "m_doExtraEtaEnergyBinHists": True,
                                 "m_doGlobalTileEfracRanges": False,
                                 "m_doGlobalEnergyRanges": False,
