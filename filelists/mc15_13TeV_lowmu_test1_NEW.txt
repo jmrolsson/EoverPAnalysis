@@ -1,0 +1,10 @@
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.10385442.EXT1._000001.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.10385442.EXT1._000002.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.10385442.EXT1._000003.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.10385442.EXT1._000004.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.10385442.EXT1._000005.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.10385442.EXT1._000006.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.10385442.EXT1._000007.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.10385442.EXT1._000008.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.10385442.EXT1._000009.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.10385442.EXT1._000010.pool.root
