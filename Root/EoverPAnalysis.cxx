@@ -447,7 +447,8 @@ EL::StatusCode EoverPAnalysis :: execute ()
     m_trk_n_pass_eta_tmp++;
 
     if (m_doTrkPtReweighting &&  eventInfo->isAvailable< float >( "mcEventWeight" ) ) {
-      eventWeight *= m_pthist->GetBinEntry(h_pthist->FindBin(trk_pt))
+      if (trk_pt > 0. && trk_pt < 30.)
+        eventWeight *= m_ptHist->GetBinEntry(m_ptHist->FindBin(trk_pt))
     }
 
     if (m_doTileCuts) {
