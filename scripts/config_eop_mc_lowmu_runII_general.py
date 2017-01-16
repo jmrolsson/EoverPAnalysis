@@ -188,6 +188,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doTrkEtacut": True,
                                 "m_trkEtamin": 0.,
                                 "m_trkEtamax": 1e8,
+                                "m_doTrkPtReweighting": True,
                                 "m_doTileCuts": False,
                                 "m_LarEmax": 1e8,
                                 "m_TileEfracmin": -1,

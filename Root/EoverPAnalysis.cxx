@@ -22,6 +22,7 @@ ClassImp(EoverPAnalysis)
     m_trk_cutflowHist_eop(nullptr),
     // pileup reweighting
     m_puwHist(nullptr),
+    m_ptHist(nullptr),
     // number of tracks per event, after each selection
     m_trk_n_all(nullptr),
     m_trk_n_pass_p(nullptr),
@@ -289,6 +290,8 @@ EL::StatusCode EoverPAnalysis :: initialize ()
   if (m_doCustomPUreweighting && eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) {
     TFile *f_prw = wk()->getOutputFile ("pileup");
     m_puwHist = (TH1D*)f_prw->Get("pileup_weights");
+    TFile *f_pt = wk()->getOutputFile ("pt_reweighting.root");
+    m_ptHist = (TH1D*)f_pt->Get("h_ptweight");
   }
 
   m_numEvent = 0;
@@ -370,6 +373,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
     m_trk_n_all_tmp++;
 
     const xAOD::TrackParticle* trk = (*trk_itr);
+    float trk_pt = trk->pt()/1e3;
     float trk_p = 0;
     if (TMath::Abs(trk->qOverP())>0.) trk_p = (1./TMath::Abs(trk->qOverP()))/1e3; 
     // coordinates of the track in the ID
@@ -441,6 +445,10 @@ EL::StatusCode EoverPAnalysis :: execute ()
     }
     m_trk_cutflow_eop_pass_eta++;
     m_trk_n_pass_eta_tmp++;
+
+    if (m_doTrkPtReweighting &&  eventInfo->isAvailable< float >( "mcEventWeight" ) ) {
+      eventWeight *= m_pthist->GetBinEntry(h_pthist->FindBin(trk_pt))
+    }
 
     if (m_doTileCuts) {
 

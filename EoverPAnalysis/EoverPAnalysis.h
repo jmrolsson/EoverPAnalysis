@@ -87,6 +87,7 @@ class EoverPAnalysis : public xAH::Algorithm
 
     // pileup reweighting
     bool m_doCustomPUreweighting = false;
+    bool m_doTrkPtReweighting = false;
 
   private:
 
@@ -97,6 +98,7 @@ class EoverPAnalysis : public xAH::Algorithm
 
     // pileup reweighting
     TH1D* m_puwHist; //! 
+    TH1D* m_ptHist; //! 
 
     /* object-level cutflow */
 
