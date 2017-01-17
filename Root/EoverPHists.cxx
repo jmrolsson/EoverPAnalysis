@@ -39,7 +39,7 @@ StatusCode EoverPHists::initialize()
   unsigned int nBinsEop = 300;        float minEop = -4;                float maxEop = 20;
   unsigned int nBinsEop_l = 255;      float minEop_l = -100;            float maxEop_l = 5000;
 
-  unsigned int nBinsE = 300;          float minE = 0;                   float maxE = 30;
+  unsigned int nBinsE = 500;          float minE = 0;                   float maxE = 50;
   std::vector<double> Ebins = str2vec(m_Ebins);
   if (Ebins.size() > 2) {
     nBinsE = (int) Ebins[0];
