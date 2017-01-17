@@ -290,7 +290,9 @@ EL::StatusCode EoverPAnalysis :: initialize ()
   if (m_doCustomPUreweighting && eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) {
     TFile *f_prw = wk()->getOutputFile ("pileup");
     m_puwHist = (TH1D*)f_prw->Get("pileup_weights");
-    TFile *f_pt = wk()->getOutputFile ("pt_reweighting.root");
+  }
+  if (m_doTrkPtReweighting && eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) {
+    TFile *f_pt = new TFile("$ROOTCOREBIN/data/EoverPAnalysis/pt_reweighting.root", "READ");
     m_ptHist = (TH1D*)f_pt->Get("h_ptweight");
   }
 
@@ -447,8 +449,9 @@ EL::StatusCode EoverPAnalysis :: execute ()
     m_trk_n_pass_eta_tmp++;
 
     if (m_doTrkPtReweighting &&  eventInfo->isAvailable< float >( "mcEventWeight" ) ) {
-      if (trk_pt > 0. && trk_pt < 30.)
+      if (trk_pt > 0. && trk_pt < 30.) {
         eventWeight *= m_ptHist->GetBinContent(m_ptHist->FindBin(trk_pt));
+      }
     }
 
     if (m_doTileCuts) {
