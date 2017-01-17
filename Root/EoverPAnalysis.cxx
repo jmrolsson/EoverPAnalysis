@@ -56,18 +56,18 @@ ClassImp(EoverPAnalysis)
     m_plots_eop_pG1200L1800(nullptr),
     m_plots_eop_pG1800L2200(nullptr),
     m_plots_eop_pG2200L2800(nullptr),
-    m_plots_eop_pG2800L3600(nullptr),
-    m_plots_eop_pG3600L4600(nullptr),
-    m_plots_eop_pG4600L5600(nullptr),
-    m_plots_eop_etaL06_pG2200L4600(nullptr),
-    m_plots_eop_etaL06_pG4600L50000(nullptr),
+    m_plots_eop_pG2800L3400(nullptr),
+    m_plots_eop_pG3400L4200(nullptr),
+    m_plots_eop_pG4200L5000(nullptr),
+    m_plots_eop_etaL06_pG2200L4200(nullptr),
+    m_plots_eop_etaL06_pG4200L50000(nullptr),
     m_plots_eop_etaL06(nullptr),
     m_plots_eop_etaG06L11(nullptr),
     m_plots_eop_etaG11L14(nullptr),
     m_plots_eop_etaG14L15(nullptr),
     m_plots_eop_etaG15L18(nullptr),
     m_plots_eop_etaG18L19(nullptr),
-    m_plots_eop_etaG19L23(nullptr)
+    m_plots_eop_etaG19L25(nullptr)
 {
   m_inTrackContainerName    = "";
   m_detailStr               = "";
@@ -176,50 +176,50 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
     m_plots_eop_pG1200L1800 = new EoverPHists(m_name+"_pG1200L1800", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
     m_plots_eop_pG1800L2200 = new EoverPHists(m_name+"_pG1800L2200", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
     m_plots_eop_pG2200L2800 = new EoverPHists(m_name+"_pG2200L2800", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_pG2800L3600 = new EoverPHists(m_name+"_pG2800L3600", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_pG3600L4600 = new EoverPHists(m_name+"_pG3600L4600", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_pG4600L5600 = new EoverPHists(m_name+"_pG4600L5600", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaL06_pG2200L4600 = new EoverPHists(m_name+"_etaL06_pG2200L4600", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaL06_pG4600L50000 = new EoverPHists(m_name+"_etaL06_pG4600L50000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_pG2800L3400 = new EoverPHists(m_name+"_pG2800L3400", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_pG3400L4200 = new EoverPHists(m_name+"_pG3400L4200", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_pG4200L5000 = new EoverPHists(m_name+"_pG4200L5000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaL06_pG2200L4200 = new EoverPHists(m_name+"_etaL06_pG2200L4200", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaL06_pG4200L50000 = new EoverPHists(m_name+"_etaL06_pG4200L50000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
     m_plots_eop_etaL06 = new EoverPHists(m_name+"_etaL06", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
     m_plots_eop_etaG06L11 = new EoverPHists(m_name+"_etaG06L11", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
     m_plots_eop_etaG11L14 = new EoverPHists(m_name+"_etaG11L14", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
     m_plots_eop_etaG14L15 = new EoverPHists(m_name+"_etaG14L15", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
     m_plots_eop_etaG15L18 = new EoverPHists(m_name+"_etaG15L18", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
     m_plots_eop_etaG18L19 = new EoverPHists(m_name+"_etaG18L19", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaG19L23 = new EoverPHists(m_name+"_etaG19L23", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaG19L25 = new EoverPHists(m_name+"_etaG19L25", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
 
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG1200L1800-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG1800L2200-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG2200L2800-> initialize(), "");
-    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG2800L3600-> initialize(), "");
-    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG3600L4600-> initialize(), "");
-    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG4600L5600-> initialize(), "");
-    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaL06_pG2200L4600-> initialize(), "");
-    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaL06_pG4600L50000-> initialize(), "");
+    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG2800L3400-> initialize(), "");
+    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG3400L4200-> initialize(), "");
+    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG4200L5000-> initialize(), "");
+    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaL06_pG2200L4200-> initialize(), "");
+    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaL06_pG4200L50000-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaL06-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG06L11-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG11L14-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG14L15-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG15L18-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG18L19-> initialize(), "");
-    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG19L23-> initialize(), "");
+    RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG19L25-> initialize(), "");
 
     m_plots_eop_pG1200L1800 -> record( wk() );
     m_plots_eop_pG1800L2200 -> record( wk() );
     m_plots_eop_pG2200L2800 -> record( wk() );
-    m_plots_eop_pG2800L3600 -> record( wk() );
-    m_plots_eop_pG3600L4600 -> record( wk() );
-    m_plots_eop_pG4600L5600 -> record( wk() );
-    m_plots_eop_etaL06_pG2200L4600 -> record( wk() );
-    m_plots_eop_etaL06_pG4600L50000 -> record( wk() );
+    m_plots_eop_pG2800L3400 -> record( wk() );
+    m_plots_eop_pG3400L4200 -> record( wk() );
+    m_plots_eop_pG4200L5000 -> record( wk() );
+    m_plots_eop_etaL06_pG2200L4200 -> record( wk() );
+    m_plots_eop_etaL06_pG4200L50000 -> record( wk() );
     m_plots_eop_etaL06 -> record( wk() );
     m_plots_eop_etaG06L11 -> record( wk() );
     m_plots_eop_etaG11L14 -> record( wk() );
     m_plots_eop_etaG14L15 -> record( wk() );
     m_plots_eop_etaG15L18 -> record( wk() );
     m_plots_eop_etaG18L19 -> record( wk() );
-    m_plots_eop_etaG19L23 -> record( wk() );
+    m_plots_eop_etaG19L25 -> record( wk() );
 
   }
 
@@ -549,18 +549,18 @@ EL::StatusCode EoverPAnalysis :: execute ()
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG1800L2200 -> execute(trk, vtxs, eventInfo, eventWeight), "");
       if (trk_p >= 2.2 && trk_p < 2.8)
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG2200L2800 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (trk_p >= 2.8 && trk_p < 3.6)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG2800L3600 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (trk_p >= 3.6 && trk_p < 4.6)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG3600L4600 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (trk_p >= 4.6 && trk_p < 5.6)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG4600L5600 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+      if (trk_p >= 2.8 && trk_p < 3.4)
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG2800L3400 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+      if (trk_p >= 3.4 && trk_p < 4.2)
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG3400L4200 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+      if (trk_p >= 4.2 && trk_p < 5.)
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG4200L5000 -> execute(trk, vtxs, eventInfo, eventWeight), "");
       if (TMath::Abs(trk_etaID) < .6){
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06 -> execute(trk, vtxs, eventInfo, eventWeight), "");
         if (trk_p >= 2.2 && trk_p < 4.6)
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG2200L4600 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG2200L4200 -> execute(trk, vtxs, eventInfo, eventWeight), "");
         if (trk_p >= 4.6 && trk_p < 50.)
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG4600L50000 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG4200L50000 -> execute(trk, vtxs, eventInfo, eventWeight), "");
       }
       if (TMath::Abs(trk_etaID) >= .6 && TMath::Abs(trk_etaID) < 1.1) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG06L11 -> execute(trk, vtxs, eventInfo, eventWeight), "");
@@ -572,8 +572,8 @@ EL::StatusCode EoverPAnalysis :: execute ()
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG15L18 -> execute(trk, vtxs, eventInfo, eventWeight), "");
       if (TMath::Abs(trk_etaID) >= 1.8 && TMath::Abs(trk_etaID) < 1.9) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG18L19 -> execute(trk, vtxs, eventInfo, eventWeight), "");
-      if (TMath::Abs(trk_etaID) >= 1.9 && TMath::Abs(trk_etaID) < 2.3) 
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG19L23 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+      if (TMath::Abs(trk_etaID) >= 1.9 && TMath::Abs(trk_etaID) < 2.5) 
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG19L25 -> execute(trk, vtxs, eventInfo, eventWeight), "");
     }
 
   } // END looping trk
@@ -646,18 +646,18 @@ EL::StatusCode EoverPAnalysis :: histFinalize ()
   if(m_plots_eop_pG1200L1800) delete m_plots_eop_pG1200L1800;
   if(m_plots_eop_pG1800L2200) delete m_plots_eop_pG1800L2200;
   if(m_plots_eop_pG2200L2800) delete m_plots_eop_pG2200L2800;
-  if(m_plots_eop_pG2800L3600) delete m_plots_eop_pG2800L3600;
-  if(m_plots_eop_pG3600L4600) delete m_plots_eop_pG3600L4600;
-  if(m_plots_eop_pG4600L5600) delete m_plots_eop_pG4600L5600;
+  if(m_plots_eop_pG2800L3400) delete m_plots_eop_pG2800L3400;
+  if(m_plots_eop_pG3400L4200) delete m_plots_eop_pG3400L4200;
+  if(m_plots_eop_pG4200L5000) delete m_plots_eop_pG4200L5000;
   if(m_plots_eop_etaL06) delete m_plots_eop_etaL06;
-  if(m_plots_eop_etaL06_pG2200L4600) delete m_plots_eop_etaL06_pG2200L4600;
-  if(m_plots_eop_etaL06_pG4600L50000) delete m_plots_eop_etaL06_pG4600L50000;
+  if(m_plots_eop_etaL06_pG2200L4200) delete m_plots_eop_etaL06_pG2200L4200;
+  if(m_plots_eop_etaL06_pG4200L50000) delete m_plots_eop_etaL06_pG4200L50000;
   if(m_plots_eop_etaG06L11) delete m_plots_eop_etaG06L11;
   if(m_plots_eop_etaG11L14) delete m_plots_eop_etaG11L14;
   if(m_plots_eop_etaG14L15) delete m_plots_eop_etaG14L15;
   if(m_plots_eop_etaG15L18) delete m_plots_eop_etaG15L18;
   if(m_plots_eop_etaG18L19) delete m_plots_eop_etaG18L19;
-  if(m_plots_eop_etaG19L23) delete m_plots_eop_etaG19L23;
+  if(m_plots_eop_etaG19L25) delete m_plots_eop_etaG19L25;
 
   RETURN_CHECK("xAH::Algorithm::algFinalize()", xAH::Algorithm::algFinalize(), "");
   return EL::StatusCode::SUCCESS;

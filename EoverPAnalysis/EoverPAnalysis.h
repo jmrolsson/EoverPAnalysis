@@ -168,18 +168,18 @@ class EoverPAnalysis : public xAH::Algorithm
     EoverPHists* m_plots_eop_pG1200L1800; //!
     EoverPHists* m_plots_eop_pG1800L2200; //!
     EoverPHists* m_plots_eop_pG2200L2800; //!
-    EoverPHists* m_plots_eop_pG2800L3600; //!
-    EoverPHists* m_plots_eop_pG3600L4600; //!
-    EoverPHists* m_plots_eop_pG4600L5600; //!
-    EoverPHists* m_plots_eop_etaL06_pG2200L4600; //!
-    EoverPHists* m_plots_eop_etaL06_pG4600L50000; //!
+    EoverPHists* m_plots_eop_pG2800L3400; //!
+    EoverPHists* m_plots_eop_pG3400L4200; //!
+    EoverPHists* m_plots_eop_pG4200L5000; //!
+    EoverPHists* m_plots_eop_etaL06_pG2200L4200; //!
+    EoverPHists* m_plots_eop_etaL06_pG4200L50000; //!
     EoverPHists* m_plots_eop_etaL06; //!
     EoverPHists* m_plots_eop_etaG06L11; //!
     EoverPHists* m_plots_eop_etaG11L14; //!
     EoverPHists* m_plots_eop_etaG14L15; //!
     EoverPHists* m_plots_eop_etaG15L18; //!
     EoverPHists* m_plots_eop_etaG18L19; //!
-    EoverPHists* m_plots_eop_etaG19L23; //!
+    EoverPHists* m_plots_eop_etaG19L25; //!
 
     // variables that don't get filled at submission time should be
     // protected from being send from the submission node to the worker
