@@ -558,7 +558,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   float chi2Prob = TMath::Prob(chi2,ndof);
   float d0 = trk->d0();
   const xAOD::Vertex* pvx = HelperFunctions::getPrimaryVertex(vtxs);
-  float pvz = HelperFunctions::getPrimaryVertexZ(pv);
+  float pvz = HelperFunctions::getPrimaryVertexZ(pvx);
   float z0 = trk->z0() + trk->vz() - pvz;
   float sinT = sin(trk->theta());
   m_trk_d0 -> Fill( d0, eventWeight );
