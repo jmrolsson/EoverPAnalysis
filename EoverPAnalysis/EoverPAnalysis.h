@@ -125,12 +125,24 @@ class EoverPAnalysis : public xAH::Algorithm
     // number of tracks per event, after each selection
     TH1D* m_trk_n_all; //!
     TH1D* m_trk_n_pass_p; //!
+    TH1D* m_trk_n_pass_pG500; //!
+    TH1D* m_trk_n_pass_pG800; //!
+    TH1D* m_trk_n_pass_pG1200; //!
+    TH1D* m_trk_n_pass_pG2200; //!
+    TH1D* m_trk_n_pass_pG3400; //!
+    TH1D* m_trk_n_pass_pG5000; //!
     TH1D* m_trk_n_pass_eta; //!
     TH1D* m_trk_n_pass_iso; //!
     TH1D* m_trk_n_pass_larEmax; //!
     TH1D* m_trk_n_pass_tileEfrac; //!
     int m_trk_n_all_tmp; //!
     int m_trk_n_pass_p_tmp; //!
+    int m_trk_n_pass_pG500_tmp; //!
+    int m_trk_n_pass_pG800_tmp; //!
+    int m_trk_n_pass_pG1200_tmp; //!
+    int m_trk_n_pass_pG2200_tmp; //!
+    int m_trk_n_pass_pG3400_tmp; //!
+    int m_trk_n_pass_pG5000_tmp; //!
     int m_trk_n_pass_eta_tmp; //!
     int m_trk_n_pass_iso_tmp; //!
     int m_trk_n_pass_larEmax_tmp; //!

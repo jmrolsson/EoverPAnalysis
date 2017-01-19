@@ -72,6 +72,13 @@ class EoverPHists : public HistogramManager
     TH1F* m_trk_phiEME2; //!
     TH1F* m_trk_phi_extra; //!
     TH1F* m_trk_phi_extra2; //!
+    TH1F* m_trk_d0;
+    TH1F* m_trk_d0_s;
+    TH1F* m_trk_z0;
+    TH1F* m_trk_z0_s;
+    TH1F* m_trk_z0sinT;
+    TH1F* m_trk_chi2Prob;
+    TH1F* m_trk_charge;
 
     TH1F* m_trk_DR_EMB2_ID; //!
     TH1F* m_trk_DEta_EMB2_ID; //!

@@ -12,11 +12,11 @@ trks_loose = trks+"LoosePrimary"
 trks_loose_ntrtG20 = trks+"LoosePrimary_nTRTG20"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
-do_trkPtRewighting = False
+do_trkPtRewighting = True
 
-eta_bins_runII_general = ".0, .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.5"
+eta_bins_runII_general = ".0, .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3"
 # OLD  p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30., 40., 50., 100., 200., 1000., 10000."
-p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.4, 4.2, 5., 6., 7., 9., 12., 15., 20., 30., 40., 50., 100., 200., 1000., 10000."
+p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.4, 4.2, 5., 6., 7., 9., 12., 15., 20., 30." #, 40., 50., 100., 200., 1000., 10000."
 
 # E/p for comparisons with the Run 1 paper
 ''' E/p histograms with LoosePrimary track selection'''
@@ -113,8 +113,8 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimary",
 #                                   "m_useCutFlow": False,
 #                                   "m_debug": False})
 #
-# ''' Fill histograms with tracking details, after LoosePrimary but with *NO TRT cut* selection '''
-# c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimaryNoTRT",
+# ''' Fill histograms with tracking details, after LoosePrimary and with TRT selection '''
+# c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimaryTRT",
 #                             "m_inContainerName": trks_loose_ntrtG20,
 #                             "m_detailStr": "2D IPDetails HitCounts Chi2Details",
 #                             "m_debug": False})
@@ -172,6 +172,10 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimary",
 for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
 # for energy_calib in ["ClusterEnergy"]:
 
+    if energy_calib == "ClusterEnergy":
+        useCutFlow = True
+    else:
+        useCutFlow = False
     # E/p for comparisons with the Run 1 paper
     ''' E/p histograms with LoosePrimary track selection'''
     c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_"+energy_calib+"_Run1paper",
@@ -204,7 +208,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalTileEfracRanges": False,
                                 "m_doGlobalEnergyRanges": False,
                                 "m_doGlobalEtaRanges": False,
-                                "m_doGlobalExtraRanges": True,
+                                "m_doGlobalExtraRanges": False,
                                 "m_detailStr": "all",
-                                "m_useCutFlow": False,
+                                "m_useCutFlow": useCutFlow,
                                 "m_debug": False})

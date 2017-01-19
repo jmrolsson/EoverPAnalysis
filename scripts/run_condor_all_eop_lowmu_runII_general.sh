@@ -20,8 +20,8 @@ if [ $# -eq 0 ]
     xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 40
 
     echo "---> Running MC:"
-    echo xAH_run.py --files ${files_mc} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
-    xAH_run.py --files ${files_mc} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    echo xAH_run.py --files ${files_mc} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 20
+    xAH_run.py --files ${files_mc} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_${today}_${tag} --verbose --force condor --optFilesPerWorker 20
 
     echo "---> Write to logfile:"
     echo ${files_data} > results/run_condor_eop_lowmu_runII_general.log

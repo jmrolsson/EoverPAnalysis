@@ -94,6 +94,16 @@ StatusCode EoverPHists::initialize()
   m_trk_DEta_EMB2_ID_vs_trk_p = book(m_name, std::string("trk_DEta_EMB2_ID_vs_trk_p"), "p_{trk} [GeV]", nBinsE, minE, maxE, std::string("#Delta #eta_{trk}(EMB2, ID)"), nBinsEta, minEta, maxEta); 
   m_trk_DPhi_EMB2_ID_vs_trk_p = book(m_name, std::string("trk_DPhi_EMB2_ID_vs_trk_p"), "p_{trk} [GeV]", nBinsE, minE, maxE, std::string("#Delta #phi_{trk}(EMB2, ID)"), nBinsPhi, minPhi, maxPhi); 
 
+  m_trk_d0 = book(m_name, "trk_d0", "d0[mm]", 100,-5.0, 5.0 );
+  m_trk_d0_s = book(m_name, "trk_d0_s" , "d0[mm]", 100,  -1.0, 1.0 );
+
+  m_trk_z0 = book(m_name, "trk_z0","z0[mm]", 100,-5.0, 5.0 );
+  m_trk_z0_s = book(m_name, "trk_z0_s", "z0[mm]", 100,-1.0, 1.0 );
+  m_trk_z0sinT = book(m_name, "trk_z0sinT", "z0xsin(#theta)[mm]", 100, -5.0, 5.0 );
+
+  m_trk_chi2Prob = book(m_name, "trk_chi2Prob", "chi2Prob", 100,   -0.01,     1.0);
+  m_trk_charge = book(m_name, "trk_charge", "charge",   3,  -1.5,  1.5   );
+
   // Tile energy fractions
   m_trk_TileEfrac_100 = book (m_name, std::string("trk_"+m_energyCalib+"_TileEfrac_100"), "E(tile)/E(total)", 100, 0, 5.0); 
   m_trk_TileEfrac_100_vs_trk_p = book (m_name, std::string("trk_"+m_energyCalib+"_TileEfrac_100_vs_trk_p"), "p_{trk} [GeV]", nBinsE, minE, maxE, "E(tile)/E(total)", 100, 0, 5.0); 
@@ -541,6 +551,23 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_DR_EMB2_ID_vs_trk_p -> Fill(trk_p, dR_EMB2_ID, eventWeight);
   m_trk_DEta_EMB2_ID_vs_trk_p -> Fill(trk_p, dEta_EMB2_ID, eventWeight);
   m_trk_DPhi_EMB2_ID_vs_trk_p -> Fill(trk_p, dPhi_EMB2_ID, eventWeight);
+
+  
+  float chi2 = trk->chiSquared();
+  float ndof = trk->numberDoF();
+  float chi2Prob = TMath::Prob(chi2,ndof);
+  float d0 = trk->d0();
+  const xAOD::Vertex* pvx = HelperFunctions::getPrimaryVertex(vtxs);
+  float pvz = HelperFunctions::getPrimaryVertexZ(pv);
+  float z0 = trk->z0() + trk->vz() - pvz;
+  float sinT = sin(trk->theta());
+  m_trk_d0 -> Fill( d0, eventWeight );
+  m_trk_d0_s -> Fill( d0, eventWeight );
+  m_trk_z0 -> Fill( z0, eventWeight );
+  m_trk_z0_s -> Fill( z0, eventWeight );
+  m_trk_z0sinT -> Fill(z0*sinT, eventWeight );
+  m_trk_chi2Prob-> Fill( chi2Prob, eventWeight );
+  m_trk_charge -> Fill( trk->charge(), eventWeight );
 
   // cluster energy associated with the track
   float trk_E_Total_100 = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_100"))/1e3; 
