@@ -132,6 +132,9 @@ class EoverPAnalysis : public xAH::Algorithm
     TH1D* m_trk_n_pass_pG3400; //!
     TH1D* m_trk_n_pass_pG5000; //!
     TH1D* m_trk_n_pass_eta; //!
+    TH1D* m_trk_n_pass_etaL06; //!
+    TH1D* m_trk_n_pass_etaG06L15; //!
+    TH1D* m_trk_n_pass_etaG15L23; //!
     TH1D* m_trk_n_pass_iso; //!
     TH1D* m_trk_n_pass_larEmax; //!
     TH1D* m_trk_n_pass_tileEfrac; //!
@@ -144,6 +147,9 @@ class EoverPAnalysis : public xAH::Algorithm
     int m_trk_n_pass_pG3400_tmp; //!
     int m_trk_n_pass_pG5000_tmp; //!
     int m_trk_n_pass_eta_tmp; //!
+    int m_trk_n_pass_etaL06_tmp; //!
+    int m_trk_n_pass_etaG06L15_tmp; //!
+    int m_trk_n_pass_etaG15L23_tmp; //!
     int m_trk_n_pass_iso_tmp; //!
     int m_trk_n_pass_larEmax_tmp; //!
     int m_trk_n_pass_tileEfrac_tmp; //!

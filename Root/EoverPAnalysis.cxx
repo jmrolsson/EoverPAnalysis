@@ -33,6 +33,9 @@ ClassImp(EoverPAnalysis)
     m_trk_n_pass_pG3400(nullptr),
     m_trk_n_pass_pG5000(nullptr),
     m_trk_n_pass_eta(nullptr),
+    m_trk_n_pass_etaL06(nullptr),
+    m_trk_n_pass_etaG06L15(nullptr),
+    m_trk_n_pass_etaG15L23(nullptr),
     m_trk_n_pass_iso(nullptr),
     m_trk_n_pass_larEmax(nullptr),
     m_trk_n_pass_tileEfrac(nullptr),
@@ -243,13 +246,16 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   int nBinsTrkN = 200; float minTrkN = -0.5; float maxTrkN = 199.5;
   m_trk_n_all = new TH1D((std::string(m_name+"/trk_n_all")).c_str(), "trk_n_all", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_p = new TH1D((std::string(m_name+"/trk_n_pass_p")).c_str(), "trk_n_pass_p", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_n_pass_pG500 = new TH1D((std::string(m_name+"/trk_n_pass_pG500")).c_str(), "trk_n_pass_p", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_n_pass_pG800 = new TH1D((std::string(m_name+"/trk_n_pass_pG800")).c_str(), "trk_n_pass_p", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_n_pass_pG1200 = new TH1D((std::string(m_name+"/trk_n_pass_pG1200")).c_str(), "trk_n_pass_p", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_n_pass_pG2200 = new TH1D((std::string(m_name+"/trk_n_pass_pG2200")).c_str(), "trk_n_pass_p", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_n_pass_pG3400 = new TH1D((std::string(m_name+"/trk_n_pass_pG3400")).c_str(), "trk_n_pass_p", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_n_pass_pG5000 = new TH1D((std::string(m_name+"/trk_n_pass_pG5000")).c_str(), "trk_n_pass_p", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_pG500 = new TH1D((std::string(m_name+"/trk_n_pass_pG500")).c_str(), "trk_n_pass_pG500", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_pG800 = new TH1D((std::string(m_name+"/trk_n_pass_pG800")).c_str(), "trk_n_pass_pG800", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_pG1200 = new TH1D((std::string(m_name+"/trk_n_pass_pG1200")).c_str(), "trk_n_pass_pG1200", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_pG2200 = new TH1D((std::string(m_name+"/trk_n_pass_pG2200")).c_str(), "trk_n_pass_pG2200", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_pG3400 = new TH1D((std::string(m_name+"/trk_n_pass_pG3400")).c_str(), "trk_n_pass_pG3400", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_pG5000 = new TH1D((std::string(m_name+"/trk_n_pass_pG5000")).c_str(), "trk_n_pass_pG5000", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_eta = new TH1D((std::string(m_name+"/trk_n_pass_eta")).c_str(), "trk_n_pass_eta", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_etaL06 = new TH1D((std::string(m_name+"/trk_n_pass_etaL06")).c_str(), "trk_n_pass_etaL06", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_etaG06L15 = new TH1D((std::string(m_name+"/trk_n_pass_etaG06L15")).c_str(), "trk_n_pass_etaG06L15", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_etaG15L23 = new TH1D((std::string(m_name+"/trk_n_pass_etaG15L23")).c_str(), "trk_n_pass_etaG15L23", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_iso = new TH1D((std::string(m_name+"/trk_n_pass_iso")).c_str(), "trk_n_pass_iso", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_larEmax = new TH1D((std::string(m_name+"/trk_n_pass_larEmax")).c_str(), "trk_n_pass_larEmax", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_tileEfrac = new TH1D((std::string(m_name+"/trk_n_pass_tileEfrac")).c_str(), "trk_n_pass_tileEfrac", nBinsTrkN, minTrkN, maxTrkN); 
@@ -262,6 +268,9 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   m_trk_n_pass_pG3400->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_pG5000->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_eta->GetXaxis()->SetTitle("N_trks");
+  m_trk_n_pass_etaL06->GetXaxis()->SetTitle("N_trks");
+  m_trk_n_pass_etaG06L15->GetXaxis()->SetTitle("N_trks");
+  m_trk_n_pass_etaG15L23->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_iso->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_larEmax->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_tileEfrac->GetXaxis()->SetTitle("N_trks");
@@ -275,6 +284,9 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   wk()->addOutput(m_trk_n_pass_pG3400);
   wk()->addOutput(m_trk_n_pass_pG5000);
   wk()->addOutput(m_trk_n_pass_eta);
+  wk()->addOutput(m_trk_n_pass_etaL06);
+  wk()->addOutput(m_trk_n_pass_etaG06L15);
+  wk()->addOutput(m_trk_n_pass_etaG15L23);
   wk()->addOutput(m_trk_n_pass_iso);
   wk()->addOutput(m_trk_n_pass_larEmax);
   wk()->addOutput(m_trk_n_pass_tileEfrac);
@@ -379,6 +391,9 @@ EL::StatusCode EoverPAnalysis :: execute ()
   m_trk_n_pass_pG3400_tmp = 0;
   m_trk_n_pass_pG5000_tmp = 0;
   m_trk_n_pass_eta_tmp = 0;
+  m_trk_n_pass_etaL06_tmp = 0;
+  m_trk_n_pass_etaG06L15_tmp = 0;
+  m_trk_n_pass_etaG15L23_tmp = 0;
   m_trk_n_pass_iso_tmp = 0;
   m_trk_n_pass_larEmax_tmp = 0;
   m_trk_n_pass_tileEfrac_tmp = 0;
@@ -475,10 +490,17 @@ EL::StatusCode EoverPAnalysis :: execute ()
     if (trk_p > 5.0)
       m_trk_n_pass_pG5000_tmp++;
 
+    if (TMath::Abs(trk_etaID) < 0.6)
+      m_trk_n_pass_etaL06_tmp++;
+    if (TMath::Abs(trk_etaID) >= 0.6 && TMath::Abs(trk_etaID) < 1.5)
+      m_trk_n_pass_etaG06L15_tmp++;
+    if (TMath::Abs(trk_etaID) >= 1.5 && TMath::Abs(trk_etaID) < 2.3)
+      m_trk_n_pass_etaG15L23_tmp++;
+
     // check track p requirement
     if (m_doTrkPcut) {
       if (trk_p < m_trkPmin) continue;
-      if (trk_p > m_trkPmax) continue;
+      if (trk_p >= m_trkPmax) continue;
     }
     m_trk_cutflow_eop_pass_p++;
     m_trk_n_pass_p_tmp++;
@@ -486,7 +508,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
     // check track eta requirement
     if (m_doTrkEtacut) {
       if (TMath::Abs(trk_etaID) < m_trkEtamin) continue;
-      if (TMath::Abs(trk_etaID) > m_trkEtamax) continue;
+      if (TMath::Abs(trk_etaID) >= m_trkEtamax) continue;
     }
     m_trk_cutflow_eop_pass_eta++;
     m_trk_n_pass_eta_tmp++;
@@ -633,7 +655,10 @@ EL::StatusCode EoverPAnalysis :: execute ()
   m_trk_n_pass_pG2200->Fill(m_trk_n_pass_pG2200_tmp, eventWeight);
   m_trk_n_pass_pG3400->Fill(m_trk_n_pass_pG3400_tmp, eventWeight);
   m_trk_n_pass_pG5000->Fill(m_trk_n_pass_pG5000_tmp, eventWeight);
-  m_trk_n_pass_eta->Fill(m_trk_n_pass_p_tmp, eventWeight);
+  m_trk_n_pass_eta->Fill(m_trk_n_pass_eta_tmp, eventWeight);
+  m_trk_n_pass_etaL06->Fill(m_trk_n_pass_etaL06_tmp, eventWeight);
+  m_trk_n_pass_etaG06L15->Fill(m_trk_n_pass_etaG06L15_tmp, eventWeight);
+  m_trk_n_pass_etaG15L23->Fill(m_trk_n_pass_etaG15L23_tmp, eventWeight);
   m_trk_n_pass_larEmax->Fill(m_trk_n_pass_larEmax_tmp, eventWeight);
   m_trk_n_pass_tileEfrac->Fill(m_trk_n_pass_tileEfrac_tmp, eventWeight);
 
