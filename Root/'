@@ -504,6 +504,8 @@ StatusCode EoverPHists::initialize()
 StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::VertexContainer *vtxs, const xAOD::EventInfo* eventInfo, float eventWeight )
 {
 
+  
+  return StatusCode::SUCCESS;
   // get pileup
   float mu(-1.);
   if( eventInfo->isAvailable< float >( "actualInteractionsPerCrossing" ) ) {
@@ -562,6 +564,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_DEta_EMB2_ID_vs_trk_p -> Fill(trk_p, dEta_EMB2_ID, eventWeight);
   m_trk_DPhi_EMB2_ID_vs_trk_p -> Fill(trk_p, dPhi_EMB2_ID, eventWeight);
 
+  std::cout << "Before filling trk d0, etc hists" << std::endl;
   
   float chi2 = trk->chiSquared();
   float ndof = trk->numberDoF();
@@ -746,12 +749,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     // dR(trk,cluster) < 0.2
  
     // fill zero fraction histograms
-    if (m_doEbinsArray && m_doEtabinsArray) {
-      m_trk_n_E_200 -> Fill(trk_p, trk_etaID, eventWeight);
-      if (trk_E_Total_200 < 0) m_trk_n_E_200_l0 -> Fill(trk_p, trk_etaID, eventWeight);
-      if (trk_E_Total_200 == 0) m_trk_n_E_200_eq0 -> Fill(trk_p, trk_etaID, eventWeight);
-      if (trk_E_Total_200 <= 0) m_trk_n_E_200_leq0 -> Fill(trk_p, trk_etaID, eventWeight);
-    }
+    m_trk_n_E_200 -> Fill(trk_p, trk_etaID, eventWeight);
+    if (trk_E_Total_200 < 0) m_trk_n_E_200_l0 -> Fill(trk_p, trk_etaID, eventWeight);
+    if (trk_E_Total_200 == 0) m_trk_n_E_200_eq0 -> Fill(trk_p, trk_etaID, eventWeight);
+    if (trk_E_Total_200 <= 0) m_trk_n_E_200_leq0 -> Fill(trk_p, trk_etaID, eventWeight);
 
     m_trk_E_Total_200 -> Fill(trk_E_Total_200, eventWeight); 
     m_trk_E_Total_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200, eventWeight); 
@@ -856,6 +857,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
         m_eop_EM_BG_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill((trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
     }
   } // END doBgSubtr
+
 
   // E/p where E is maximum in either Tile layer A, BC, or D
   if (m_doTileLayer) {
