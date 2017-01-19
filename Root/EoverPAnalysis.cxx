@@ -513,9 +513,10 @@ EL::StatusCode EoverPAnalysis :: execute ()
     m_trk_cutflow_eop_pass_eta++;
     m_trk_n_pass_eta_tmp++;
 
-    if (m_doTrkPtReweighting &&  eventInfo->isAvailable< float >( "mcEventWeight" ) ) {
+    float trkWeight = eventWeight;
+    if (m_doTrkPtReweighting && eventInfo->isAvailable< float >( "mcEventWeight" ) ) {
       if (trk_pt > 0. && trk_pt < 30.) {
-        eventWeight *= m_ptHist->GetBinContent(m_ptHist->FindBin(trk_pt));
+        trkWeight *= m_ptHist->GetBinContent(m_ptHist->FindBin(trk_pt));
       }
     }
 
@@ -553,27 +554,27 @@ EL::StatusCode EoverPAnalysis :: execute ()
       // Make all the histograms for different TileEfrac selections
       if (m_doGlobalTileEfracRanges && trk_TileEfrac_200 >= 0. && trk_TileEfrac_200 < 1.) {
         if (m_doGlobalTileEfracRanges && trk_TileEfrac_200 == 0.)
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac000->execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac000->execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
         if (trk_TileEfrac_200 >= .1) {
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac010->execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac010->execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
         }
         if (trk_TileEfrac_200 >= .3) {
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac030->execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac030->execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
         }
         if (trk_TileEfrac_200 >= .5) {
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac050->execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac050->execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
         }
         if (trk_TileEfrac_200 >= .6) {
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac060->execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac060->execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
         }
         if (trk_TileEfrac_200 >= .7) {
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac070->execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac070->execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
         }
         if (trk_TileEfrac_200 >= .75) {
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac075->execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac075->execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
         }
         if (trk_TileEfrac_200 >= .8) {
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac080->execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_TileEfrac080->execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
         }
       }
 
@@ -584,61 +585,61 @@ EL::StatusCode EoverPAnalysis :: execute ()
     }
 
     // fill eop histograms
-    RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop -> execute(trk, vtxs, eventInfo, eventWeight), "");
+    RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
 
     // fill eop histograms for different trk p ranges
     if (m_doGlobalEnergyRanges) {
       if (trk_p < 4)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pL4000 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pL4000 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (trk_p >= 4 && trk_p < 8)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG4000L8000 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG4000L8000 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (trk_p >= 8 && trk_p < 12)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG8000L12000 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG8000L12000 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (trk_p >= 12)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG12000 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG12000 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
     }
     // fill eop histograms for different trk eta ranges
     if (m_doGlobalEtaRanges) {
       if (TMath::Abs(trk_etaID) < .5) 
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL05 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL05 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (TMath::Abs(trk_etaID) >= .5 && TMath::Abs(trk_etaID) < .7) 
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG05L07 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG05L07 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (TMath::Abs(trk_etaID) >= .7) 
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG07 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG07 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
     }
 
     if (m_doGlobalExtraRanges) {
       if (trk_p >= 1.2 && trk_p < 1.8)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG1200L1800 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG1200L1800 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (trk_p >= 1.8 && trk_p < 2.2)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG1800L2200 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG1800L2200 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (trk_p >= 2.2 && trk_p < 2.8)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG2200L2800 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG2200L2800 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (trk_p >= 2.8 && trk_p < 3.4)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG2800L3400 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG2800L3400 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (trk_p >= 3.4 && trk_p < 4.2)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG3400L4200 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG3400L4200 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (trk_p >= 4.2 && trk_p < 5.)
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG4200L5000 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG4200L5000 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (TMath::Abs(trk_etaID) < .6){
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
         if (trk_p >= 2.2 && trk_p < 4.6)
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG2200L4200 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG2200L4200 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
         if (trk_p >= 4.6 && trk_p < 50.)
-          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG4200L50000 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+          RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG4200L50000 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       }
       if (TMath::Abs(trk_etaID) >= .6 && TMath::Abs(trk_etaID) < 1.1) 
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG06L11 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG06L11 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (TMath::Abs(trk_etaID) >= 1.1 && TMath::Abs(trk_etaID) < 1.4) 
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG11L14 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG11L14 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (TMath::Abs(trk_etaID) >= 1.4 && TMath::Abs(trk_etaID) < 1.5) 
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG14L15 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG14L15 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (TMath::Abs(trk_etaID) >= 1.5 && TMath::Abs(trk_etaID) < 1.8) 
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG15L18 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG15L18 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (TMath::Abs(trk_etaID) >= 1.8 && TMath::Abs(trk_etaID) < 1.9) 
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG18L19 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG18L19 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
       if (TMath::Abs(trk_etaID) >= 1.9 && TMath::Abs(trk_etaID) < 2.5) 
-        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG19L25 -> execute(trk, vtxs, eventInfo, eventWeight), "");
+        RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG19L25 -> execute(trk, vtxs, eventInfo, eventWeight, trkWeight), "");
     }
 
   } // END looping trk
@@ -646,21 +647,21 @@ EL::StatusCode EoverPAnalysis :: execute ()
   m_numEventPass++;
   m_weightNumEventPass += eventWeight;
 
-  m_trk_n_all->Fill(m_trk_n_all_tmp, eventWeight);
-  m_trk_n_pass_iso->Fill(m_trk_n_pass_iso_tmp, eventWeight);
-  m_trk_n_pass_p->Fill(m_trk_n_pass_p_tmp, eventWeight);
-  m_trk_n_pass_pG500->Fill(m_trk_n_pass_pG500_tmp, eventWeight);
-  m_trk_n_pass_pG800->Fill(m_trk_n_pass_pG800_tmp, eventWeight);
-  m_trk_n_pass_pG1200->Fill(m_trk_n_pass_pG1200_tmp, eventWeight);
-  m_trk_n_pass_pG2200->Fill(m_trk_n_pass_pG2200_tmp, eventWeight);
-  m_trk_n_pass_pG3400->Fill(m_trk_n_pass_pG3400_tmp, eventWeight);
-  m_trk_n_pass_pG5000->Fill(m_trk_n_pass_pG5000_tmp, eventWeight);
-  m_trk_n_pass_eta->Fill(m_trk_n_pass_eta_tmp, eventWeight);
-  m_trk_n_pass_etaL06->Fill(m_trk_n_pass_etaL06_tmp, eventWeight);
-  m_trk_n_pass_etaG06L15->Fill(m_trk_n_pass_etaG06L15_tmp, eventWeight);
-  m_trk_n_pass_etaG15L23->Fill(m_trk_n_pass_etaG15L23_tmp, eventWeight);
-  m_trk_n_pass_larEmax->Fill(m_trk_n_pass_larEmax_tmp, eventWeight);
-  m_trk_n_pass_tileEfrac->Fill(m_trk_n_pass_tileEfrac_tmp, eventWeight);
+  m_trk_n_all->Fill(m_trk_n_all_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_iso->Fill(m_trk_n_pass_iso_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_p->Fill(m_trk_n_pass_p_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_pG500->Fill(m_trk_n_pass_pG500_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_pG800->Fill(m_trk_n_pass_pG800_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_pG1200->Fill(m_trk_n_pass_pG1200_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_pG2200->Fill(m_trk_n_pass_pG2200_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_pG3400->Fill(m_trk_n_pass_pG3400_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_pG5000->Fill(m_trk_n_pass_pG5000_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_eta->Fill(m_trk_n_pass_eta_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_etaL06->Fill(m_trk_n_pass_etaL06_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_etaG06L15->Fill(m_trk_n_pass_etaG06L15_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_etaG15L23->Fill(m_trk_n_pass_etaG15L23_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_larEmax->Fill(m_trk_n_pass_larEmax_tmp, eventWeight, trkWeight);
+  m_trk_n_pass_tileEfrac->Fill(m_trk_n_pass_tileEfrac_tmp, eventWeight, trkWeight);
 
   return EL::StatusCode::SUCCESS;
 }
