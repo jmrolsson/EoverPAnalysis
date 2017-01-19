@@ -104,6 +104,15 @@ StatusCode EoverPHists::initialize()
   m_trk_chi2Prob = book(m_name, "trk_chi2Prob", "chi2Prob", 100,   -0.01,     1.0);
   m_trk_charge = book(m_name, "trk_charge", "charge",   3,  -1.5,  1.5   );
 
+  m_trk_nSi        = book(m_name, "trk_nSi",        "nSi",         30,   -0.5, 29.5 );
+  m_trk_nSiAndDead = book(m_name, "trk_nSiAndDead", "nSi(+Dead)",  30,   -0.5, 29.5 );
+  m_trk_nSiDead    = book(m_name, "trk_nSiDead",    "nSiDead",     10,   -0.5,  9.5 );
+  m_trk_nSCT       = book(m_name, "trk_nSCT",       "nSCTHits",    20,   -0.5, 19.5 );
+  m_trk_nPix       = book(m_name, "trk_nPix",       "nPix",        10,   -0.5,  9.5 );
+  m_trk_nPixHoles  = book(m_name, "trk_nPixHoles",  "nPixHoles",   10,   -0.5,  9.5 );
+  m_trk_nBL        = book(m_name, "trk_nBL",        "nBL",          3,   -0.5,  2.5 );
+  m_trk_nTRT       = book(m_name, "trk_nTRT",       "nTRT",        50,   -0.5, 49.5 );
+
   // Tile energy fractions
   m_trk_TileEfrac_100 = book (m_name, std::string("trk_"+m_energyCalib+"_TileEfrac_100"), "E(tile)/E(total)", 100, 0, 5.0); 
   m_trk_TileEfrac_100_vs_trk_p = book (m_name, std::string("trk_"+m_energyCalib+"_TileEfrac_100_vs_trk_p"), "p_{trk} [GeV]", nBinsE, minE, maxE, "E(tile)/E(total)", 100, 0, 5.0); 
@@ -568,6 +577,33 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_z0sinT -> Fill(z0*sinT, eventWeight );
   m_trk_chi2Prob-> Fill( chi2Prob, eventWeight );
   m_trk_charge -> Fill( trk->charge(), eventWeight );
+
+  uint8_t nBL       = -1;
+  uint8_t nPix      = -1;
+  uint8_t nPixDead  = -1;
+  uint8_t nPixHoles = -1;
+  uint8_t nSCT      = -1;
+  uint8_t nSCTDead  = -1;
+  uint8_t nTRT      = -1;
+
+  if(!trk->summaryValue(nBL,       xAOD::numberOfBLayerHits))       Error("TrackHists::execute()", "BLayer hits not filled");
+  if(!trk->summaryValue(nPix,      xAOD::numberOfPixelHits))        Error("TrackHists::execute()", "Pix hits not filled");
+  if(!trk->summaryValue(nPixDead,  xAOD::numberOfPixelDeadSensors)) Error("TrackHists::execute()", "Pix Dead not filled");
+  if(!trk->summaryValue(nPixHoles, xAOD::numberOfPixelHoles))       Error("TrackHists::execute()", "Pix holes not filled");
+  if(!trk->summaryValue(nSCT,      xAOD::numberOfSCTHits))          Error("TrackHists::execute()", "SCT hits not filled");
+  if(!trk->summaryValue(nSCTDead,  xAOD::numberOfSCTDeadSensors))   Error("TrackHists::execute()", "SCT Dead not filled");
+  if(!trk->summaryValue(nTRT,      xAOD::numberOfTRTHits))          Error("TrackHists::execute()", "TRT hits not filled");
+
+  uint8_t nSi     = nPix     + nSCT;
+  uint8_t nSiDead = nPixDead + nSCTDead;
+  m_trk_nBL        -> Fill( nBL         , eventWeight );
+  m_trk_nSi        -> Fill( nSi         , eventWeight );
+  m_trk_nSiAndDead -> Fill( nSi+nSiDead , eventWeight );
+  m_trk_nSiDead    -> Fill( nSiDead     , eventWeight );
+  m_trk_nSCT       -> Fill( nSCT        , eventWeight );
+  m_trk_nPix       -> Fill( nPix        , eventWeight );
+  m_trk_nPixHoles  -> Fill( nPixHoles   , eventWeight );
+  m_trk_nTRT       -> Fill( nTRT        , eventWeight );
 
   // cluster energy associated with the track
   float trk_E_Total_100 = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_100"))/1e3; 
