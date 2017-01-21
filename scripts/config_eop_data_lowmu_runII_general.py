@@ -209,7 +209,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalTileEfracRanges": False,
                                 "m_doGlobalEnergyRanges": False,
                                 "m_doGlobalEtaRanges": False,
-                                "m_doGlobalExtraRanges": True,
+                                "m_doGlobalExtraRanges": False,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": useCutFlow,
                                 "m_debug": False})
