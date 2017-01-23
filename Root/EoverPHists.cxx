@@ -561,7 +561,7 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_phi_extra2 -> Fill(trk_phiID, eventWeight); 
 
   m_trk_p_vs_eta -> Fill(trk_etaID, trk_p, eventWeight); 
-  if (m_doPbinsArray && m_doEtabinsArray) m_trk_p_vs_eta_array -> Fill(trk_etaID, trk_p, eventWeight); 
+  if (m_doEbinsArray && m_doEtabinsArray) m_trk_p_vs_eta_array -> Fill(trk_etaID, trk_p, eventWeight); 
 
   m_trk_DR_EMB2_ID -> Fill(dR_EMB2_ID, eventWeight); 
   m_trk_DEta_EMB2_ID -> Fill(dEta_EMB2_ID, eventWeight); 
