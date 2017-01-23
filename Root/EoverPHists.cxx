@@ -87,6 +87,10 @@ StatusCode EoverPHists::initialize()
   m_trk_phiEME2 = book(m_name, "trk_phiEME2", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
   m_trk_phi_extra = book(m_name, "trk_phi_extra", "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra); 
   m_trk_phi_extra2 = book(m_name, "trk_phi_extra2", "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2); 
+
+  m_trk_p_vs_eta = book(m_name, "trk_p_vs_eta", "#eta_{trk}", nBinsEta, minEta, maxEta, "p_{trk} [GeV]", nBinsE, minE, maxE); 
+  if (m_doEbinsArray && m_doEtabinsArray) m_trk_p_vs_eta_array = book(m_name, "trk_p_vs_eta_pEtabinsArray", "#eta_{trk}", nEtabinsArray, &EtabinsArray[0], "p_{T,trk} [GeV]", nBinsE, minE, maxE); 
+
   m_trk_DR_EMB2_ID = book(m_name, std::string("trk_DR_EMB2_ID"), std::string("#Delta R_{trk}(EMB2, ID)"), nBinsDR, minDR, maxDR); 
   m_trk_DEta_EMB2_ID = book(m_name, std::string("trk_DEta_EMB2_ID"), std::string("#Delta #eta_{trk}(EMB2, ID)"), nBinsEta, minEta, maxEta); 
   m_trk_DPhi_EMB2_ID = book(m_name, std::string("trk_DPhi_EMB2_ID"), std::string("#Delta #phi_{trk}(EMB2, ID)"), nBinsPhi, minPhi, maxPhi); 
@@ -555,6 +559,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_phiEME2 -> Fill(trk_phiEME2, eventWeight); 
   m_trk_phi_extra -> Fill(trk_phiID, eventWeight); 
   m_trk_phi_extra2 -> Fill(trk_phiID, eventWeight); 
+
+  m_trk_p_vs_eta -> Fill(trk_etaID, trk_p, eventWeight); 
+  if (m_doPbinsArray && m_doEtabinsArray) m_trk_p_vs_eta_array -> Fill(trk_etaID, trk_p, eventWeight); 
+
   m_trk_DR_EMB2_ID -> Fill(dR_EMB2_ID, eventWeight); 
   m_trk_DEta_EMB2_ID -> Fill(dEta_EMB2_ID, eventWeight); 
   m_trk_DPhi_EMB2_ID -> Fill(dPhi_EMB2_ID, eventWeight); 
