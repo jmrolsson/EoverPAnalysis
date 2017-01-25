@@ -15,11 +15,14 @@ class EoverPHistsTrks : public HistogramManager
     StatusCode initialize();
 
     StatusCode execute( const xAOD::TrackParticleContainer* trks, const xAOD::VertexContainer* vtxs, const xAOD::EventInfo* eventInfo, float eventWeight );
+  
+    float deltaR (float trk_eta, float trk_phi, float trk2_eta, float trk2_phi);
+
     using HistogramManager::book; // make other overloaded versions of book() to show up in subclass
     using HistogramManager::execute; // overload
 
   protected:
-    
+
     float m_trkIsoDRmax; //! track isolation max DR
     float m_trkIsoPfrac; //! track isolation max p fraction
     bool m_doTrkPcut; //!
@@ -63,6 +66,10 @@ class EoverPHistsTrks : public HistogramManager
     TH2F* m_trk_trk2_dR_EMB2_vs_trk_p; //!
     TH1F* m_trk_trk2_dR_EME2; //!
     TH2F* m_trk_trk2_dR_EME2_vs_trk_p; //!
+    TH1F* m_trk_trk2_dR_EMB2_EME2; //!
+    TH2F* m_trk_trk2_dR_EMB2_EME2_vs_trk_p; //!
+    TH1F* m_trk_trk2_dR_EME2_EMB2; //!
+    TH2F* m_trk_trk2_dR_EME2_EMB2_vs_trk_p; //!
 
     TH1F* m_trk_ntrks_maxDR01; //!
     TH1F* m_trk_ntrks_maxDR02; //!

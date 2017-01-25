@@ -12,7 +12,7 @@
 class EoverPHists : public HistogramManager
 {
   public:
-    EoverPHists(std::string name, std::string detailStr, std::string energyCalib = "ClusterEnergy", bool doCaloTotal = true, bool doCaloEM = false, bool doCaloHAD = false, bool doBgSubtr = true, bool doTileLayer = false, std::string Ebins = "", bool doEbinsArray = false, std::string EbinsArray = "", std::string Etabins = "", bool doEtabinsArray = false, std::string EtabinsArray = "", bool doExtraEtaEnergyBinHists = false);
+    EoverPHists(std::string name, std::string detailStr, std::string energyCalib = "ClusterEnergy", bool doCaloTotal = true, bool doCaloEM = false, bool doCaloHAD = false, bool doBgSubtr = true, bool doTileLayer = false, std::string Pbins = "", bool doPbinsArray = false, std::string PbinsArray = "", std::string Etabins = "", bool doEtabinsArray = false, std::string EtabinsArray = "", bool doExtraEtaEnergyBinHists = false);
     ~EoverPHists();
 
     StatusCode initialize();
@@ -35,15 +35,15 @@ class EoverPHists : public HistogramManager
     bool m_doTileLayer; //!
 
     std::string m_energyCalib; //! what type of energy calibration to use (EM, LCW, cells)
-    std::string m_Ebins; //!
-    bool m_doEbinsArray; //!
-    std::string m_EbinsArray; //!
+    std::string m_Pbins; //!
+    bool m_doPbinsArray; //!
+    std::string m_PbinsArray; //!
     std::string m_Etabins; //!
     bool m_doEtaAbs; //!
     bool m_doEtabinsArray; //!
     std::string m_EtabinsArray; //!
-    std::vector<double> EbinsArray = {0}; //!
-    unsigned int nEbinsArray; //!
+    std::vector<double> PbinsArray = {0}; //!
+    unsigned int nPbinsArray; //!
     std::vector<double> EtabinsArray = {0}; //!
     unsigned int nEtabinsArray; //!
 

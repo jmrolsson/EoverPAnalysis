@@ -54,9 +54,9 @@ class EoverPAnalysis : public xAH::Algorithm
     float m_TileEfracmin = -1;
 
     // user defined energy (p) bins
-    std::string m_Ebins = "";
-    bool m_doEbinsArray = false;
-    std::string m_EbinsArray = "";
+    std::string m_Pbins = "";
+    bool m_doPbinsArray = false;
+    std::string m_PbinsArray = "";
 
     // user defined eta bins
     std::string m_Etabins = "";
@@ -106,15 +106,17 @@ class EoverPAnalysis : public xAH::Algorithm
     TH1D* m_trk_cutflowHist_eop;  //!
 
     int m_trk_cutflow_eop_all_bin; //!
+    int m_trk_cutflow_eop_extrapol_bin; //!
     int m_trk_cutflow_eop_pass_iso_bin; //!
     int m_trk_cutflow_eop_pass_p_bin; //!
     int m_trk_cutflow_eop_pass_eta_bin; //!
     int m_trk_cutflow_eop_pass_larEmax_bin; //!
     int m_trk_cutflow_eop_pass_tileEfrac_bin; //!
     int m_trk_cutflow_eop_all; //!
+    int m_trk_cutflow_eop_extrapol; //!
+    int m_trk_cutflow_eop_pass_iso; //!
     int m_trk_cutflow_eop_pass_p; //!
     int m_trk_cutflow_eop_pass_eta; //!
-    int m_trk_cutflow_eop_pass_iso; //!
     int m_trk_cutflow_eop_pass_larEmax; //!
     int m_trk_cutflow_eop_pass_tileEfrac; //!
 
@@ -124,6 +126,8 @@ class EoverPAnalysis : public xAH::Algorithm
 
     // number of tracks per event, after each selection
     TH1D* m_trk_n_all; //!
+    TH1D* m_trk_n_pass_extrapol; //!
+    TH1D* m_trk_n_pass_iso; //!
     TH1D* m_trk_n_pass_p; //!
     TH1D* m_trk_n_pass_pG500; //!
     TH1D* m_trk_n_pass_pG800; //!
@@ -135,10 +139,11 @@ class EoverPAnalysis : public xAH::Algorithm
     TH1D* m_trk_n_pass_etaL06; //!
     TH1D* m_trk_n_pass_etaG06L15; //!
     TH1D* m_trk_n_pass_etaG15L23; //!
-    TH1D* m_trk_n_pass_iso; //!
     TH1D* m_trk_n_pass_larEmax; //!
     TH1D* m_trk_n_pass_tileEfrac; //!
     int m_trk_n_all_tmp; //!
+    int m_trk_n_pass_extrapol_tmp; //!
+    int m_trk_n_pass_iso_tmp; //!
     int m_trk_n_pass_p_tmp; //!
     int m_trk_n_pass_pG500_tmp; //!
     int m_trk_n_pass_pG800_tmp; //!
@@ -150,7 +155,6 @@ class EoverPAnalysis : public xAH::Algorithm
     int m_trk_n_pass_etaL06_tmp; //!
     int m_trk_n_pass_etaG06L15_tmp; //!
     int m_trk_n_pass_etaG15L23_tmp; //!
-    int m_trk_n_pass_iso_tmp; //!
     int m_trk_n_pass_larEmax_tmp; //!
     int m_trk_n_pass_tileEfrac_tmp; //!
 
@@ -219,6 +223,8 @@ class EoverPAnalysis : public xAH::Algorithm
     virtual EL::StatusCode postExecute ();
     virtual EL::StatusCode finalize ();
     virtual EL::StatusCode histFinalize ();
+
+    float deltaR (float trk_eta, float trk_phi, float trk2_eta, float trk2_phi);
 
     /// @cond
     // this is needed to distribute the algorithm to the workers

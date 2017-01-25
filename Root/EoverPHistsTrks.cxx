@@ -29,7 +29,7 @@ StatusCode EoverPHistsTrks::initialize()
   float minMu_shift = -0.5; float maxMu_shift = 49.5;
   unsigned int nBinsNPV = 50;          float minNPV = -0.5;         float maxNPV = 49.5;
   unsigned int nBinsTrkN = 200;        float minTrkN = -0.5;        float maxTrkN = 199.5;
-  unsigned int nBinsE = 300;           float minE = 0;              float maxE = 30;
+  unsigned int nBinsP = 500;           float minP = 0;              float maxP = 50;
   unsigned int nBinsDR = 60;           float minDR = 0;             float maxDR = 3;
   unsigned int nBinsPhi = 32;          float minPhi = -TMath::Pi(); float maxPhi = TMath::Pi(); 
   unsigned int nBinsEta = 100;         float minEta = -2.5;         float maxEta = 2.5;
@@ -48,7 +48,7 @@ StatusCode EoverPHistsTrks::initialize()
 
   // track plots
   m_trk_n_nocut       = book(m_name, "trk_n_nocut", "N_{trk}", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_p_noiso       = book(m_name, "trk_p_noiso", "p_{trk} [GeV]", nBinsE, minE, maxE); 
+  m_trk_p_noiso       = book(m_name, "trk_p_noiso", "p_{trk} [GeV]", nBinsP, minP, maxP); 
   m_trk_etaID_noiso   = book(m_name, "trk_etaID_noiso", "#eta_{trk}", nBinsEta, minEta, maxEta); 
   m_trk_etaEMB2_noiso = book(m_name, "trk_etaEMB2_noiso", "#eta_{trk}", nBinsEta, minEta, maxEta); 
   m_trk_etaEME2_noiso = book(m_name, "trk_etaEME2_noiso", "#eta_{trk}", nBinsEta, minEta, maxEta); 
@@ -61,11 +61,15 @@ StatusCode EoverPHistsTrks::initialize()
   m_trk_etaEME2_vs_etaEMB2_noiso = book(m_name, "trk_etaEME2_vs_etaEMB2_noiso", "#eta_{trk,EMB2}", nBinsEta, minEta, maxEta, "#eta_{trk,EME2}", nBinsEta, minEta, maxEta); 
 
   m_trk_trk2_dR_ID = book(m_name, "trk_trk2_dR_ID", "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
-  m_trk_trk2_dR_ID_vs_trk_p = book(m_name, "trk_trk2_dR_ID_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_ID_vs_trk_p = book(m_name, "trk_trk2_dR_ID_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
   m_trk_trk2_dR_EMB2 = book(m_name, "trk_trk2_dR_EMB2", "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
-  m_trk_trk2_dR_EMB2_vs_trk_p = book(m_name, "trk_trk2_dR_EMB2_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_EMB2_vs_trk_p = book(m_name, "trk_trk2_dR_EMB2_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
   m_trk_trk2_dR_EME2 = book(m_name, "trk_trk2_dR_EME2", "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
-  m_trk_trk2_dR_EME2_vs_trk_p = book(m_name, "trk_trk2_dR_EME2_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_EME2_vs_trk_p = book(m_name, "trk_trk2_dR_EME2_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "#DeltaR(trk,trk2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_EMB2_EME2 = book(m_name, "trk_trk2_dR_EMB2_EME2", "#DeltaR(trk_EMB2,trk2_EME2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_EMB2_EME2_vs_trk_p = book(m_name, "trk_trk2_dR_EMB2_EME2_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "#DeltaR(trk_EMB2,trk2_EME2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_EME2_EMB2 = book(m_name, "trk_trk2_dR_EME2_EMB2", "#DeltaR(trk_EME2,trk2_EMB2)", nBinsDR, minDR, maxDR);
+  m_trk_trk2_dR_EME2_EMB2_vs_trk_p = book(m_name, "trk_trk2_dR_EME2_EMB2_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "#DeltaR(trk_EME2,trk2_EMB2)", nBinsDR, minDR, maxDR);
 
   m_trk_ntrks_maxDR01 = book(m_name, "trk_ntrks_maxDR01", "N_{trks} within #Delta R<0.1 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_ntrks_maxDR02 = book(m_name, "trk_ntrks_maxDR02", "N_{trks} within #Delta R<0.2 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
@@ -78,24 +82,24 @@ StatusCode EoverPHistsTrks::initialize()
   m_trk_ntrks_maxDR09 = book(m_name, "trk_ntrks_maxDR09", "N_{trks} within #Delta R<0.9 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_ntrks_maxDR10 = book(m_name, "trk_ntrks_maxDR10", "N_{trks} within #Delta R<1.0 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
 
-  m_trk_ntrks_maxDR01_vs_trk_p = book(m_name, "trk_ntrks_maxDR01_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.1 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_maxDR02_vs_trk_p = book(m_name, "trk_ntrks_maxDR02_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.2 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_maxDR03_vs_trk_p = book(m_name, "trk_ntrks_maxDR03_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.3 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_maxDR04_vs_trk_p = book(m_name, "trk_ntrks_maxDR04_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.4 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_maxDR05_vs_trk_p = book(m_name, "trk_ntrks_maxDR05_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.5 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_maxDR06_vs_trk_p = book(m_name, "trk_ntrks_maxDR06_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.6 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_maxDR07_vs_trk_p = book(m_name, "trk_ntrks_maxDR07_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.7 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_maxDR08_vs_trk_p = book(m_name, "trk_ntrks_maxDR08_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.8 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_maxDR09_vs_trk_p = book(m_name, "trk_ntrks_maxDR09_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.9 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_maxDR10_vs_trk_p = book(m_name, "trk_ntrks_maxDR10_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<1.0 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_maxDR01_vs_trk_p = book(m_name, "trk_ntrks_maxDR01_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.1 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_maxDR02_vs_trk_p = book(m_name, "trk_ntrks_maxDR02_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.2 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_maxDR03_vs_trk_p = book(m_name, "trk_ntrks_maxDR03_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.3 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_maxDR04_vs_trk_p = book(m_name, "trk_ntrks_maxDR04_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.4 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_maxDR05_vs_trk_p = book(m_name, "trk_ntrks_maxDR05_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.5 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_maxDR06_vs_trk_p = book(m_name, "trk_ntrks_maxDR06_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.6 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_maxDR07_vs_trk_p = book(m_name, "trk_ntrks_maxDR07_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.7 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_maxDR08_vs_trk_p = book(m_name, "trk_ntrks_maxDR08_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.8 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_maxDR09_vs_trk_p = book(m_name, "trk_ntrks_maxDR09_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.9 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_maxDR10_vs_trk_p = book(m_name, "trk_ntrks_maxDR10_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<1.0 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
 
-  m_trk_ntrks_trkIsoDRmax_vs_sum_surr_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_vs_sum_surr_trk_p", "#Sigma_{i#neq0} p_{trk,#DeltaR<0.4}_{i} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.4 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_trkIsoDRmax_vs_avg_surr_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_vs_avg_surr_trk_p", "p_{trk,#DeltaR<0.4}^{avg} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.4 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_ntrks_trkIsoDRmax_vs_leading_surr_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_vs_leading_surr_trk_p", "p_{trk,#DeltaR<0.4}^{leading} [GeV]", nBinsE, minE, maxE, "N_{trks} within #Delta R<0.4 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_trkIsoDRmax_vs_sum_surr_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_vs_sum_surr_trk_p", "#Sigma_{i#neq0} p_{trk,#DeltaR<0.4}_{i} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.4 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_trkIsoDRmax_vs_avg_surr_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_vs_avg_surr_trk_p", "p_{trk,#DeltaR<0.4}^{avg} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.4 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_ntrks_trkIsoDRmax_vs_leading_surr_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_vs_leading_surr_trk_p", "p_{trk,#DeltaR<0.4}^{leading} [GeV]", nBinsP, minP, maxP, "N_{trks} within #Delta R<0.4 of selected trk", nBinsTrkN, minTrkN, maxTrkN); 
 
-  m_trk_ntrks_trkIsoDRmax_sum_surr_trk_p_vs_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_sum_surr_trk_p_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "#Sigma_{i#neq0} p_{trk,#DeltaR<0.4}_{i} [GeV]", nBinsE, minE, maxE); 
-  m_trk_ntrks_trkIsoDRmax_avg_surr_trk_p_vs_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_avg_surr_trk_p_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "p_{trk,#DeltaR<0.4}^{avg} [GeV]", nBinsE, minE, maxE); 
-  m_trk_ntrks_trkIsoDRmax_leading_surr_trk_p_vs_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_leading_surr_trk_p_vs_trk_p", "p_{trk} [GeV]", nBinsE, minE, maxE, "p_{trk,#DeltaR<0.4}^{leading} [GeV]", nBinsE, minE, maxE); 
+  m_trk_ntrks_trkIsoDRmax_sum_surr_trk_p_vs_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_sum_surr_trk_p_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "#Sigma_{i#neq0} p_{trk,#DeltaR<0.4}_{i} [GeV]", nBinsP, minP, maxP); 
+  m_trk_ntrks_trkIsoDRmax_avg_surr_trk_p_vs_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_avg_surr_trk_p_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "p_{trk,#DeltaR<0.4}^{avg} [GeV]", nBinsP, minP, maxP); 
+  m_trk_ntrks_trkIsoDRmax_leading_surr_trk_p_vs_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_leading_surr_trk_p_vs_trk_p", "p_{trk} [GeV]", nBinsP, minP, maxP, "p_{trk,#DeltaR<0.4}^{leading} [GeV]", nBinsP, minP, maxP); 
 
   m_trk_ntrks_trkIsoDRmax_sum_surr_trk_p_over_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_sum_surr_trk_p_over_trk_p", "#Sigma_{i#neq0} p_{trk,#DeltaR<0.4}_{i} / p_{trk}", 100, 0, 5.0); 
   m_trk_ntrks_trkIsoDRmax_avg_surr_trk_p_over_trk_p = book(m_name, "trk_ntrks_trkIsoDRmax_avg_surr_trk_p_over_trk_p", "p_{trk,#DeltaR<0.4}^{avg} / p_{trk}", 100, 0, 5.0); 
@@ -158,11 +162,20 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
     m_trk_p_noiso->Fill(trk_p, eventWeight);
 
     float trk_etaID = trk->eta();
-    float trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
-    float trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
     float trk_phiID = trk->phi();
+    // coordinates of the track extrapolated to the calorimeter
+    // EMB2
+    float trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
     float trk_phiEMB2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
+    // EME2
+    float trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
     float trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
+
+    // check that the track is extrapolated to either EMB2 or EME2
+    // (if not then trk_eta = trk_phi = -999999999)
+    if (trk_etaEMB2 > 4.0 && trk_etaEME2 > 4.0) { 
+      continue;
+    }
 
     m_trk_etaID_noiso->Fill(trk_etaID, eventWeight);
     m_trk_etaEMB2_noiso->Fill(trk_etaEMB2, eventWeight);
@@ -199,44 +212,40 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
 
         float trk2_etaID  = trk2->eta();
         float trk2_phiID  = trk2->phi();
-        float trk_trk2_dEta_ID = TMath::Abs(trk2_etaID - trk_etaID);
-        float trk_trk2_dPhi_ID = TMath::Abs(trk2_phiID - trk_phiID);
-        if (trk_trk2_dPhi_ID > TMath::Pi())
-          trk_trk2_dPhi_ID = 2*TMath::Pi() - trk_trk2_dPhi_ID;
-        float trk_trk2_dR_ID = sqrt( pow(trk_trk2_dEta_ID, 2) + pow(trk_trk2_dPhi_ID, 2) );
-
+        float trk_trk2_dR_ID = deltaR(trk_etaID, trk_phiID, trk2_etaID, trk2_phiID);
         m_trk_trk2_dR_ID -> Fill(trk_trk2_dR_ID, eventWeight);
         m_trk_trk2_dR_ID_vs_trk_p -> Fill(trk_p, trk_trk2_dR_ID, eventWeight);
 
-        // tracks extrapolated to EMB2
-        float trk_trk2_dR_EMB2 = 1e8; // initialize to a large value, in case there is no extrapolation
+        //EMB2
         float trk2_etaEMB2 = trk2->auxdata<float>("CALO_trkEta_EMB2");
         float trk2_phiEMB2 = trk2->auxdata<float>("CALO_trkPhi_EMB2");
-        if (TMath::Abs(trk_etaEMB2) < 4.0 && TMath::Abs(trk2_etaEMB2) < 4.0) {
-          float trk_trk2_dEta_EMB2 = TMath::Abs(trk2_etaEMB2 - trk_etaEMB2);
-          float trk_trk2_dPhi_EMB2 = TMath::Abs(trk2_phiEMB2 - trk_phiEMB2);
-          if (trk_trk2_dPhi_EMB2 > TMath::Pi())
-            trk_trk2_dPhi_EMB2 = 2*TMath::Pi() - trk_trk2_dPhi_EMB2;
-          trk_trk2_dR_EMB2 = sqrt( pow(trk_trk2_dEta_EMB2, 2) + pow(trk_trk2_dPhi_EMB2, 2) );
-        } 
-
-        m_trk_trk2_dR_EMB2 -> Fill(trk_trk2_dR_EMB2, eventWeight);
-        m_trk_trk2_dR_EMB2_vs_trk_p -> Fill(trk_p, trk_trk2_dR_EMB2, eventWeight);
-
-        // tracks extrapolated to EME2
-        float trk_trk2_dR_EME2 = 1e8; // initialize to a large value, in case there is no extrapolation
+        //EME2
         float trk2_etaEME2 = trk2->auxdata<float>("CALO_trkEta_EME2");
         float trk2_phiEME2 = trk2->auxdata<float>("CALO_trkPhi_EME2");
-        if (TMath::Abs(trk_etaEME2) < 4.0 && TMath::Abs(trk2_etaEME2) < 4.0) {
-          float trk_trk2_dEta_EME2 = TMath::Abs(trk2_etaEME2 - trk_etaEME2);
-          float trk_trk2_dPhi_EME2 = TMath::Abs(trk2_phiEME2 - trk_phiEME2);
-          if (trk_trk2_dPhi_EME2 > TMath::Pi())
-            trk_trk2_dPhi_EME2 = 2*TMath::Pi() - trk_trk2_dPhi_EME2;
-          trk_trk2_dR_EME2 = sqrt( pow(trk_trk2_dEta_EME2, 2) + pow(trk_trk2_dPhi_EME2, 2) );
-        } 
 
-        m_trk_trk2_dR_EME2 -> Fill(trk_trk2_dR_EME2, eventWeight);
-        m_trk_trk2_dR_EME2_vs_trk_p -> Fill(trk_p, trk_trk2_dR_EME2, eventWeight);
+        float trk_trk2_dR[4] = {};
+        trk_trk2_dR[0] = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEMB2, trk2_phiEMB2);
+        trk_trk2_dR[1] = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEME2, trk2_phiEME2);
+        trk_trk2_dR[2] = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEMB2, trk2_phiEMB2);
+        trk_trk2_dR[3] = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEME2, trk2_phiEME2);
+
+        float trk_trk2_dR_min = trk_trk2_dR[0];
+        for (int i = 1; i < 4; ++i) {
+          if (trk_trk2_dR[i] < trk_trk2_dR_min)
+            trk_trk2_dR_min = trk_trk2_dR[i];
+        }
+
+        m_trk_trk2_dR_EMB2 -> Fill(trk_trk2_dR[0], eventWeight);
+        m_trk_trk2_dR_EMB2_vs_trk_p -> Fill(trk_p, trk_trk2_dR[0], eventWeight);
+
+        m_trk_trk2_dR_EME2 -> Fill(trk_trk2_dR[3], eventWeight);
+        m_trk_trk2_dR_EME2_vs_trk_p -> Fill(trk_p, trk_trk2_dR[3], eventWeight);
+
+        m_trk_trk2_dR_EMB2_EME2 -> Fill(trk_trk2_dR[1], eventWeight);
+        m_trk_trk2_dR_EMB2_EME2_vs_trk_p -> Fill(trk_p, trk_trk2_dR[1], eventWeight);
+
+        m_trk_trk2_dR_EME2_EMB2 -> Fill(trk_trk2_dR[2], eventWeight);
+        m_trk_trk2_dR_EME2_EMB2_vs_trk_p -> Fill(trk_p, trk_trk2_dR[2], eventWeight);
 
         // count the number of track wihin a given radius
         for (int i = 0; i < 10; ++i) {
@@ -246,7 +255,7 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
         }
 
         // track isolation
-        if (trk_trk2_dR_EMB2 < m_trkIsoDRmax || trk_trk2_dR_EME2 < m_trkIsoDRmax) { // check if trk2 falls within DRmax of trk 
+        if (trk_trk2_dR_min < m_trkIsoDRmax) { // check if trk2 falls within DRmax of trk 
 
           // calculate the leading and avg p of the surrounding tracks
           if (TMath::Abs(trk2->qOverP())>0.) trk2_p = (1./TMath::Abs(trk2->qOverP()))/1e3; 
@@ -300,4 +309,13 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
   m_mu_avg_vs_trk_n_nocut -> Fill(trk_n, mu_avg, eventWeight);
 
   return StatusCode::SUCCESS;
+}
+
+float EoverPHistsTrks::deltaR (float trk_eta, float trk_phi, float trk2_eta, float trk2_phi)
+{
+  float trk_trk2_dEta = TMath::Abs(trk2_eta - trk_eta);
+  float trk_trk2_dPhi = TMath::Abs(trk2_phi - trk_phi);
+  if (trk_trk2_dPhi > TMath::Pi())
+    trk_trk2_dPhi = 2*TMath::Pi() - trk_trk2_dPhi;
+  return sqrt( pow(trk_trk2_dEta, 2) + pow(trk_trk2_dPhi, 2) );
 }

@@ -25,6 +25,8 @@ ClassImp(EoverPAnalysis)
     m_ptHist(nullptr),
     // number of tracks per event, after each selection
     m_trk_n_all(nullptr),
+    m_trk_n_pass_extrapol(nullptr),
+    m_trk_n_pass_iso(nullptr),
     m_trk_n_pass_p(nullptr),
     m_trk_n_pass_pG500(nullptr),
     m_trk_n_pass_pG800(nullptr),
@@ -36,7 +38,6 @@ ClassImp(EoverPAnalysis)
     m_trk_n_pass_etaL06(nullptr),
     m_trk_n_pass_etaG06L15(nullptr),
     m_trk_n_pass_etaG15L23(nullptr),
-    m_trk_n_pass_iso(nullptr),
     m_trk_n_pass_larEmax(nullptr),
     m_trk_n_pass_tileEfrac(nullptr),
     // main histograms
@@ -105,7 +106,7 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   }
 
   // declare class and add histograms to output
-  m_plots_eop = new EoverPHists(m_name, m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+  m_plots_eop = new EoverPHists(m_name, m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
   RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop -> initialize(), "");
   m_plots_eop -> record( wk() );
 
@@ -118,14 +119,14 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
 
   if (m_doGlobalTileEfracRanges) {
 
-    m_plots_eop_TileEfrac000 = new EoverPHists(m_name+"_TileEfrac000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_TileEfrac010 = new EoverPHists(m_name+"_TileEfrac010", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_TileEfrac030 = new EoverPHists(m_name+"_TileEfrac030", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_TileEfrac050 = new EoverPHists(m_name+"_TileEfrac050", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_TileEfrac060 = new EoverPHists(m_name+"_TileEfrac060", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_TileEfrac070 = new EoverPHists(m_name+"_TileEfrac070", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_TileEfrac075 = new EoverPHists(m_name+"_TileEfrac075", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_TileEfrac080 = new EoverPHists(m_name+"_TileEfrac080", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_TileEfrac000 = new EoverPHists(m_name+"_TileEfrac000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_TileEfrac010 = new EoverPHists(m_name+"_TileEfrac010", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_TileEfrac030 = new EoverPHists(m_name+"_TileEfrac030", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_TileEfrac050 = new EoverPHists(m_name+"_TileEfrac050", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_TileEfrac060 = new EoverPHists(m_name+"_TileEfrac060", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_TileEfrac070 = new EoverPHists(m_name+"_TileEfrac070", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_TileEfrac075 = new EoverPHists(m_name+"_TileEfrac075", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_TileEfrac080 = new EoverPHists(m_name+"_TileEfrac080", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
 
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_TileEfrac000 -> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_TileEfrac010 -> initialize(), "");
@@ -148,10 +149,10 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
 
   if (m_doGlobalEnergyRanges) {
 
-    m_plots_eop_pL4000 = new EoverPHists(m_name+"_pL4000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_pG4000L8000 = new EoverPHists(m_name+"_pG4000L8000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_pG8000L12000 = new EoverPHists(m_name+"_pG8000L12000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_pG12000 = new EoverPHists(m_name+"_pG12000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_pL4000 = new EoverPHists(m_name+"_pL4000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_pG4000L8000 = new EoverPHists(m_name+"_pG4000L8000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_pG8000L12000 = new EoverPHists(m_name+"_pG8000L12000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_pG12000 = new EoverPHists(m_name+"_pG12000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
 
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pL4000 -> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG4000L8000 -> initialize(), "");
@@ -167,9 +168,9 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
 
   if (m_doGlobalEtaRanges) {
 
-    m_plots_eop_etaL05 = new EoverPHists(m_name+"_etaL05", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_etaG05L07 = new EoverPHists(m_name+"_etaG05L07", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
-    m_plots_eop_etaG07 = new EoverPHists(m_name+"_etaG07", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_etaL05 = new EoverPHists(m_name+"_etaL05", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_etaG05L07 = new EoverPHists(m_name+"_etaG05L07", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
+    m_plots_eop_etaG07 = new EoverPHists(m_name+"_etaG07", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, m_doExtraEtaEnergyBinHists);
 
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaL05 -> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_etaG05L07 -> initialize(), "");
@@ -182,21 +183,21 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   }
 
   if (m_doGlobalExtraRanges) {
-    m_plots_eop_pG1200L1800 = new EoverPHists(m_name+"_pG1200L1800", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_pG1800L2200 = new EoverPHists(m_name+"_pG1800L2200", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_pG2200L2800 = new EoverPHists(m_name+"_pG2200L2800", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_pG2800L3400 = new EoverPHists(m_name+"_pG2800L3400", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_pG3400L4200 = new EoverPHists(m_name+"_pG3400L4200", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_pG4200L5000 = new EoverPHists(m_name+"_pG4200L5000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaL06_pG2200L4200 = new EoverPHists(m_name+"_etaL06_pG2200L4200", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaL06_pG4200L50000 = new EoverPHists(m_name+"_etaL06_pG4200L50000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaL06 = new EoverPHists(m_name+"_etaL06", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaG06L11 = new EoverPHists(m_name+"_etaG06L11", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaG11L14 = new EoverPHists(m_name+"_etaG11L14", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaG14L15 = new EoverPHists(m_name+"_etaG14L15", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaG15L18 = new EoverPHists(m_name+"_etaG15L18", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaG18L19 = new EoverPHists(m_name+"_etaG18L19", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
-    m_plots_eop_etaG19L25 = new EoverPHists(m_name+"_etaG19L25", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Ebins, m_doEbinsArray, m_EbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_pG1200L1800 = new EoverPHists(m_name+"_pG1200L1800", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_pG1800L2200 = new EoverPHists(m_name+"_pG1800L2200", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_pG2200L2800 = new EoverPHists(m_name+"_pG2200L2800", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_pG2800L3400 = new EoverPHists(m_name+"_pG2800L3400", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_pG3400L4200 = new EoverPHists(m_name+"_pG3400L4200", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_pG4200L5000 = new EoverPHists(m_name+"_pG4200L5000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaL06_pG2200L4200 = new EoverPHists(m_name+"_etaL06_pG2200L4200", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaL06_pG4200L50000 = new EoverPHists(m_name+"_etaL06_pG4200L50000", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaL06 = new EoverPHists(m_name+"_etaL06", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaG06L11 = new EoverPHists(m_name+"_etaG06L11", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaG11L14 = new EoverPHists(m_name+"_etaG11L14", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaG14L15 = new EoverPHists(m_name+"_etaG14L15", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaG15L18 = new EoverPHists(m_name+"_etaG15L18", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaG18L19 = new EoverPHists(m_name+"_etaG18L19", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
+    m_plots_eop_etaG19L25 = new EoverPHists(m_name+"_etaG19L25", m_detailStr, m_energyCalib, m_doCaloTotal, m_doCaloEM, m_doCaloHAD, m_doBgSubtr, m_doTileLayer, m_Pbins, m_doPbinsArray, m_PbinsArray, m_Etabins, m_doEtabinsArray, m_EtabinsArray, false);
 
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG1200L1800-> initialize(), "");
     RETURN_CHECK("TrackHistsAlgo::histInitialize()", m_plots_eop_pG1800L2200-> initialize(), "");
@@ -245,6 +246,8 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
 
   int nBinsTrkN = 200; float minTrkN = -0.5; float maxTrkN = 199.5;
   m_trk_n_all = new TH1D((std::string(m_name+"/trk_n_all")).c_str(), "trk_n_all", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_extrapol = new TH1D((std::string(m_name+"/trk_n_pass_extrapol")).c_str(), "trk_n_pass_extrapol", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_iso = new TH1D((std::string(m_name+"/trk_n_pass_iso")).c_str(), "trk_n_pass_iso", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_p = new TH1D((std::string(m_name+"/trk_n_pass_p")).c_str(), "trk_n_pass_p", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_pG500 = new TH1D((std::string(m_name+"/trk_n_pass_pG500")).c_str(), "trk_n_pass_pG500", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_pG800 = new TH1D((std::string(m_name+"/trk_n_pass_pG800")).c_str(), "trk_n_pass_pG800", nBinsTrkN, minTrkN, maxTrkN); 
@@ -256,10 +259,11 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   m_trk_n_pass_etaL06 = new TH1D((std::string(m_name+"/trk_n_pass_etaL06")).c_str(), "trk_n_pass_etaL06", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_etaG06L15 = new TH1D((std::string(m_name+"/trk_n_pass_etaG06L15")).c_str(), "trk_n_pass_etaG06L15", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_etaG15L23 = new TH1D((std::string(m_name+"/trk_n_pass_etaG15L23")).c_str(), "trk_n_pass_etaG15L23", nBinsTrkN, minTrkN, maxTrkN); 
-  m_trk_n_pass_iso = new TH1D((std::string(m_name+"/trk_n_pass_iso")).c_str(), "trk_n_pass_iso", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_larEmax = new TH1D((std::string(m_name+"/trk_n_pass_larEmax")).c_str(), "trk_n_pass_larEmax", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_tileEfrac = new TH1D((std::string(m_name+"/trk_n_pass_tileEfrac")).c_str(), "trk_n_pass_tileEfrac", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_all->GetXaxis()->SetTitle("N_trks");
+  m_trk_n_pass_extrapol->GetXaxis()->SetTitle("N_trks");
+  m_trk_n_pass_iso->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_p->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_pG500->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_pG800->GetXaxis()->SetTitle("N_trks");
@@ -271,11 +275,12 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   m_trk_n_pass_etaL06->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_etaG06L15->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_etaG15L23->GetXaxis()->SetTitle("N_trks");
-  m_trk_n_pass_iso->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_larEmax->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_tileEfrac->GetXaxis()->SetTitle("N_trks");
 
   wk()->addOutput(m_trk_n_all);
+  wk()->addOutput(m_trk_n_pass_extrapol);
+  wk()->addOutput(m_trk_n_pass_iso);
   wk()->addOutput(m_trk_n_pass_p);
   wk()->addOutput(m_trk_n_pass_pG500);
   wk()->addOutput(m_trk_n_pass_pG800);
@@ -287,7 +292,6 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   wk()->addOutput(m_trk_n_pass_etaL06);
   wk()->addOutput(m_trk_n_pass_etaG06L15);
   wk()->addOutput(m_trk_n_pass_etaG15L23);
-  wk()->addOutput(m_trk_n_pass_iso);
   wk()->addOutput(m_trk_n_pass_larEmax);
   wk()->addOutput(m_trk_n_pass_tileEfrac);
 
@@ -312,6 +316,7 @@ EL::StatusCode EoverPAnalysis :: initialize ()
     // retrieve the object cutflow
     m_trk_cutflowHist_1  = (TH1D*)file->Get("cutflow_trks_1");
     m_trk_cutflow_eop_all_bin = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop all");
+    m_trk_cutflow_eop_extrapol_bin = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop pass trk extrapol");
     m_trk_cutflow_eop_pass_iso_bin  = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop pass trk iso");
     m_trk_cutflow_eop_pass_p_bin = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop pass trk p cuts");
     m_trk_cutflow_eop_pass_eta_bin = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop pass trk eta cuts");
@@ -337,9 +342,10 @@ EL::StatusCode EoverPAnalysis :: initialize ()
   m_weightNumEventPass = 0;
 
   m_trk_cutflow_eop_all = 0;
+  m_trk_cutflow_eop_extrapol = 0;
+  m_trk_cutflow_eop_pass_iso = 0;
   m_trk_cutflow_eop_pass_p = 0;
   m_trk_cutflow_eop_pass_eta = 0;
-  m_trk_cutflow_eop_pass_iso = 0;
   m_trk_cutflow_eop_pass_larEmax = 0;
   m_trk_cutflow_eop_pass_tileEfrac = 0;
 
@@ -383,6 +389,8 @@ EL::StatusCode EoverPAnalysis :: execute ()
   if (mu_avg < m_mu_avg_min || mu_avg >= m_mu_avg_max) return EL::StatusCode::SUCCESS;
 
   m_trk_n_all_tmp = 0;
+  m_trk_n_pass_extrapol_tmp = 0;
+  m_trk_n_pass_iso_tmp = 0;
   m_trk_n_pass_p_tmp = 0;
   m_trk_n_pass_pG500_tmp = 0;
   m_trk_n_pass_pG800_tmp = 0;
@@ -394,7 +402,6 @@ EL::StatusCode EoverPAnalysis :: execute ()
   m_trk_n_pass_etaL06_tmp = 0;
   m_trk_n_pass_etaG06L15_tmp = 0;
   m_trk_n_pass_etaG15L23_tmp = 0;
-  m_trk_n_pass_iso_tmp = 0;
   m_trk_n_pass_larEmax_tmp = 0;
   m_trk_n_pass_tileEfrac_tmp = 0;
 
@@ -427,10 +434,21 @@ EL::StatusCode EoverPAnalysis :: execute ()
     float trk_etaID = trk->eta();
     float trk_phiID = trk->phi();
     // coordinates of the track extrapolated to the calorimeter
+    // EMB2
     float trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
     float trk_phiEMB2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
+    //EME2
     float trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
     float trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
+
+    // check that the track is extrapolated to either EMB2 or EME2
+    // (if not then trk_eta = trk_phi = -999999999)
+    if (trk_etaEMB2 > 4.0 && trk_etaEME2 > 4.0) { 
+      continue;
+    }
+
+    m_trk_cutflow_eop_extrapol++;
+    m_trk_n_pass_extrapol_tmp++;
 
     // track isolation: p(cone of DR='m_trkIsoDRmax')/p(track) < 'm_trkIsoPfrac' 
     float surr_trk_sum_p = 0.;
@@ -438,33 +456,28 @@ EL::StatusCode EoverPAnalysis :: execute ()
     for( ; trk2_itr != trk2_end; ++trk2_itr ) {
       if (trk_itr != trk2_itr) { // do not double count the selected track 
         const xAOD::TrackParticle* trk2 = (*trk2_itr);
-        
-        // tracks extrapolated to EMB2
-        float trk_trk2_dR_EMB2 = 1e8; // initialize to a large value, in case there is no extrapolation
+        //EMB2
         float trk2_etaEMB2 = trk2->auxdata<float>("CALO_trkEta_EMB2");
         float trk2_phiEMB2 = trk2->auxdata<float>("CALO_trkPhi_EMB2");
-        if (TMath::Abs(trk_etaEMB2) < 4.0 && TMath::Abs(trk2_etaEMB2) < 4.0) {
-          float trk_trk2_dEta_EMB2 = TMath::Abs(trk2_etaEMB2 - trk_etaEMB2);
-          float trk_trk2_dPhi_EMB2 = TMath::Abs(trk2_phiEMB2 - trk_phiEMB2);
-          if (trk_trk2_dPhi_EMB2 > TMath::Pi())
-            trk_trk2_dPhi_EMB2 = 2*TMath::Pi() - trk_trk2_dPhi_EMB2;
-          trk_trk2_dR_EMB2 = sqrt( pow(trk_trk2_dEta_EMB2, 2) + pow(trk_trk2_dPhi_EMB2, 2) );
-        }
-
-        // tracks extrapolated to EME2
-        float trk_trk2_dR_EME2 = 1e8; // initialize to a large value, in case there is no extrapolation
+        //EME2
         float trk2_etaEME2 = trk2->auxdata<float>("CALO_trkEta_EME2");
         float trk2_phiEME2 = trk2->auxdata<float>("CALO_trkPhi_EME2");
-        if (TMath::Abs(trk_etaEME2) < 4.0 && TMath::Abs(trk2_etaEME2) < 4.0) {
-          float trk_trk2_dEta_EME2 = TMath::Abs(trk2_etaEME2 - trk_etaEME2);
-          float trk_trk2_dPhi_EME2 = TMath::Abs(trk2_phiEME2 - trk_phiEME2);
-          if (trk_trk2_dPhi_EME2 > TMath::Pi())
-            trk_trk2_dPhi_EME2 = 2*TMath::Pi() - trk_trk2_dPhi_EME2;
-          trk_trk2_dR_EME2 = sqrt( pow(trk_trk2_dEta_EME2, 2) + pow(trk_trk2_dPhi_EME2, 2) );
-        } 
+        
+        // Calculate all possible permutations of dR between tracks extrapolated to EMB2 or EME2
+        float trk_trk2_dR[4] = {};
+        trk_trk2_dR[0] = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEMB2, trk2_phiEMB2);
+        trk_trk2_dR[1] = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEME2, trk2_phiEME2);
+        trk_trk2_dR[2] = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEMB2, trk2_phiEMB2);
+        trk_trk2_dR[3] = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEME2, trk2_phiEME2);
+
+        float trk_trk2_dR_min = trk_trk2_dR[0];
+        for (int i = 1; i < 4; ++i) {
+          if (trk_trk2_dR[i] < trk_trk2_dR_min)
+            trk_trk2_dR_min = trk_trk2_dR[i];
+        }
 
         // track isolation - check if trk2 falls within DRmax of trk
-        if (trk_trk2_dR_EMB2 < m_trkIsoDRmax || trk_trk2_dR_EME2 < m_trkIsoDRmax) {  
+        if (trk_trk2_dR_min < m_trkIsoDRmax) {  
           // calculate the leading and avg p of the surrounding tracks
           if (TMath::Abs(trk2->qOverP())>0.) surr_trk_sum_p += (1./TMath::Abs(trk2->qOverP()))/1e3; 
         }
@@ -648,6 +661,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
   m_weightNumEventPass += eventWeight;
 
   m_trk_n_all->Fill(m_trk_n_all_tmp, eventWeight);
+  m_trk_n_pass_extrapol->Fill(m_trk_n_pass_extrapol_tmp, eventWeight);
   m_trk_n_pass_iso->Fill(m_trk_n_pass_iso_tmp, eventWeight);
   m_trk_n_pass_p->Fill(m_trk_n_pass_p_tmp, eventWeight);
   m_trk_n_pass_pG500->Fill(m_trk_n_pass_pG500_tmp, eventWeight);
@@ -676,6 +690,7 @@ EL::StatusCode EoverPAnalysis :: finalize () {
     m_cutflowHistW->SetBinContent( m_cutflow_bin, m_weightNumEventPass  );
 
     m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_all_bin, m_trk_cutflow_eop_all );
+    m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_extrapol_bin, m_trk_cutflow_eop_extrapol );
     m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_pass_iso_bin, m_trk_cutflow_eop_pass_iso );
     m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_pass_p_bin, m_trk_cutflow_eop_pass_p );
     m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_pass_eta_bin, m_trk_cutflow_eop_pass_eta );
@@ -690,6 +705,7 @@ EL::StatusCode EoverPAnalysis :: finalize () {
 EL::StatusCode EoverPAnalysis :: histFinalize ()
 {
   m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_all_bin, m_trk_cutflow_eop_all );
+  m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_extrapol_bin, m_trk_cutflow_eop_extrapol );
   m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_pass_iso_bin, m_trk_cutflow_eop_pass_iso );
   m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_pass_p_bin, m_trk_cutflow_eop_pass_p );
   m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_pass_eta_bin, m_trk_cutflow_eop_pass_eta );
@@ -736,4 +752,13 @@ EL::StatusCode EoverPAnalysis :: histFinalize ()
 
   RETURN_CHECK("xAH::Algorithm::algFinalize()", xAH::Algorithm::algFinalize(), "");
   return EL::StatusCode::SUCCESS;
+}
+
+float EoverPAnalysis :: deltaR (float trk_eta, float trk_phi, float trk2_eta, float trk2_phi)
+{
+  float trk_trk2_dEta = TMath::Abs(trk2_eta - trk_eta);
+  float trk_trk2_dPhi = TMath::Abs(trk2_phi - trk_phi);
+  if (trk_trk2_dPhi > TMath::Pi())
+    trk_trk2_dPhi = 2*TMath::Pi() - trk_trk2_dPhi;
+  return sqrt( pow(trk_trk2_dEta, 2) + pow(trk_trk2_dPhi, 2) );
 }

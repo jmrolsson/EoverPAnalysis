@@ -12,7 +12,7 @@ trks_loose = trks+"LoosePrimary"
 trks_loose_ntrtG20 = trks+"LoosePrimary_nTRTG20"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
-do_trkPtRewighting = True
+do_trkPtRewighting = False
 
 eta_bins_runII_general = ".0, .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3"
 # OLD  p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30., 40., 50., 100., 200., 1000., 10000."
@@ -39,9 +39,9 @@ p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.4, 4.2, 5., 6., 7., 9., 12
 #                            "m_doTileCuts": False,
 #                            "m_LarEmax": 1e8,
 #                            "m_TileEfracmin": -1,
-#                            "m_Ebins": "500, 0., 50",
-#                            "m_doEbinsArray": True,
-#                            "m_EbinsArray": p_bins_runII_general,
+#                            "m_Pbins": "500, 0, 50",
+#                            "m_doPbinsArray": True,
+#                            "m_PbinsArray": p_bins_runII_general,
 #                            "m_Etabins": "50, 0., 2.5",
 #                            "m_doEtabinsArray": True,
 #                            "m_EtabinsArray": eta_bins_runII_general,
@@ -194,13 +194,13 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doTrkEtacut": True,
                                 "m_trkEtamin": 0.,
                                 "m_trkEtamax": 1e8,
-                                "m_doTrkPtReweighting": do_trkPtRewighting,
+                                "m_doTrkPtReweighting": False,
                                 "m_doTileCuts": False,
                                 "m_LarEmax": 1e8,
                                 "m_TileEfracmin": -1,
-                                "m_Ebins": "500, 0., 50",
-                                "m_doEbinsArray": True,
-                                "m_EbinsArray": p_bins_runII_general,
+                                "m_Pbins": "500, 0, 50",
+                                "m_doPbinsArray": True,
+                                "m_PbinsArray": p_bins_runII_general,
                                 "m_Etabins": "50, 0., 2.5",
                                 "m_doEtabinsArray": True,
                                 "m_EtabinsArray": eta_bins_runII_general,
