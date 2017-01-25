@@ -12,6 +12,7 @@ trks_loose = trks+"LoosePrimary"
 trks_loose_ntrtG20 = trks+"LoosePrimary_nTRTG20"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
+do_trkPtRewighting = False
 
 eta_bins_runII_general = ".0, .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3"
 # OLD  p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30., 40., 50., 100., 200., 1000., 10000."
@@ -55,15 +56,18 @@ p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.4, 4.2, 5., 6., 7., 9., 12
 
 ''' Set up all the algorithms '''
 c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
-                                 "m_applyGRLCut": True,
-                                 "m_GRLxml": "$ROOTCOREBIN/data/EoverPAnalysis/data15_13TeV.periodB1_DetStatus-v62-pro18_DQDefects-00-01-02_PHYS_StandardModel_MinimuBias2010.xml",
-                                 "m_doPUreweighting": False,
+                                 "m_applyGRLCut": False,
+                                 "m_doPUreweighting": True,
+                                 # "m_doCustomPUreweighting": False,
+                                 # "m_PRWHistName": "pileup_chan361021_run284500",
+                                 "m_PRWFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/group.phys-susy.PRW.mc15c.3_METADATA.merged.root",
+                                 "m_lumiCalcFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/ilumicalc_histograms_HLT_noalg_zb_L1ZB_276262-284484_OflLumi-13TeV-005.root",
+                                 "m_useMetaData" : True,
                                  "m_applyPrimaryVertexCut": True,
-                                 "m_PVNTrack": 2,
                                  "m_applyEventCleaningCut": True,
-                                 "m_applyCoreFlagsCut": True,
-                                 "m_applyTriggerCut": True,
-                                 "m_triggerSelection": "HLT_noalg_mb_L1MBTS_1",
+                                 "m_applyCoreFlagsCut": False,
+                                 "m_applyTriggerCut": False,
+                                 "m_PVNTrack": 2,
                                  "m_useMetaData": False,
                                  "m_checkDuplicatesData": False,
                                  "m_checkDuplicatesMC": False})
@@ -195,7 +199,7 @@ for energy_calib in ["ClusterEnergy"]:
                                 "m_doTrkEtacut": True,
                                 "m_trkEtamin": 0.,
                                 "m_trkEtamax": 1e8,
-                                "m_doTrkPtReweighting": False,
+                                "m_doTrkPtReweighting": do_trkPtRewighting,
                                 "m_doTileCuts": False,
                                 "m_LarEmax": 1e8,
                                 "m_TileEfracmin": -1,

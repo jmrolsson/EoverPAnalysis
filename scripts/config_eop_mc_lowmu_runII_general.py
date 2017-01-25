@@ -169,8 +169,8 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimary",
 
 #### Make E/p plots
 
-for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
-# for energy_calib in ["ClusterEnergy"]:
+# for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
+for energy_calib in ["ClusterEnergy"]:
 
     if energy_calib == "ClusterEnergy":
         useCutFlow = True
@@ -194,7 +194,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doTrkEtacut": True,
                                 "m_trkEtamin": 0.,
                                 "m_trkEtamax": 1e8,
-                                "m_doTrkPtReweighting": False,
+                                "m_doTrkPtReweighting": do_trkPtRewighting,
                                 "m_doTileCuts": False,
                                 "m_LarEmax": 1e8,
                                 "m_TileEfracmin": -1,
