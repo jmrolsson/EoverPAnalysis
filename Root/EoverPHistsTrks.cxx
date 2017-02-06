@@ -173,7 +173,7 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
 
     // check that the track is extrapolated to either EMB2 or EME2
     // (if not then trk_eta = trk_phi = -999999999)
-    if (trk_etaEMB2 > 4.0 && trk_etaEME2 > 4.0) { 
+    if (TMath::Abs(trk_etaEMB2) > 100.0 && TMath::Abs(trk_etaEME2) > 100.0) { 
       continue;
     }
 
@@ -223,10 +223,12 @@ StatusCode EoverPHistsTrks::execute( const xAOD::TrackParticleContainer* trks, c
         float trk2_etaEME2 = trk2->auxdata<float>("CALO_trkEta_EME2");
         float trk2_phiEME2 = trk2->auxdata<float>("CALO_trkPhi_EME2");
 
-        float trk_trk2_dR[4] = {};
+        // Calculate all possible permutations of dR between tracks extrapolated to EMB2 or EME2
+        // Modification: skip the case when one track is on EMB2 and the other in EME2
+        float trk_trk2_dR[4] = {1e8, 1e8, 1e8, 1e8};
         trk_trk2_dR[0] = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEMB2, trk2_phiEMB2);
-        trk_trk2_dR[1] = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEME2, trk2_phiEME2);
-        trk_trk2_dR[2] = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEMB2, trk2_phiEMB2);
+        // trk_trk2_dR[1] = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEME2, trk2_phiEME2);
+        // trk_trk2_dR[2] = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEMB2, trk2_phiEMB2);
         trk_trk2_dR[3] = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEME2, trk2_phiEME2);
 
         float trk_trk2_dR_min = trk_trk2_dR[0];

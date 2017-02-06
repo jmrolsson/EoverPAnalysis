@@ -73,6 +73,8 @@ class EoverPHists : public HistogramManager
     TH1F* m_trk_phi_extra; //!
     TH1F* m_trk_phi_extra2; //!
     TH2F* m_trk_p_vs_eta; //!
+    TH2F* m_trk_p_vs_etaEMB2; //!
+    TH2F* m_trk_p_vs_etaEME2; //!
     TH2F* m_trk_p_vs_eta_array; //!
 
     TH1F* m_trk_d0;
@@ -91,6 +93,8 @@ class EoverPHists : public HistogramManager
     TH1F* m_trk_nPixDead; //!
     TH1F* m_trk_nBL; //!
     TH1F* m_trk_nTRT; //!
+    TH2F* m_trk_nTRT_vs_p; //!
+    TH2F* m_trk_nTRT_vs_eta; //!
 
     TH1F* m_trk_DR_EMB2_ID; //!
     TH1F* m_trk_DEta_EMB2_ID; //!

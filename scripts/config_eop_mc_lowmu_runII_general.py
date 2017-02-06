@@ -12,7 +12,10 @@ trks_loose = trks+"LoosePrimary"
 trks_loose_ntrtG20 = trks+"LoosePrimary_nTRTG20"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
-do_trkPtRewighting = False
+
+# track pt reweighing (MC to data)
+do_trkPtRewighting = True
+trkPtReweightingFile = "pt_reweighting_runII_general.root"
 
 eta_bins_runII_general = ".0, .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3"
 # OLD  p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30., 40., 50., 100., 200., 1000., 10000."
@@ -170,7 +173,46 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimary",
 #### Make E/p plots
 
 # for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
-for energy_calib in ["ClusterEnergy"]:
+for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW"]:
+# for energy_calib in ["ClusterEnergy"]:
+
+    # # E/p for comparisons with the Run 1 paper
+    # ''' E/p histograms with LoosePrimary track selection'''
+    # c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_"+energy_calib+"_Run1paper_noTrkIsolation",
+    #                             "m_inTrackContainerName": trks_loose,
+    #                             "m_energyCalib": energy_calib, # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
+    #                             "m_doCaloTotal": True,
+    #                             "m_doCaloEM": True,
+    #                             "m_doCaloHAD": True,
+    #                             "m_doBgSubtr" : True,
+    #                             "m_doTileLayer": False,
+    #                             "m_trkIsoDRmax": .0,
+    #                             "m_trkIsoPfrac": 0.,
+    #                             "m_doTrkPcut": True,
+    #                             "m_trkPmin": 0.,
+    #                             "m_trkPmax": 1e8,
+    #                             "m_doTrkEtacut": True,
+    #                             "m_trkEtamin": 0.,
+    #                             "m_trkEtamax": 1e8,
+    #                             "m_doTrkPtReweighting": False,
+    #                             "m_doTileCuts": False,
+    #                             "m_LarEmax": 1e8,
+    #                             "m_TileEfracmin": -1,
+    #                             "m_Pbins": "500, 0, 50",
+    #                             "m_doPbinsArray": True,
+    #                             "m_PbinsArray": p_bins_runII_general,
+    #                             "m_Etabins": "50, 0., 2.5",
+    #                             "m_doEtabinsArray": True,
+    #                             "m_EtabinsArray": eta_bins_runII_general,
+    #                             "m_doExtraEtaEnergyBinHists": True,
+    #                             "m_doGlobalTileEfracRanges": False,
+    #                             "m_doGlobalEnergyRanges": False,
+    #                             "m_doGlobalEtaRanges": False,
+    #                             "m_doGlobalExtraRanges": False,
+    #                             "m_detailStr": "all",
+    #                             "m_useCutFlow": False,
+    #                             "m_debug": False})
+
 
     if energy_calib == "ClusterEnergy":
         useCutFlow = True
@@ -195,6 +237,7 @@ for energy_calib in ["ClusterEnergy"]:
                                 "m_trkEtamin": 0.,
                                 "m_trkEtamax": 1e8,
                                 "m_doTrkPtReweighting": do_trkPtRewighting,
+                                "m_trkPtReweightingFile": trkPtReweightingFile,
                                 "m_doTileCuts": False,
                                 "m_LarEmax": 1e8,
                                 "m_TileEfracmin": -1,
@@ -208,7 +251,7 @@ for energy_calib in ["ClusterEnergy"]:
                                 "m_doGlobalTileEfracRanges": False,
                                 "m_doGlobalEnergyRanges": False,
                                 "m_doGlobalEtaRanges": False,
-                                "m_doGlobalExtraRanges": False,
+                                # "m_doGlobalExtraRanges": True,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": useCutFlow,
                                 "m_debug": False})

@@ -44,8 +44,8 @@ StatusCode EoverPHists::initialize()
   std::vector<double> Pbins = str2vec(m_Pbins);
   if (Pbins.size() > 2) {
     nBinsP = (int) Pbins[0];
-    minE = (float) Pbins[1];
-    maxE = (float) Pbins[2];
+    minP = (float) Pbins[1];
+    maxP = (float) Pbins[2];
   }
 
   nPbinsArray = 0;
@@ -90,6 +90,8 @@ StatusCode EoverPHists::initialize()
   m_trk_phi_extra2 = book(m_name, "trk_phi_extra2", "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2); 
 
   m_trk_p_vs_eta = book(m_name, "trk_p_vs_eta", "#eta_{trk}", nBinsEta, minEta, maxEta, "p_{trk} [GeV]", nBinsP, minP, maxP); 
+  m_trk_p_vs_etaEMB2 = book(m_name, "trk_p_vs_etaEMB2", "#eta_{trk}", nBinsEta, minEta, maxEta, "p_{trk} [GeV]", nBinsP, minP, maxP); 
+  m_trk_p_vs_etaEME2 = book(m_name, "trk_p_vs_etaEME2", "#eta_{trk}", nBinsEta, minEta, maxEta, "p_{trk} [GeV]", nBinsP, minP, maxP); 
   if (m_doPbinsArray && m_doEtabinsArray) m_trk_p_vs_eta_array = book(m_name, "trk_p_vs_eta_pEtabinsArray", "#eta_{trk}", nEtabinsArray, &EtabinsArray[0], "p_{T,trk} [GeV]", nBinsP, minP, maxP); 
 
   m_trk_DR_EMB2_ID = book(m_name, std::string("trk_DR_EMB2_ID"), std::string("#Delta R_{trk}(EMB2, ID)"), nBinsDR, minDR, maxDR); 
@@ -109,14 +111,16 @@ StatusCode EoverPHists::initialize()
   m_trk_chi2Prob = book(m_name, "trk_chi2Prob", "chi2Prob", 100,   -0.01,     1.0);
   m_trk_charge = book(m_name, "trk_charge", "charge",   3,  -1.5,  1.5   );
 
-  m_trk_nSi        = book(m_name, "trk_nSi",        "nSi",         30,   -0.5, 29.5 );
-  m_trk_nSiAndDead = book(m_name, "trk_nSiAndDead", "nSi(+Dead)",  30,   -0.5, 29.5 );
-  m_trk_nSiDead    = book(m_name, "trk_nSiDead",    "nSiDead",     10,   -0.5,  9.5 );
-  m_trk_nSCT       = book(m_name, "trk_nSCT",       "nSCTHits",    20,   -0.5, 19.5 );
-  m_trk_nPix       = book(m_name, "trk_nPix",       "nPix",        10,   -0.5,  9.5 );
-  m_trk_nPixHoles  = book(m_name, "trk_nPixHoles",  "nPixHoles",   10,   -0.5,  9.5 );
-  m_trk_nBL        = book(m_name, "trk_nBL",        "nBL",          3,   -0.5,  2.5 );
-  m_trk_nTRT       = book(m_name, "trk_nTRT",       "nTRT",        50,   -0.5, 49.5 );
+  m_trk_nSi         = book(m_name, "trk_nSi",         "nSi",         30,   -0.5, 29.5 );
+  m_trk_nSiAndDead  = book(m_name, "trk_nSiAndDead",  "nSi(+Dead)",  30,   -0.5, 29.5 );
+  m_trk_nSiDead     = book(m_name, "trk_nSiDead",     "nSiDead",     10,   -0.5,  9.5 );
+  m_trk_nSCT        = book(m_name, "trk_nSCT",        "nSCTHits",    20,   -0.5, 19.5 );
+  m_trk_nPix        = book(m_name, "trk_nPix",        "nPix",        10,   -0.5,  9.5 );
+  m_trk_nPixHoles   = book(m_name, "trk_nPixHoles",   "nPixHoles",   10,   -0.5,  9.5 );
+  m_trk_nBL         = book(m_name, "trk_nBL",         "nBL",          3,   -0.5,  2.5 );
+  m_trk_nTRT        = book(m_name, "trk_nTRT",        "nTRT",        50,   -0.5, 49.5 );
+  m_trk_nTRT_vs_p   = book(m_name, "trk_nTRT_vs_p",   "p_{trk} [GeV]", nBinsP, minP, maxP, "nTRT", 50, -0.5, 49.5 );
+  m_trk_nTRT_vs_eta = book(m_name, "trk_nTRT_vs_eta", "#eta_{trk}", nBinsEta, minEta, maxEta, "nTRT", 50, -0.5, 49.5 );
 
   // Tile energy fractions
   m_trk_TileEfrac_100 = book (m_name, std::string("trk_"+m_energyCalib+"_TileEfrac_100"), "E(tile)/E(total)", 100, 0, 5.0); 
@@ -562,6 +566,8 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_phi_extra2 -> Fill(trk_phiID, eventWeight); 
 
   m_trk_p_vs_eta -> Fill(trk_etaID, trk_p, eventWeight); 
+  m_trk_p_vs_etaEMB2 -> Fill(trk_etaEMB2, trk_p, eventWeight); 
+  m_trk_p_vs_etaEME2 -> Fill(trk_etaEME2, trk_p, eventWeight); 
   if (m_doPbinsArray && m_doEtabinsArray) m_trk_p_vs_eta_array -> Fill(trk_etaID, trk_p, eventWeight); 
 
   m_trk_DR_EMB2_ID -> Fill(dR_EMB2_ID, eventWeight); 
@@ -606,14 +612,16 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
 
   uint8_t nSi     = nPix     + nSCT;
   uint8_t nSiDead = nPixDead + nSCTDead;
-  m_trk_nBL        -> Fill( nBL         , eventWeight );
-  m_trk_nSi        -> Fill( nSi         , eventWeight );
-  m_trk_nSiAndDead -> Fill( nSi+nSiDead , eventWeight );
-  m_trk_nSiDead    -> Fill( nSiDead     , eventWeight );
-  m_trk_nSCT       -> Fill( nSCT        , eventWeight );
-  m_trk_nPix       -> Fill( nPix        , eventWeight );
-  m_trk_nPixHoles  -> Fill( nPixHoles   , eventWeight );
-  m_trk_nTRT       -> Fill( nTRT        , eventWeight );
+  m_trk_nBL         -> Fill( nBL          , eventWeight );
+  m_trk_nSi         -> Fill( nSi          , eventWeight );
+  m_trk_nSiAndDead  -> Fill( nSi+nSiDead  , eventWeight );
+  m_trk_nSiDead     -> Fill( nSiDead      , eventWeight );
+  m_trk_nSCT        -> Fill( nSCT         , eventWeight );
+  m_trk_nPix        -> Fill( nPix         , eventWeight );
+  m_trk_nPixHoles   -> Fill( nPixHoles    , eventWeight );
+  m_trk_nTRT        -> Fill( nTRT         , eventWeight );
+  m_trk_nTRT_vs_p   -> Fill( trk_p,     nTRT, eventWeight );
+  m_trk_nTRT_vs_eta -> Fill( trk_etaID, nTRT, eventWeight );
 
   // cluster energy associated with the track
   float trk_E_Total_100_all = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_100"))/1e3; 
