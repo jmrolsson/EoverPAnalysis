@@ -181,7 +181,7 @@ EL::StatusCode TrackVertexSelection :: initialize ()
   //------------------------------------------------------
   m_trkSelection = new InDet::InDetTrackSelectionTool("TrackSelection");
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("CutLevel", m_cutLevel.c_str()), "failed to set CutLevel property");
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minPt", static_cast<double>(m_minPt)), "failed to set minPt property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minPt", static_cast<double>(m_minPt)*1000), "failed to set minPt property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxAbsEta", static_cast<double>(m_maxAbsEta)), "failed to set maxAbsEta property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxZ0SinTheta", static_cast<double>(m_maxZ0SinTheta)), "failed to set maxZ0SinTheta property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxD0", static_cast<double>(m_maxD0)), "failed to set maxD0 property");

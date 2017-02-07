@@ -26,6 +26,7 @@ ClassImp(EoverPAnalysis)
     // number of tracks per event, after each selection
     m_trk_n_all(nullptr),
     m_trk_n_pass_extrapol(nullptr),
+    m_trk_n_pass_trk1etaphi(nullptr),
     m_trk_n_pass_iso(nullptr),
     m_trk_n_pass_p(nullptr),
     m_trk_n_pass_pG500(nullptr),
@@ -247,6 +248,7 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   int nBinsTrkN = 200; float minTrkN = -0.5; float maxTrkN = 199.5;
   m_trk_n_all = new TH1D((std::string(m_name+"/trk_n_all")).c_str(), "trk_n_all", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_extrapol = new TH1D((std::string(m_name+"/trk_n_pass_extrapol")).c_str(), "trk_n_pass_extrapol", nBinsTrkN, minTrkN, maxTrkN); 
+  m_trk_n_pass_trk1etaphi = new TH1D((std::string(m_name+"/trk_n_pass_trk1etaphi")).c_str(), "trk_n_pass_trk1etaphi", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_iso = new TH1D((std::string(m_name+"/trk_n_pass_iso")).c_str(), "trk_n_pass_iso", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_p = new TH1D((std::string(m_name+"/trk_n_pass_p")).c_str(), "trk_n_pass_p", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_pG500 = new TH1D((std::string(m_name+"/trk_n_pass_pG500")).c_str(), "trk_n_pass_pG500", nBinsTrkN, minTrkN, maxTrkN); 
@@ -263,6 +265,7 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
   m_trk_n_pass_tileEfrac = new TH1D((std::string(m_name+"/trk_n_pass_tileEfrac")).c_str(), "trk_n_pass_tileEfrac", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_all->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_extrapol->GetXaxis()->SetTitle("N_trks");
+  m_trk_n_pass_trk1etaphi->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_iso->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_p->GetXaxis()->SetTitle("N_trks");
   m_trk_n_pass_pG500->GetXaxis()->SetTitle("N_trks");
@@ -280,6 +283,7 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
 
   wk()->addOutput(m_trk_n_all);
   wk()->addOutput(m_trk_n_pass_extrapol);
+  wk()->addOutput(m_trk_n_pass_trk1etaphi);
   wk()->addOutput(m_trk_n_pass_iso);
   wk()->addOutput(m_trk_n_pass_p);
   wk()->addOutput(m_trk_n_pass_pG500);
@@ -317,6 +321,7 @@ EL::StatusCode EoverPAnalysis :: initialize ()
     m_trk_cutflowHist_1  = (TH1D*)file->Get("cutflow_trks_1");
     m_trk_cutflow_eop_all_bin = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop all");
     m_trk_cutflow_eop_extrapol_bin = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop pass trk extrapol");
+    m_trk_cutflow_eop_trk1etaphi_bin = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop pass trk1 eta,phi<1000");
     m_trk_cutflow_eop_pass_iso_bin  = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop pass trk iso");
     m_trk_cutflow_eop_pass_p_bin = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop pass trk p cuts");
     m_trk_cutflow_eop_pass_eta_bin = m_trk_cutflowHist_1->GetXaxis()->FindBin("eop pass trk eta cuts");
@@ -343,6 +348,7 @@ EL::StatusCode EoverPAnalysis :: initialize ()
 
   m_trk_cutflow_eop_all = 0;
   m_trk_cutflow_eop_extrapol = 0;
+  m_trk_cutflow_eop_trk1etaphi = 0;
   m_trk_cutflow_eop_pass_iso = 0;
   m_trk_cutflow_eop_pass_p = 0;
   m_trk_cutflow_eop_pass_eta = 0;
@@ -390,6 +396,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
 
   m_trk_n_all_tmp = 0;
   m_trk_n_pass_extrapol_tmp = 0;
+  m_trk_n_pass_trk1etaphi_tmp = 0;
   m_trk_n_pass_iso_tmp = 0;
   m_trk_n_pass_p_tmp = 0;
   m_trk_n_pass_pG500_tmp = 0;
@@ -430,6 +437,9 @@ EL::StatusCode EoverPAnalysis :: execute ()
 
     if (trk->auxdata<int>("CALO_extrapolation") == 0) continue;
 
+    m_trk_cutflow_eop_extrapol++;
+    m_trk_n_pass_extrapol_tmp++;
+
     float trk_pt = trk->pt()/1e3;
     float trk_p = 0;
     if (TMath::Abs(trk->qOverP())>0.) trk_p = (1./TMath::Abs(trk->qOverP()))/1e3; 
@@ -450,14 +460,14 @@ EL::StatusCode EoverPAnalysis :: execute ()
          (TMath::Abs(trk_etaEME2) > 1000.0 || TMath::Abs(trk_phiEME2) > 1000.0) )
       continue;
 
-    m_trk_cutflow_eop_extrapol++;
-    m_trk_n_pass_extrapol_tmp++;
+    m_trk_cutflow_eop_trk1etaphi++;
+    m_trk_n_pass_trk1etaphi_tmp++;
 
     bool trk_not_isolated_EMB2 = false;
     bool trk_not_isolated_EME2 = false;
 
     // track isolation: p(cone of DR='m_trkIsoDRmax')/p(track) < 'm_trkIsoPfrac' 
-    float surr_trk_sum_p = 0.;
+    // float surr_trk_sum_p = 0.;
     trk2_itr = trks->begin();
     for( ; trk2_itr != trk2_end; ++trk2_itr ) {
       if (trk_itr != trk2_itr) { // do not double count the selected track 
@@ -467,9 +477,10 @@ EL::StatusCode EoverPAnalysis :: execute ()
         if (TMath::Abs(trk_etaEMB2) < 1000.0 && TMath::Abs(trk_phiEMB2) < 1000.0) {
           float trk2_etaEMB2 = trk2->auxdata<float>("CALO_trkEta_EMB2");
           float trk2_phiEMB2 = trk2->auxdata<float>("CALO_trkPhi_EMB2");
-
-          float trk_trk2_dR_EMB2 = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEMB2, trk2_phiEMB2);
-          if (trk_trk2_dR_EMB2 <= m_trkIsoDRmax) trk_not_isolated_EMB2 = true;
+          if (TMath::Abs(trk2_etaEMB2) < 1000.0 && TMath::Abs(trk2_phiEMB2) < 1000.0) {
+            float trk_trk2_dR_EMB2 = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEMB2, trk2_phiEMB2);
+            if (trk_trk2_dR_EMB2 <= m_trkIsoDRmax) trk_not_isolated_EMB2 = true;
+          }
         }
 
         //EME2
@@ -477,8 +488,10 @@ EL::StatusCode EoverPAnalysis :: execute ()
           float trk2_etaEME2 = trk2->auxdata<float>("CALO_trkEta_EME2");
           float trk2_phiEME2 = trk2->auxdata<float>("CALO_trkPhi_EME2");
 
-          float trk_trk2_dR_EME2 = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEME2, trk2_phiEME2);
-          if (trk_trk2_dR_EME2 <= m_trkIsoDRmax) trk_not_isolated_EME2 = true;
+          if (TMath::Abs(trk2_etaEME2) < 1000.0 && TMath::Abs(trk2_phiEME2) < 1000.0) {
+            float trk_trk2_dR_EME2 = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEME2, trk2_phiEME2);
+            if (trk_trk2_dR_EME2 <= m_trkIsoDRmax) trk_not_isolated_EME2 = true;
+          }
         }
 
         // //track isolation - check if trk2 falls within DRmax of trk
@@ -670,6 +683,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
 
   m_trk_n_all->Fill(m_trk_n_all_tmp, eventWeight);
   m_trk_n_pass_extrapol->Fill(m_trk_n_pass_extrapol_tmp, eventWeight);
+  m_trk_n_pass_trk1etaphi->Fill(m_trk_n_pass_trk1etaphi_tmp, eventWeight);
   m_trk_n_pass_iso->Fill(m_trk_n_pass_iso_tmp, eventWeight);
   m_trk_n_pass_p->Fill(m_trk_n_pass_p_tmp, eventWeight);
   m_trk_n_pass_pG500->Fill(m_trk_n_pass_pG500_tmp, eventWeight);
@@ -699,6 +713,7 @@ EL::StatusCode EoverPAnalysis :: finalize () {
 
     m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_all_bin, m_trk_cutflow_eop_all );
     m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_extrapol_bin, m_trk_cutflow_eop_extrapol );
+    m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_trk1etaphi_bin, m_trk_cutflow_eop_trk1etaphi );
     m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_pass_iso_bin, m_trk_cutflow_eop_pass_iso );
     m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_pass_p_bin, m_trk_cutflow_eop_pass_p );
     m_trk_cutflowHist_1->SetBinContent( m_trk_cutflow_eop_pass_eta_bin, m_trk_cutflow_eop_pass_eta );
@@ -714,6 +729,7 @@ EL::StatusCode EoverPAnalysis :: histFinalize ()
 {
   m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_all_bin, m_trk_cutflow_eop_all );
   m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_extrapol_bin, m_trk_cutflow_eop_extrapol );
+  m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_trk1etaphi_bin, m_trk_cutflow_eop_trk1etaphi );
   m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_pass_iso_bin, m_trk_cutflow_eop_pass_iso );
   m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_pass_p_bin, m_trk_cutflow_eop_pass_p );
   m_trk_cutflowHist_eop->SetBinContent( m_trk_cutflow_eop_pass_eta_bin, m_trk_cutflow_eop_pass_eta );

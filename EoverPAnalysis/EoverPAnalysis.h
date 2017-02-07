@@ -107,6 +107,7 @@ class EoverPAnalysis : public xAH::Algorithm
 
     int m_trk_cutflow_eop_all_bin; //!
     int m_trk_cutflow_eop_extrapol_bin; //!
+    int m_trk_cutflow_eop_trk1etaphi_bin; //!
     int m_trk_cutflow_eop_pass_iso_bin; //!
     int m_trk_cutflow_eop_pass_p_bin; //!
     int m_trk_cutflow_eop_pass_eta_bin; //!
@@ -114,6 +115,7 @@ class EoverPAnalysis : public xAH::Algorithm
     int m_trk_cutflow_eop_pass_tileEfrac_bin; //!
     int m_trk_cutflow_eop_all; //!
     int m_trk_cutflow_eop_extrapol; //!
+    int m_trk_cutflow_eop_trk1etaphi; //!
     int m_trk_cutflow_eop_pass_iso; //!
     int m_trk_cutflow_eop_pass_p; //!
     int m_trk_cutflow_eop_pass_eta; //!
@@ -127,6 +129,7 @@ class EoverPAnalysis : public xAH::Algorithm
     // number of tracks per event, after each selection
     TH1D* m_trk_n_all; //!
     TH1D* m_trk_n_pass_extrapol; //!
+    TH1D* m_trk_n_pass_trk1etaphi; //!
     TH1D* m_trk_n_pass_iso; //!
     TH1D* m_trk_n_pass_p; //!
     TH1D* m_trk_n_pass_pG500; //!
@@ -143,6 +146,7 @@ class EoverPAnalysis : public xAH::Algorithm
     TH1D* m_trk_n_pass_tileEfrac; //!
     int m_trk_n_all_tmp; //!
     int m_trk_n_pass_extrapol_tmp; //!
+    int m_trk_n_pass_trk1etaphi_tmp; //!
     int m_trk_n_pass_iso_tmp; //!
     int m_trk_n_pass_p_tmp; //!
     int m_trk_n_pass_pG500_tmp; //!
