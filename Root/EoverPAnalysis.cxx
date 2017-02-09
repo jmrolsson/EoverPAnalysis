@@ -454,133 +454,59 @@ EL::StatusCode EoverPAnalysis :: execute ()
     float trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
     float trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
 
-    // // check that the track is extrapolated to either EMB2 or EME2
-    // // (if not then trk_eta = trk_phi = -999999999)
-    // if ( (TMath::Abs(trk_etaEMB2) > 1000.0 || TMath::Abs(trk_phiEMB2) > 1000.0) && 
-    //      (TMath::Abs(trk_etaEME2) > 1000.0 || TMath::Abs(trk_phiEME2) > 1000.0) )
-    //   continue;
-
-
-    // bool trk_not_isolated_EMB2 = false;
-    // bool trk_not_isolated_EME2 = false;
-
-    // Make sure track is extrapolated to EM2 layer, either barrel ( B ) or endcap ( E )
-    if((((float)fabs(trk_etaEME2) > (double)1000.0) || ((float)fabs(trk_phiEME2) > (float)1000.0)) && (((float)fabs(trk_etaEMB2) > (double)1000.0) || ((float)fabs(trk_phiEMB2) > (double)1000.0))) continue;
+    // check that the track is extrapolated to either EMB2 or EME2
+    // (if not then trk_eta = trk_phi = -999999999)
+    if ( (TMath::Abs(trk_etaEMB2) > 1000.0 || TMath::Abs(trk_phiEMB2) > 1000.0) && 
+         (TMath::Abs(trk_etaEME2) > 1000.0 || TMath::Abs(trk_phiEME2) > 1000.0) )
+      continue;
 
     m_trk_cutflow_eop_trk1etaphi++;
     m_trk_n_pass_trk1etaphi_tmp++;
 
-    int not_isolated_EME2 = 0;
-    int not_isolated_EMB2 = 0;
+    bool trk_not_isolated_EMB2 = false;
+    bool trk_not_isolated_EME2 = false;
 
-    if(((float)fabs(trk_etaEME2) < (double)1000.0) && ((float)fabs(trk_phiEME2) < (double)1000.0)) {
-
-      trk2_itr = trks->begin();
-      for( ; trk2_itr != trk2_end; ++trk2_itr ) {
-      // for(int l=0; l<ntracks; l++) {
-
-        // if(l==k) continue;
-        if (trk_itr == trk2_itr) continue;
-
-        // double trk_phiEME2_2 = (float)trd3->trk_phiEME2->at( l );
-        // double trk_etaEME2_2 = (float)trd3->trk_etaEME2->at( l );
+    // track isolation: p(cone of DR='m_trkIsoDRmax')/p(track) < 'm_trkIsoPfrac' 
+    // float surr_trk_sum_p = 0.;
+    trk2_itr = trks->begin();
+    for( ; trk2_itr != trk2_end; ++trk2_itr ) {
+      if (trk_itr != trk2_itr) { // do not double count the selected track 
         const xAOD::TrackParticle* trk2 = (*trk2_itr);
-        float trk_etaEMB2_2 = trk->auxdata<float>("CALO_trkEta_EMB2");
-        float trk_phiEMB2_2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
 
-        if(((float)fabs(trk_etaEME2_2) < (double)1000.0) && ((float)fabs(trk_phiEME2_2) < (double)1000.0)) {
-
-          double dphi = (double)fabs(trk_phiEME2 - trk_phiEME2_2); 
-          double deta = (double)fabs(trk_etaEME2 - trk_etaEME2_2);
-
-          while( dphi > TMath::Pi() ) { dphi = dphi - ((double)2.0*TMath::Pi()); } // having the dphi in ]-pi,+pi]
-          while( dphi <= (double)-1.0*TMath::Pi() ) { dphi = dphi + ((double)2.0*TMath::Pi()); }
-          //if(dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
-
-          double deltaR = sqrt((dphi*dphi) + (deta*deta));
-
-          if(deltaR <= (double)0.4) not_isolated_EME2 ++;
-
+        //EMB2
+        if (TMath::Abs(trk_etaEMB2) < 1000.0 && TMath::Abs(trk_phiEMB2) < 1000.0) {
+          float trk2_etaEMB2 = trk2->auxdata<float>("CALO_trkEta_EMB2");
+          float trk2_phiEMB2 = trk2->auxdata<float>("CALO_trkPhi_EMB2");
+          if (TMath::Abs(trk2_etaEMB2) < 1000.0 && TMath::Abs(trk2_phiEMB2) < 1000.0) {
+            float trk_trk2_dR_EMB2 = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEMB2, trk2_phiEMB2);
+            if (trk_trk2_dR_EMB2 <= m_trkIsoDRmax) trk_not_isolated_EMB2 = true;
+          }
         }
-      }
-    }
 
-    if(((float)fabs(trk_etaEMB2) < (double)1000.0) && ((float)fabs(trk_phiEMB2) < (double)1000.0)) {
+        //EME2
+        if (TMath::Abs(trk_etaEME2) < 1000.0 && TMath::Abs(trk_phiEME2) < 1000.0) {
+          float trk2_etaEME2 = trk2->auxdata<float>("CALO_trkEta_EME2");
+          float trk2_phiEME2 = trk2->auxdata<float>("CALO_trkPhi_EME2");
 
-      trk2_itr = trks->begin();
-      for( ; trk2_itr != trk2_end; ++trk2_itr ) {
-      // for(int l=0; l<ntracks; l++) {
-
-        // if(l==k) continue;
-        if (trk_itr == trk2_itr) continue;
-
-        // double trk_phiEMB2_2 = (float)trd3->trk_phiEMB2->at( l );
-        // double trk_etaEMB2_2 = (float)trd3->trk_etaEMB2->at( l );
-        const xAOD::TrackParticle* trk2 = (*trk2_itr);
-        float trk_etaEMB2_2 = trk->auxdata<float>("CALO_trkEta_EMB2");
-        float trk_phiEMB2_2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
-
-        if(((float)fabs(trk_etaEMB2_2) < (double)1000.0) && ((float)fabs(trk_phiEMB2_2) < (double)1000.0)) {
-
-          double dphi = (double)fabs(trk_phiEMB2 - trk_phiEMB2_2); 
-          double deta = (double)fabs(trk_etaEMB2 - trk_etaEMB2_2);
-
-          while( dphi > TMath::Pi() ) { dphi = dphi - ((double)2.0*TMath::Pi()); } // having the dphi in ]-pi,+pi]
-          while( dphi <= (double)-1.0*TMath::Pi() ) { dphi = dphi + ((double)2.0*TMath::Pi()); }
-          //if(dphi > TMath::Pi()) dphi = TMath::TwoPi() - dphi;
-
-          double deltaR = sqrt((dphi*dphi) + (deta*deta));
-
-          if(deltaR <= (double)0.4) not_isolated_EMB2 ++;
-
+          if (TMath::Abs(trk2_etaEME2) < 1000.0 && TMath::Abs(trk2_phiEME2) < 1000.0) {
+            float trk_trk2_dR_EME2 = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEME2, trk2_phiEME2);
+            if (trk_trk2_dR_EME2 <= m_trkIsoDRmax) trk_not_isolated_EME2 = true;
+          }
         }
+
+        // //track isolation - check if trk2 falls within DRmax of trk
+        // if (trk_trk2_dR_min < m_trkIsoDRmax) {  
+        //   // calculate the leading and avg p of the surrounding tracks, 
+        //   // used for TileCal comparisons with Run1
+        //   if (TMath::Abs(trk2->qOverP())>0.) surr_trk_sum_p += (1./TMath::Abs(trk2->qOverP()))/1e3; 
+        // }
       }
-    }
+    } // END looping trk2
 
-    if(not_isolated_EME2!=0) continue;         //Track must be isolated in EME2
-    if(not_isolated_EMB2!=0) continue;         //Track must be isolated in EMB2
-
-    // // track isolation: p(cone of DR='m_trkIsoDRmax')/p(track) < 'm_trkIsoPfrac' 
-    // // float surr_trk_sum_p = 0.;
-    // trk2_itr = trks->begin();
-    // for( ; trk2_itr != trk2_end; ++trk2_itr ) {
-    //   if (trk_itr != trk2_itr) { // do not double count the selected track 
-    //     const xAOD::TrackParticle* trk2 = (*trk2_itr);
-    //
-    //     //EMB2
-    //     if (TMath::Abs(trk_etaEMB2) < 1000.0 && TMath::Abs(trk_phiEMB2) < 1000.0) {
-    //       float trk2_etaEMB2 = trk2->auxdata<float>("CALO_trkEta_EMB2");
-    //       float trk2_phiEMB2 = trk2->auxdata<float>("CALO_trkPhi_EMB2");
-    //       if (TMath::Abs(trk2_etaEMB2) < 1000.0 && TMath::Abs(trk2_phiEMB2) < 1000.0) {
-    //         float trk_trk2_dR_EMB2 = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEMB2, trk2_phiEMB2);
-    //         if (trk_trk2_dR_EMB2 <= m_trkIsoDRmax) trk_not_isolated_EMB2 = true;
-    //       }
-    //     }
-    //
-    //     //EME2
-    //     if (TMath::Abs(trk_etaEME2) < 1000.0 && TMath::Abs(trk_phiEME2) < 1000.0) {
-    //       float trk2_etaEME2 = trk2->auxdata<float>("CALO_trkEta_EME2");
-    //       float trk2_phiEME2 = trk2->auxdata<float>("CALO_trkPhi_EME2");
-    //
-    //       if (TMath::Abs(trk2_etaEME2) < 1000.0 && TMath::Abs(trk2_phiEME2) < 1000.0) {
-    //         float trk_trk2_dR_EME2 = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEME2, trk2_phiEME2);
-    //         if (trk_trk2_dR_EME2 <= m_trkIsoDRmax) trk_not_isolated_EME2 = true;
-    //       }
-    //     }
-    //
-    //     // //track isolation - check if trk2 falls within DRmax of trk
-    //     // if (trk_trk2_dR_min < m_trkIsoDRmax) {  
-    //     //   // calculate the leading and avg p of the surrounding tracks, 
-    //     //   // used for TileCal comparisons with Run1
-    //     //   if (TMath::Abs(trk2->qOverP())>0.) surr_trk_sum_p += (1./TMath::Abs(trk2->qOverP()))/1e3; 
-    //     // }
-    //   }
-    // } // END looping trk2
-    //
-    // // check track isolation requirement
-    // // if (TMath::Abs(surr_trk_sum_p/trk_p) > m_trkIsoPfrac) continue;
-    // if (trk_not_isolated_EMB2) continue;
-    // if (trk_not_isolated_EME2) continue;
+    // check track isolation requirement
+    // if (TMath::Abs(surr_trk_sum_p/trk_p) > m_trkIsoPfrac) continue;
+    if (trk_not_isolated_EMB2) continue;
+    if (trk_not_isolated_EME2) continue;
 
     m_trk_cutflow_eop_pass_iso++;
     m_trk_n_pass_iso_tmp++;
