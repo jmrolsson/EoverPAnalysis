@@ -235,7 +235,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW"]:
                                 "m_trkPmax": 1e8,
                                 "m_doTrkEtacut": True,
                                 "m_trkEtamin": 0.,
-                                "m_trkEtamax": 1e8,
+                                "m_trkEtamax": 2.3,
                                 "m_doTrkPtReweighting": do_trkPtRewighting,
                                 "m_trkPtReweightingFile": trkPtReweightingFile,
                                 "m_doTileCuts": False,
