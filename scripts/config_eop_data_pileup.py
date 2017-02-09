@@ -13,10 +13,6 @@ trks_loose_ntrtG20 = trks+"LoosePrimary_nTRTG20"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
 
-eta_bins_runII_general = ".0, .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3"
-# OLD  p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30., 40., 50., 100., 200., 1000., 10000."
-p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.4, 4.2, 5., 6., 7., 9., 12., 15., 20., 30." #, 40., 50., 100., 200., 1000., 10000."
-
 ''' Set up all the algorithms '''
 c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
                                  "m_applyGRLCut": True,
@@ -162,9 +158,9 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doTileCuts": True,
                                 "m_LarEmax": 1e8,
                                 "m_TileEfracmin": -1,
-                                "m_Ebins": "30, 0., 30.",
-                                "m_doEbinsArray": True,
-                                "m_EbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
+                                "m_Pbins": "30, 0., 30.",
+                                "m_doPbinsArray": True,
+                                "m_PbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
                                 "m_Etabins": "17, -1.7, 1.7",
                                 "m_doEtabinsArray": False,
                                 "m_EtabinsArray": "",
@@ -196,9 +192,9 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doTileCuts": True,
                                 "m_LarEmax": 1e8,
                                 "m_TileEfracmin": -1,
-                                "m_Ebins": "30, 0., 30.",
-                                "m_doEbinsArray": True,
-                                "m_EbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
+                                "m_Pbins": "30, 0., 30.",
+                                "m_doPbinsArray": True,
+                                "m_PbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
                                 "m_Etabins": "17, -1.7, 1.7",
                                 "m_doEtabinsArray": False,
                                 "m_EtabinsArray": "",
@@ -230,9 +226,9 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doTileCuts": True,
                                 "m_LarEmax": 1,
                                 "m_TileEfracmin": -1,
-                                "m_Ebins": "30, 0., 30.",
-                                "m_doEbinsArray": True,
-                                "m_EbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
+                                "m_Pbins": "30, 0., 30.",
+                                "m_doPbinsArray": True,
+                                "m_PbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
                                 "m_Etabins": "17, -1.7, 1.7",
                                 "m_doEtabinsArray": False,
                                 "m_EtabinsArray": "",
@@ -268,9 +264,9 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doTileCuts": True,
                                 "m_LarEmax": 1.,
                                 "m_TileEfracmin": 0.7,
-                                "m_Ebins": "30, 0., 30.",
-                                "m_doEbinsArray": True,
-                                "m_EbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
+                                "m_Pbins": "30, 0., 30.",
+                                "m_doPbinsArray": True,
+                                "m_PbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
                                 "m_Etabins": "17, -1.7, 1.7",
                                 "m_doEtabinsArray": False,
                                 "m_EtabinsArray": "",

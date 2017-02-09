@@ -13,19 +13,17 @@ trks_loose_ntrtG20 = trks+"LoosePrimary_nTRTG20"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
 do_trkPtRewighting = False
-
-eta_bins_runII_general = ".0, .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3"
-# OLD  p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30., 40., 50., 100., 200., 1000., 10000."
-p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.4, 4.2, 5., 6., 7., 9., 12., 15., 20., 30." #, 40., 50., 100., 200., 1000., 10000."
+trkPtReweightingFile = "pt_reweighting.root"
 
 ''' Set up all the algorithms '''
 c.setalg("BasicEventSelection", {"m_name": "BasicEventSelection",
                                  "m_applyGRLCut": False,
-                                 "m_doPUreweighting": True,
-                                 # "m_doCustomPUreweighting": False,
-                                 # "m_PRWHistName": "pileup_chan361021_run284500",
-                                 "m_PRWFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/group.phys-susy.PRW.mc15c.3_METADATA.merged.root",
-                                 "m_lumiCalcFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/ilumicalc_histograms_HLT_noalg_zb_L1ZB_276262-284484_OflLumi-13TeV-005.root",
+                                 "m_doPUreweighting": False,
+                                 # "m_doPUreweighting": True,
+                                 # # "m_doCustomPUreweighting": False,
+                                 # # "m_PRWHistName": "pileup_chan361021_run284500",
+                                 # "m_PRWFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/group.phys-susy.PRW.mc15c.3_METADATA.merged.root",
+                                 # "m_lumiCalcFileNames": "$ROOTCOREBIN/data/EoverPAnalysis/ilumicalc_histograms_HLT_noalg_zb_L1ZB_276262-284484_OflLumi-13TeV-005.root",
                                  "m_useMetaData" : True,
                                  "m_applyPrimaryVertexCut": True,
                                  "m_applyEventCleaningCut": True,
