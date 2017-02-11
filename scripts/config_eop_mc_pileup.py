@@ -12,8 +12,13 @@ trks_loose = trks+"LoosePrimary"
 trks_loose_ntrtG20 = trks+"LoosePrimary_nTRTG20"
 trks_tight = trks+"TightPrimary"
 trks_run1 = trks+"Run1"
-do_trkPtRewighting = False
-trkPtReweightingFile = "pt_reweighting.root"
+
+doCustomPUreweighting = True
+pileupReweightingFile = "pileup_reweighting.root";
+
+do_trkPtRewighting = True
+trkPtReweightingFile = "pt_reweighting_pileup.root"
+
 
 c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_ClusterEnergy_noCuts",
                             "m_inTrackContainerName": trks,
@@ -44,6 +49,10 @@ c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_ClusterEnergy_noC
                             "m_doGlobalTileEfracRanges": False,
                             "m_doGlobalEnergyRanges": False,
                             "m_doGlobalEtaRanges": False,
+                            "m_pileupReweightingFile": pileupReweightingFile,
+                            "m_doCustomPUreweighting": doCustomPUreweighting,
+                            "m_trkPtReweightingFile": trkPtReweightingFile,
+                            "m_doTrkPtReweighting": do_trkPtRewighting,
                             "m_detailStr": "all",
                             "m_useCutFlow": False,
                             "m_debug": False})
@@ -200,6 +209,8 @@ c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_ClusterEnergy_Til
                             "m_doGlobalTileEfracRanges": False,
                             "m_doGlobalEnergyRanges": False,
                             "m_doGlobalEtaRanges": False,
+                            "m_pileupReweightingFile": pileupReweightingFile,
+                            "m_doCustomPUreweighting": doCustomPUreweighting,
                             "m_trkPtReweightingFile": trkPtReweightingFile,
                             "m_doTrkPtReweighting": do_trkPtRewighting,
                             "m_detailStr": "all",
@@ -315,6 +326,8 @@ for energy_calib in ["ClusterEnergy"]:
                                 "m_doGlobalTileEfracRanges": False,
                                 "m_doGlobalEnergyRanges": True,
                                 "m_doGlobalEtaRanges": True,
+                                "m_pileupReweightingFile": pileupReweightingFile,
+                                "m_doCustomPUreweighting": doCustomPUreweighting,
                                 "m_trkPtReweightingFile": trkPtReweightingFile,
                                 "m_doTrkPtReweighting": do_trkPtRewighting,
                                 "m_detailStr": "all",

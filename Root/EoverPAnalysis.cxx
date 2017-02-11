@@ -334,8 +334,10 @@ EL::StatusCode EoverPAnalysis :: initialize ()
   const xAOD::EventInfo* eventInfo(nullptr);
   RETURN_CHECK("EoverPAnalysis::execute()", HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store, m_verbose) ,"");
   if (m_doCustomPUreweighting && eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) {
-    TFile *f_prw = wk()->getOutputFile ("pileup");
-    m_puwHist = (TH1D*)f_prw->Get("pileup_weights");
+    // TFile *f_prw = wk()->getOutputFile ("pileup");
+    // m_puwHist = (TH1D*)f_prw->Get("pileup_weights");
+    TFile *f_pileup = new TFile(std::string("$ROOTCOREBIN/data/EoverPAnalysis/"+m_pileupReweightingFile).c_str(), "READ");
+    m_puwHist = (TH1D*)f_pileup->Get("h_pileupweight");
   }
   if (m_doTrkPtReweighting && eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) {
     TFile *f_pt = new TFile(std::string("$ROOTCOREBIN/data/EoverPAnalysis/"+m_trkPtReweightingFile).c_str(), "READ");
@@ -378,21 +380,26 @@ EL::StatusCode EoverPAnalysis :: execute ()
     float pileupWeight(0.);
     // std::cout << "before getting PileupWeight" << std::endl;
     if (m_doCustomPUreweighting) {
-      if (mu_avg <= m_puwHist->GetNbinsX())
+      if (mu_avg > 0. && mu_avg <= m_puwHist->GetNbinsX()) {
+        // pileupWeight = m_puwHist->GetBinContent(m_puwHist->FindBin(mu_avg));
+        pileupWeight = m_puwHist->GetBinContent(mu_avg+1);
+        // std::cout << "mu_avg " << mu_avg << std::endl;
         pileupWeight = m_puwHist->GetBinContent(mu_avg);
+        // std::cout << "pileupweight " << pileupWeight << std::endl;
+      }
       eventWeight *= pileupWeight;
     }
-    else if (eventInfo->isAvailable< float >( "PileupWeight" )) {
-      pileupWeight = eventInfo->auxdata< float >( "PileupWeight" );
-      eventWeight *= pileupWeight;
-    }
+    // else if (eventInfo->isAvailable< float >( "PileupWeight" )) {
+    //   pileupWeight = eventInfo->auxdata< float >( "PileupWeight" );
+    //   eventWeight *= pileupWeight;
+    // }
     // std::cout << "pileupWeight: " << pileupWeight << std::endl;
     // std::cout << "eventWeight, after PRW: " << eventWeight << std::endl;
   }
 
   m_numEvent++;
 
-  if (mu_avg < m_mu_avg_min || mu_avg >= m_mu_avg_max) return EL::StatusCode::SUCCESS;
+  if (mu_avg < m_mu_avg_min || mu_avg > m_mu_avg_max) return EL::StatusCode::SUCCESS;
 
   m_trk_n_all_tmp = 0;
   m_trk_n_pass_extrapol_tmp = 0;
