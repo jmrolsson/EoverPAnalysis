@@ -381,20 +381,10 @@ EL::StatusCode EoverPAnalysis :: execute ()
     // std::cout << "before getting PileupWeight" << std::endl;
     if (m_doCustomPUreweighting) {
       if (mu_avg > 0. && mu_avg <= m_puwHist->GetNbinsX()) {
-        // pileupWeight = m_puwHist->GetBinContent(m_puwHist->FindBin(mu_avg));
         pileupWeight = m_puwHist->GetBinContent(mu_avg+1);
-        // std::cout << "mu_avg " << mu_avg << std::endl;
-        pileupWeight = m_puwHist->GetBinContent(mu_avg);
-        // std::cout << "pileupweight " << pileupWeight << std::endl;
       }
       eventWeight *= pileupWeight;
     }
-    // else if (eventInfo->isAvailable< float >( "PileupWeight" )) {
-    //   pileupWeight = eventInfo->auxdata< float >( "PileupWeight" );
-    //   eventWeight *= pileupWeight;
-    // }
-    // std::cout << "pileupWeight: " << pileupWeight << std::endl;
-    // std::cout << "eventWeight, after PRW: " << eventWeight << std::endl;
   }
 
   m_numEvent++;
