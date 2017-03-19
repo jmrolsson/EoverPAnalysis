@@ -170,8 +170,8 @@ c.setalg("TrackHistsAlgo", {"m_name": "Tracks_LoosePrimary",
 
 #### Make E/p plots
 
-# for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
-for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW"]:
+for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
+# for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW"]:
 # for energy_calib in ["ClusterEnergy"]:
 
     # # E/p for comparisons with the Run 1 paper
