@@ -529,16 +529,16 @@ EL::StatusCode EoverPAnalysis :: execute ()
       m_trk_n_pass_etaG15L23_tmp++;
 
     // check track p requirement
-    if (m_doTrkPcut) {
-      if (trk_p < m_trkPmin) continue;
-      if (trk_p >= m_trkPmax) continue;
-    }
+    // if (m_doTrkPcut) {
+    //   if (trk_p < m_trkPmin) continue;
+    //   if (trk_p >= m_trkPmax) continue;
+    // }
     m_trk_cutflow_eop_pass_p++;
     m_trk_n_pass_p_tmp++;
 
     // check track eta requirement
     if (m_doTrkEtacut) {
-      if (TMath::Abs(trk_etaID) < m_trkEtamin) continue;
+      // if (TMath::Abs(trk_etaID) < m_trkEtamin) continue;
       if (TMath::Abs(trk_etaID) >= m_trkEtamax) continue;
     }
     m_trk_cutflow_eop_pass_eta++;
@@ -779,7 +779,9 @@ float EoverPAnalysis :: deltaR (float trk_eta, float trk_phi, float trk2_eta, fl
 {
   float trk_trk2_dEta = TMath::Abs(trk2_eta - trk_eta);
   float trk_trk2_dPhi = TMath::Abs(trk2_phi - trk_phi);
+
   if (trk_trk2_dPhi > TMath::Pi())
     trk_trk2_dPhi = 2*TMath::Pi() - trk_trk2_dPhi;
+
   return sqrt( pow(trk_trk2_dEta, 2) + pow(trk_trk2_dPhi, 2) );
 }
