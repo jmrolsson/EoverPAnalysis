@@ -231,7 +231,7 @@ class EoverPAnalysis : public xAH::Algorithm
     virtual EL::StatusCode finalize ();
     virtual EL::StatusCode histFinalize ();
 
-    float deltaR (float trk_eta, float trk_phi, float trk2_eta, float trk2_phi);
+    double deltaR (double trk_eta, double trk_phi, double trk2_eta, double trk2_phi);
 
     /// @cond
     // this is needed to distribute the algorithm to the workers

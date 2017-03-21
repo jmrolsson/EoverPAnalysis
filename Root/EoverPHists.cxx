@@ -30,22 +30,22 @@ EoverPHists :: ~EoverPHists () {}
 StatusCode EoverPHists::initialize()
 {
   // number of bins and ranges for histograms
-  unsigned int nBinsMu = 50;          float minMu = 0;                  float maxMu = 50;
-  unsigned int nBinsNPV = 50;         float minNPV = -0.5;              float maxNPV = 49.5;
-  unsigned int nBinsDR = 60;          float minDR = 0;                  float maxDR = 3;
-  unsigned int nBinsPhi = 32;         float minPhi = -TMath::Pi();      float maxPhi = TMath::Pi(); 
-  unsigned int nBinsPhiExtra = 1024;  float minPhiExtra = -TMath::Pi(); float maxPhiExtra = TMath::Pi(); 
-  unsigned int nBinsPhiExtra2 = 800;  float minPhiExtra2 = -4.0;        float maxPhiExtra2 = 4.0; 
-  unsigned int nBinsEop = 300;        float minEop = -4;                float maxEop = 20;
-  unsigned int nBinsEop_l = 255;      float minEop_l = -100;            float maxEop_l = 5000;
-  unsigned int nBinsE = 700;          float minE = -20;                 float maxE = 50;
+  unsigned int nBinsMu = 50;          double minMu = 0;                  double maxMu = 50;
+  unsigned int nBinsNPV = 50;         double minNPV = -0.5;              double maxNPV = 49.5;
+  unsigned int nBinsDR = 60;          double minDR = 0;                  double maxDR = 3;
+  unsigned int nBinsPhi = 32;         double minPhi = -TMath::Pi();      double maxPhi = TMath::Pi(); 
+  unsigned int nBinsPhiExtra = 1024;  double minPhiExtra = -TMath::Pi(); double maxPhiExtra = TMath::Pi(); 
+  unsigned int nBinsPhiExtra2 = 800;  double minPhiExtra2 = -4.0;        double maxPhiExtra2 = 4.0; 
+  unsigned int nBinsEop = 300;        double minEop = -4;                double maxEop = 20;
+  unsigned int nBinsEop_l = 255;      double minEop_l = -100;            double maxEop_l = 5000;
+  unsigned int nBinsE = 700;          double minE = -20;                 double maxE = 50;
 
-  unsigned int nBinsP = 500;          float minP = 0;                   float maxP = 50;
+  unsigned int nBinsP = 500;          double minP = 0;                   double maxP = 50;
   std::vector<double> Pbins = str2vec(m_Pbins);
   if (Pbins.size() > 2) {
     nBinsP = (int) Pbins[0];
-    minP = (float) Pbins[1];
-    maxP = (float) Pbins[2];
+    minP = (double) Pbins[1];
+    maxP = (double) Pbins[2];
   }
 
   nPbinsArray = 0;
@@ -56,12 +56,12 @@ StatusCode EoverPHists::initialize()
   if (nPbinsArray <= 1)
     m_doPbinsArray = false;
 
-  unsigned int nBinsEta = 100;      float minEta = -2.5;           float maxEta = 2.5;
+  unsigned int nBinsEta = 100;      double minEta = -2.5;           double maxEta = 2.5;
   std::vector<double> Etabins = str2vec(m_Etabins);
   if (Etabins.size() > 2) {
     nBinsEta = (int) Etabins[0];
-    minEta = (float) Etabins[1];
-    maxEta = (float) Etabins[2];
+    minEta = (double) Etabins[1];
+    maxEta = (double) Etabins[2];
   }
   if (minEta < 0) m_doEtaAbs = false;
   else m_doEtaAbs = true;
@@ -510,15 +510,15 @@ StatusCode EoverPHists::initialize()
   return StatusCode::SUCCESS;
 }
 
-StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::VertexContainer *vtxs, const xAOD::EventInfo* eventInfo, float eventWeight )
+StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::VertexContainer *vtxs, const xAOD::EventInfo* eventInfo, double eventWeight )
 {
 
   // get pileup
-  float mu(-1.);
+  double mu(-1.);
   if( eventInfo->isAvailable< float >( "actualInteractionsPerCrossing" ) ) {
     mu = eventInfo->actualInteractionsPerCrossing();
   }
-  float mu_avg(-1.);
+  double mu_avg(-1.);
   if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) &&
       !eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) 
     mu_avg = eventInfo->auxdata< float >( "corrected_averageInteractionsPerCrossing" );
@@ -526,24 +526,24 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     mu_avg = eventInfo->averageInteractionsPerCrossing();
 
   // get number of primary vtxs 
-  float npv = HelperFunctions::countPrimaryVertices(vtxs, 2);
+  double npv = HelperFunctions::countPrimaryVertices(vtxs, 2);
 
-  float trk_p = 0;
+  double trk_p = 0;
   if (TMath::Abs(trk->qOverP())>0.) trk_p = (1./TMath::Abs(trk->qOverP()))/1e3; 
-  float trk_pt = trk->pt()/1e3;
+  double trk_pt = trk->pt()/1e3;
   // coordinates of the track in the ID
-  float trk_etaID = trk->eta();
-  float trk_phiID = trk->phi();
+  double trk_etaID = trk->eta();
+  double trk_phiID = trk->phi();
   // coordinates of the track extrapolated to the specified calorimeter layer
-  float trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
-  float trk_phiEMB2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
-  float trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
-  float trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
-  float dEta_EMB2_ID = TMath::Abs(trk_etaEMB2 - trk_etaID);
-  float dPhi_EMB2_ID = TMath::Abs(trk_phiEMB2 - trk_phiID);
+  double trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
+  double trk_phiEMB2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
+  double trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
+  double trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
+  double dEta_EMB2_ID = TMath::Abs(trk_etaEMB2 - trk_etaID);
+  double dPhi_EMB2_ID = TMath::Abs(trk_phiEMB2 - trk_phiID);
   if (dPhi_EMB2_ID > TMath::Pi())
     dPhi_EMB2_ID = 2*TMath::Pi() - dPhi_EMB2_ID;
-  float dR_EMB2_ID = sqrt( pow(dEta_EMB2_ID, 2) + pow(dPhi_EMB2_ID, 2) );
+  double dR_EMB2_ID = sqrt( pow(dEta_EMB2_ID, 2) + pow(dPhi_EMB2_ID, 2) );
 
   if (m_doEtaAbs) {
     trk_etaID = TMath::Abs(trk_etaID);
@@ -578,14 +578,14 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_DPhi_EMB2_ID_vs_trk_p -> Fill(trk_p, dPhi_EMB2_ID, eventWeight);
 
 
-  float chi2 = trk->chiSquared();
-  float ndof = trk->numberDoF();
-  float chi2Prob = TMath::Prob(chi2,ndof);
-  float d0 = trk->d0();
+  double chi2 = trk->chiSquared();
+  double ndof = trk->numberDoF();
+  double chi2Prob = TMath::Prob(chi2,ndof);
+  double d0 = trk->d0();
   const xAOD::Vertex* pvx = HelperFunctions::getPrimaryVertex(vtxs);
-  float pvz = HelperFunctions::getPrimaryVertexZ(pvx);
-  float z0 = trk->z0() + trk->vz() - pvz;
-  float sinT = sin(trk->theta());
+  double pvz = HelperFunctions::getPrimaryVertexZ(pvx);
+  double z0 = trk->z0() + trk->vz() - pvz;
+  double sinT = sin(trk->theta());
   m_trk_d0 -> Fill( d0, eventWeight );
   m_trk_d0_s -> Fill( d0, eventWeight );
   m_trk_z0 -> Fill( z0, eventWeight );
@@ -624,31 +624,31 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_nTRT_vs_eta -> Fill( trk_etaID, nTRT, eventWeight );
 
   // cluster energy associated with the track
-  float trk_E_Total_100_all = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_100"))/1e3; 
-  float trk_E_Total_200_all = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_200"))/1e3; 
-  float trk_E_EM_100 = trk->auxdata<float>(std::string("CALO_EM_"+m_energyCalib+"_0_100"))/1e3; 
-  float trk_E_EM_200 = trk->auxdata<float>(std::string("CALO_EM_"+m_energyCalib+"_0_200"))/1e3; 
-  float trk_E_HAD_100 = trk->auxdata<float>(std::string("CALO_HAD_"+m_energyCalib+"_0_100"))/1e3; 
-  float trk_E_HAD_200 = trk->auxdata<float>(std::string("CALO_HAD_"+m_energyCalib+"_0_200"))/1e3; 
+  double trk_E_Total_100_all = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_100"))/1e3; 
+  double trk_E_Total_200_all = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_200"))/1e3; 
+  double trk_E_EM_100 = trk->auxdata<float>(std::string("CALO_EM_"+m_energyCalib+"_0_100"))/1e3; 
+  double trk_E_EM_200 = trk->auxdata<float>(std::string("CALO_EM_"+m_energyCalib+"_0_200"))/1e3; 
+  double trk_E_HAD_100 = trk->auxdata<float>(std::string("CALO_HAD_"+m_energyCalib+"_0_100"))/1e3; 
+  double trk_E_HAD_200 = trk->auxdata<float>(std::string("CALO_HAD_"+m_energyCalib+"_0_200"))/1e3; 
 
   // To agree with Millie
-  float trk_E_Total_100 = trk_E_EM_100 + trk_E_HAD_100;
-  float trk_E_Total_200 = trk_E_EM_200 + trk_E_HAD_200;
+  double trk_E_Total_100 = trk_E_EM_100 + trk_E_HAD_100;
+  double trk_E_Total_200 = trk_E_EM_200 + trk_E_HAD_200;
 
   // calculate energy fractions in different layers
-  float trk_sumE_Tile_100 = 0; 
-  float trk_sumE_Tile_200 = 0; 
-  float trk_sumE_Lar_100 = 0; 
-  float trk_sumE_Lar_200 = 0; 
-  float trk_sumE_HAD_100 = 0; 
-  float trk_sumE_HAD_200 = 0; 
-  float trk_sumE_EM_100 = 0; 
-  float trk_sumE_EM_200 = 0; 
+  double trk_sumE_Tile_100 = 0; 
+  double trk_sumE_Tile_200 = 0; 
+  double trk_sumE_Lar_100 = 0; 
+  double trk_sumE_Lar_200 = 0; 
+  double trk_sumE_HAD_100 = 0; 
+  double trk_sumE_HAD_200 = 0; 
+  double trk_sumE_EM_100 = 0; 
+  double trk_sumE_EM_200 = 0; 
   for (unsigned int i=0; i<m_layer_tile.size(); i++) {
-    float trk_E_100_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_tile[i]+"_100"))/1e3; 
+    double trk_E_100_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_tile[i]+"_100"))/1e3; 
     if (trk_E_100_tmp > 0.) // only include E > 0 (i.e. not calorimeter noise)
       trk_sumE_Tile_100 += trk_E_100_tmp; 
-    float trk_E_200_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_tile[i]+"_200"))/1e3; 
+    double trk_E_200_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_tile[i]+"_200"))/1e3; 
     if (trk_E_200_tmp > 0.)
       trk_sumE_Tile_200 += trk_E_200_tmp; 
   }
@@ -684,14 +684,14 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   // determine which layer has the highest energy deposit 
   int trk_highE_100_layer = 0;
   int trk_highE_200_layer = 0;
-  float trk_highE_100 = -1e8;
-  float trk_highE_200 = -1e8;
-  float trk_E_100_tmp = -1e8;
-  float trk_E_200_tmp = -1e8;
-  float trk_sumE_Total_100 = 0.;
-  float trk_sumE_Total_200 = 0.;
-  float trk_sumEg0_Total_100 = 0.;
-  float trk_sumEg0_Total_200 = 0.;
+  double trk_highE_100 = -1e8;
+  double trk_highE_200 = -1e8;
+  double trk_E_100_tmp = -1e8;
+  double trk_E_200_tmp = -1e8;
+  double trk_sumE_Total_100 = 0.;
+  double trk_sumE_Total_200 = 0.;
+  double trk_sumEg0_Total_100 = 0.;
+  double trk_sumEg0_Total_200 = 0.;
   for (unsigned int i=0; i<m_layer.size(); i++) { 
     trk_E_100_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer[i]+"_100"))/1e3; 
     trk_E_200_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer[i]+"_200"))/1e3; 
@@ -714,8 +714,8 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     }
   }
 
-  float trk_TileEfrac_100 = trk_sumE_Tile_100/trk_sumEg0_Total_100;    
-  float trk_TileEfrac_200 = trk_sumE_Tile_200/trk_sumEg0_Total_200;    
+  double trk_TileEfrac_100 = trk_sumE_Tile_100/trk_sumEg0_Total_100;    
+  double trk_TileEfrac_200 = trk_sumE_Tile_200/trk_sumEg0_Total_200;    
 
   int trk_p_i = -1;
   int trk_eta_i = -1;
@@ -880,8 +880,8 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
 
   // E/p where E is maximum in either Tile layer A, BC, or D
   if (m_doTileLayer) {
-    float highTileLayer_100 = -1e8;
-    float highTileLayer_200 = -1e8;
+    double highTileLayer_100 = -1e8;
+    double highTileLayer_200 = -1e8;
     int highTileLayer_i_100 = -1; 
     int highTileLayer_i_200 = -1; 
     if (trk_highE_100_layer == 12 || trk_highE_100_layer == 18) {

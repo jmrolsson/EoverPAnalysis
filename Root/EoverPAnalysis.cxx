@@ -245,7 +245,7 @@ EL::StatusCode EoverPAnalysis :: histInitialize ()
 
   wk()->addOutput(m_trk_cutflowHist_eop);
 
-  int nBinsTrkN = 200; float minTrkN = -0.5; float maxTrkN = 199.5;
+  int nBinsTrkN = 200; double minTrkN = -0.5; double maxTrkN = 199.5;
   m_trk_n_all = new TH1D((std::string(m_name+"/trk_n_all")).c_str(), "trk_n_all", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_extrapol = new TH1D((std::string(m_name+"/trk_n_pass_extrapol")).c_str(), "trk_n_pass_extrapol", nBinsTrkN, minTrkN, maxTrkN); 
   m_trk_n_pass_trk1etaphi = new TH1D((std::string(m_name+"/trk_n_pass_trk1etaphi")).c_str(), "trk_n_pass_trk1etaphi", nBinsTrkN, minTrkN, maxTrkN); 
@@ -368,7 +368,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
 
   //  1.) the PU weight ("PileupWeight")
   //  2.) the corrected mu ("corrected_averageInteractionsPerCrossing")
-  float eventWeight(1.);
+  double eventWeight(1.);
   int mu_avg(1e8); // initialize with a that won't pass the selection
   if( eventInfo->isAvailable< float >( "averageInteractionsPerCrossing" ) )
     mu_avg = eventInfo->averageInteractionsPerCrossing();
@@ -377,7 +377,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
     // std::cout << "eventWeight, before PRW: " << eventWeight << std::endl;
     // if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) ) 
     //   mu_avg = eventInfo->auxdata< float >( "corrected_averageInteractionsPerCrossing" );
-    float pileupWeight(0.);
+    double pileupWeight(0.);
     // std::cout << "before getting PileupWeight" << std::endl;
     if (m_doCustomPUreweighting) {
       if (mu_avg > 0. && mu_avg <= m_puwHist->GetNbinsX()) {
@@ -437,24 +437,24 @@ EL::StatusCode EoverPAnalysis :: execute ()
     m_trk_cutflow_eop_extrapol++;
     m_trk_n_pass_extrapol_tmp++;
 
-    float trk_pt = trk->pt()/1e3;
-    float trk_p = 0;
-    if (TMath::Abs(trk->qOverP())>0.) trk_p = (1./TMath::Abs(trk->qOverP()))/1e3; 
+    double trk_pt = trk->pt()/1e3;
+    double trk_p = 0;
+    if (fabs(trk->qOverP())>0.) trk_p = (1./fabs(trk->qOverP()))/1e3; 
     // coordinates of the track in the ID
-    float trk_etaID = trk->eta();
-    float trk_phiID = trk->phi();
+    double trk_etaID = trk->eta();
+    double trk_phiID = trk->phi();
     // coordinates of the track extrapolated to the calorimeter
     // EMB2
-    float trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
-    float trk_phiEMB2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
+    double trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
+    double trk_phiEMB2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
     //EME2
-    float trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
-    float trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
+    double trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
+    double trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
 
     // check that the track is extrapolated to either EMB2 or EME2
     // (if not then trk_eta = trk_phi = -999999999)
-    if ( (TMath::Abs(trk_etaEMB2) > 1000.0 || TMath::Abs(trk_phiEMB2) > 1000.0) && 
-         (TMath::Abs(trk_etaEME2) > 1000.0 || TMath::Abs(trk_phiEME2) > 1000.0) )
+    if ( (fabs(trk_etaEMB2) > 1000.0 || fabs(trk_phiEMB2) > 1000.0) && 
+         (fabs(trk_etaEME2) > 1000.0 || fabs(trk_phiEME2) > 1000.0) )
       continue;
 
     m_trk_cutflow_eop_trk1etaphi++;
@@ -471,22 +471,22 @@ EL::StatusCode EoverPAnalysis :: execute ()
         const xAOD::TrackParticle* trk2 = (*trk2_itr);
 
         //EMB2
-        if (TMath::Abs(trk_etaEMB2) < 1000.0 && TMath::Abs(trk_phiEMB2) < 1000.0) {
-          float trk2_etaEMB2 = trk2->auxdata<float>("CALO_trkEta_EMB2");
-          float trk2_phiEMB2 = trk2->auxdata<float>("CALO_trkPhi_EMB2");
-          if (TMath::Abs(trk2_etaEMB2) < 1000.0 && TMath::Abs(trk2_phiEMB2) < 1000.0) {
-            float trk_trk2_dR_EMB2 = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEMB2, trk2_phiEMB2);
+        if (fabs(trk_etaEMB2) < (double)1000.0 && fabs(trk_phiEMB2) < (double)1000.0) {
+          double trk2_etaEMB2 = trk2->auxdata<float>("CALO_trkEta_EMB2");
+          double trk2_phiEMB2 = trk2->auxdata<float>("CALO_trkPhi_EMB2");
+          if (fabs(trk2_etaEMB2) < (double)1000.0 && fabs(trk2_phiEMB2) < (double)1000.0) {
+            double trk_trk2_dR_EMB2 = deltaR(trk_etaEMB2, trk_phiEMB2, trk2_etaEMB2, trk2_phiEMB2);
             if (trk_trk2_dR_EMB2 <= m_trkIsoDRmax) trk_not_isolated_EMB2 = true;
           }
         }
 
         //EME2
-        if (TMath::Abs(trk_etaEME2) < 1000.0 && TMath::Abs(trk_phiEME2) < 1000.0) {
-          float trk2_etaEME2 = trk2->auxdata<float>("CALO_trkEta_EME2");
-          float trk2_phiEME2 = trk2->auxdata<float>("CALO_trkPhi_EME2");
+        if (fabs(trk_etaEME2) < (double)1000.0 && fabs(trk_phiEME2) < (double)1000.0) {
+          double trk2_etaEME2 = trk2->auxdata<float>("CALO_trkEta_EME2");
+          double trk2_phiEME2 = trk2->auxdata<float>("CALO_trkPhi_EME2");
 
-          if (TMath::Abs(trk2_etaEME2) < 1000.0 && TMath::Abs(trk2_phiEME2) < 1000.0) {
-            float trk_trk2_dR_EME2 = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEME2, trk2_phiEME2);
+          if (fabs(trk2_etaEME2) < (double)1000.0 && fabs(trk2_phiEME2) < (double)1000.0) {
+            double trk_trk2_dR_EME2 = deltaR(trk_etaEME2, trk_phiEME2, trk2_etaEME2, trk2_phiEME2);
             if (trk_trk2_dR_EME2 <= m_trkIsoDRmax) trk_not_isolated_EME2 = true;
           }
         }
@@ -495,13 +495,13 @@ EL::StatusCode EoverPAnalysis :: execute ()
         // if (trk_trk2_dR_min < m_trkIsoDRmax) {  
         //   // calculate the leading and avg p of the surrounding tracks, 
         //   // used for TileCal comparisons with Run1
-        //   if (TMath::Abs(trk2->qOverP())>0.) surr_trk_sum_p += (1./TMath::Abs(trk2->qOverP()))/1e3; 
+        //   if (fabs(trk2->qOverP())>0.) surr_trk_sum_p += (1./fabs(trk2->qOverP()))/1e3; 
         // }
       }
     } // END looping trk2
 
     // check track isolation requirement
-    // if (TMath::Abs(surr_trk_sum_p/trk_p) > m_trkIsoPfrac) continue;
+    // if (fabs(surr_trk_sum_p/trk_p) > m_trkIsoPfrac) continue;
     if (trk_not_isolated_EMB2) continue;
     if (trk_not_isolated_EME2) continue;
 
@@ -521,11 +521,11 @@ EL::StatusCode EoverPAnalysis :: execute ()
     if (trk_p > 5.0)
       m_trk_n_pass_pG5000_tmp++;
 
-    if (TMath::Abs(trk_etaID) < 0.6)
+    if (fabs(trk_etaID) < 0.6)
       m_trk_n_pass_etaL06_tmp++;
-    if (TMath::Abs(trk_etaID) >= 0.6 && TMath::Abs(trk_etaID) < 1.5)
+    if (fabs(trk_etaID) >= 0.6 && fabs(trk_etaID) < 1.5)
       m_trk_n_pass_etaG06L15_tmp++;
-    if (TMath::Abs(trk_etaID) >= 1.5 && TMath::Abs(trk_etaID) < 2.3)
+    if (fabs(trk_etaID) >= 1.5 && fabs(trk_etaID) < 2.3)
       m_trk_n_pass_etaG15L23_tmp++;
 
     // check track p requirement
@@ -538,13 +538,14 @@ EL::StatusCode EoverPAnalysis :: execute ()
 
     // check track eta requirement
     if (m_doTrkEtacut) {
-      // if (TMath::Abs(trk_etaID) < m_trkEtamin) continue;
-      if (TMath::Abs(trk_etaID) >= m_trkEtamax) continue;
+      // if (fabs(trk_etaID) < m_trkEtamin) continue;
+      // if (fabs(trk_etaID) >= m_trkEtamax) continue;
+      if ((double)fabs(trk_etaID) >= (double)2.3) continue;
     }
     m_trk_cutflow_eop_pass_eta++;
     m_trk_n_pass_eta_tmp++;
 
-    float trkWeight = eventWeight;
+    double trkWeight = eventWeight;
     if (m_doTrkPtReweighting && eventInfo->isAvailable< float >( "mcEventWeight" ) ) {
       if (trk_pt > 0. && trk_pt < 30.) {
         trkWeight *= m_ptHist->GetBinContent(m_ptHist->FindBin(trk_pt));
@@ -554,9 +555,9 @@ EL::StatusCode EoverPAnalysis :: execute ()
     if (m_doTileCuts) {
 
       // check LAr energy loss requirement
-      float trk_sumE_Lar_200 = 0.; 
+      double trk_sumE_Lar_200 = 0.; 
       for (unsigned int i=0; i<m_layer_lar.size(); i++) {
-        float trk_E_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_lar[i]+"_200"))/1e3; 
+        double trk_E_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_lar[i]+"_200"))/1e3; 
         if (trk_E_tmp > 0.) // only include E > 0 (i.e. not calorimeter noise)
           trk_sumE_Lar_200 += trk_E_tmp;
       }
@@ -566,19 +567,19 @@ EL::StatusCode EoverPAnalysis :: execute ()
       m_trk_n_pass_larEmax_tmp++;
 
       // check E(tile)/E(total) requirement
-      float trk_sumE_Tile_200 = 0.; 
+      double trk_sumE_Tile_200 = 0.; 
       for (unsigned int i=0; i<m_layer_tile.size(); i++) {
-        float trk_E_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_tile[i]+"_200"))/1e3; 
+        double trk_E_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_tile[i]+"_200"))/1e3; 
         if (trk_E_tmp > 0.) // only include E > 0 (i.e. not calorimeter noise)
           trk_sumE_Tile_200 += trk_E_tmp;
       }
-      float trk_sumE_Total_200 = 0.;
+      double trk_sumE_Total_200 = 0.;
       for (unsigned int i=0; i<m_layer.size(); i++) { 
-        float trk_E_200_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer[i]+"_200"))/1e3; 
+        double trk_E_200_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer[i]+"_200"))/1e3; 
         if (trk_E_200_tmp > 0.) // only include E > 0 (i.e. not calorimeter noise)
           trk_sumE_Total_200 += trk_E_200_tmp; 
       }
-      float trk_TileEfrac_200 = 0.;
+      double trk_TileEfrac_200 = 0.;
       if (trk_sumE_Total_200 > 0.)  
         trk_TileEfrac_200 = trk_sumE_Tile_200/trk_sumE_Total_200;
 
@@ -631,11 +632,11 @@ EL::StatusCode EoverPAnalysis :: execute ()
     }
     // fill eop histograms for different trk eta ranges
     if (m_doGlobalEtaRanges) {
-      if (TMath::Abs(trk_etaID) < .5) 
+      if (fabs(trk_etaID) < .5) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL05 -> execute(trk, vtxs, eventInfo, trkWeight), "");
-      if (TMath::Abs(trk_etaID) >= .5 && TMath::Abs(trk_etaID) < .7) 
+      if (fabs(trk_etaID) >= .5 && fabs(trk_etaID) < .7) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG05L07 -> execute(trk, vtxs, eventInfo, trkWeight), "");
-      if (TMath::Abs(trk_etaID) >= .7) 
+      if (fabs(trk_etaID) >= .7) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG07 -> execute(trk, vtxs, eventInfo, trkWeight), "");
     }
 
@@ -652,24 +653,24 @@ EL::StatusCode EoverPAnalysis :: execute ()
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG3400L4200 -> execute(trk, vtxs, eventInfo, trkWeight), "");
       if (trk_p >= 4.2 && trk_p < 5.)
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_pG4200L5000 -> execute(trk, vtxs, eventInfo, trkWeight), "");
-      if (TMath::Abs(trk_etaID) < .6){
+      if (fabs(trk_etaID) < .6){
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06 -> execute(trk, vtxs, eventInfo, trkWeight), "");
         if (trk_p >= 2.2 && trk_p < 4.6)
           RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG2200L4200 -> execute(trk, vtxs, eventInfo, trkWeight), "");
         if (trk_p >= 4.6 && trk_p < 50.)
           RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaL06_pG4200L50000 -> execute(trk, vtxs, eventInfo, trkWeight), "");
       }
-      if (TMath::Abs(trk_etaID) >= .6 && TMath::Abs(trk_etaID) < 1.1) 
+      if (fabs(trk_etaID) >= .6 && fabs(trk_etaID) < 1.1) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG06L11 -> execute(trk, vtxs, eventInfo, trkWeight), "");
-      if (TMath::Abs(trk_etaID) >= 1.1 && TMath::Abs(trk_etaID) < 1.4) 
+      if (fabs(trk_etaID) >= 1.1 && fabs(trk_etaID) < 1.4) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG11L14 -> execute(trk, vtxs, eventInfo, trkWeight), "");
-      if (TMath::Abs(trk_etaID) >= 1.4 && TMath::Abs(trk_etaID) < 1.5) 
+      if (fabs(trk_etaID) >= 1.4 && fabs(trk_etaID) < 1.5) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG14L15 -> execute(trk, vtxs, eventInfo, trkWeight), "");
-      if (TMath::Abs(trk_etaID) >= 1.5 && TMath::Abs(trk_etaID) < 1.8) 
+      if (fabs(trk_etaID) >= 1.5 && fabs(trk_etaID) < 1.8) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG15L18 -> execute(trk, vtxs, eventInfo, trkWeight), "");
-      if (TMath::Abs(trk_etaID) >= 1.8 && TMath::Abs(trk_etaID) < 1.9) 
+      if (fabs(trk_etaID) >= 1.8 && fabs(trk_etaID) < 1.9) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG18L19 -> execute(trk, vtxs, eventInfo, trkWeight), "");
-      if (TMath::Abs(trk_etaID) >= 1.9 && TMath::Abs(trk_etaID) < 2.3) 
+      if (fabs(trk_etaID) >= 1.9 && fabs(trk_etaID) < 2.3) 
         RETURN_CHECK("EoverPAnalysis::execute()", m_plots_eop_etaG19L23 -> execute(trk, vtxs, eventInfo, trkWeight), "");
     }
 
@@ -775,10 +776,10 @@ EL::StatusCode EoverPAnalysis :: histFinalize ()
   return EL::StatusCode::SUCCESS;
 }
 
-float EoverPAnalysis :: deltaR (float trk_eta, float trk_phi, float trk2_eta, float trk2_phi)
+double EoverPAnalysis :: deltaR (double trk_eta, double trk_phi, double trk2_eta, double trk2_phi)
 {
-  float trk_trk2_dEta = TMath::Abs(trk2_eta - trk_eta);
-  float trk_trk2_dPhi = TMath::Abs(trk2_phi - trk_phi);
+  double trk_trk2_dEta = fabs(trk2_eta - trk_eta);
+  double trk_trk2_dPhi = fabs(trk2_phi - trk_phi);
 
   if (trk_trk2_dPhi > TMath::Pi())
     trk_trk2_dPhi = 2*TMath::Pi() - trk_trk2_dPhi;
