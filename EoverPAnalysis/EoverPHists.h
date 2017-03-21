@@ -4,12 +4,12 @@
 #ifndef EoverPAnalysis_EoverPHists_H
 #define EoverPAnalysis_EoverPHists_H
 
-#include "xAODAnaHelpers/HistogramManager.h"
+#include "EoverPAnalysis/HistogramManagerD.h"
 #include "xAODTracking/VertexContainer.h"
 #include "xAODTracking/TrackParticleContainer.h"
 #include "xAODEventInfo/EventInfo.h"
 
-class EoverPHists : public HistogramManager
+class EoverPHists : public HistogramManagerD
 {
   public:
     EoverPHists(std::string name, std::string detailStr, std::string energyCalib = "ClusterEnergy", bool doCaloTotal = true, bool doCaloEM = false, bool doCaloHAD = false, bool doBgSubtr = true, bool doTileLayer = false, std::string Pbins = "", bool doPbinsArray = false, std::string PbinsArray = "", std::string Etabins = "", bool doEtabinsArray = false, std::string EtabinsArray = "", bool doExtraEtaEnergyBinHists = false);
@@ -18,8 +18,8 @@ class EoverPHists : public HistogramManager
     StatusCode initialize();
 
     StatusCode execute( const xAOD::TrackParticle* trk, const xAOD::VertexContainer *vtxs, const xAOD::EventInfo* eventInfo, double eventWeight );
-    using HistogramManager::book; // make other overloaded versions of book() to show up in subclass
-    using HistogramManager::execute; // overload
+    using HistogramManagerD::book; // make other overloaded versions of book() to show up in subclass
+    using HistogramManagerD::execute; // overload
 
     // Double_t* linspace(double a, double b, unsigned int n);
     // Double_t* logspace(double a, double b, unsigned int n);
