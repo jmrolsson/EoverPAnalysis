@@ -8,7 +8,7 @@
 #include <sstream>
 #include <cmath>
 
-EoverPHists :: EoverPHists (std::string name, std::string detailStr, std::string energyCalib, bool doCaloTotal, bool doCaloEM, bool doCaloHAD, bool doBgSubtr, bool doTileLayer, std::string Pbins, bool doPbinsArray, std::string PbinsArray, std::string Etabins, bool doEtabinsArray, std::string EtabinsArray, bool doExtraEtaEnergyBinHists) : HistogramManager(name, detailStr)
+EoverPHists :: EoverPHists (std::string name, std::string detailStr, std::string energyCalib, bool doCaloTotal, bool doCaloEM, bool doCaloHAD, bool doBgSubtr, bool doTileLayer, std::string Pbins, bool doPbinsArray, std::string PbinsArray, std::string Etabins, bool doEtabinsArray, std::string EtabinsArray, bool doExtraEtaEnergyBinHists) : HistogramManagerD(name, detailStr)
 {
   m_energyCalib = energyCalib;
   m_doCaloTotal = doCaloTotal;
@@ -186,12 +186,12 @@ StatusCode EoverPHists::initialize()
     m_eop_Total_100_vs_npv = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_100_vs_highE_layer = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_Total_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
+      m_eop_Total_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_Total_100_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -214,12 +214,12 @@ StatusCode EoverPHists::initialize()
     m_eop_Total_200_vs_npv = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_200_vs_highE_layer = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_Total_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
+      m_eop_Total_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_Total_200_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -241,12 +241,12 @@ StatusCode EoverPHists::initialize()
     m_eop_EM_100_vs_npv = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_EM_100_vs_highE_layer = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_EM_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
+      m_eop_EM_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_EM_100_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -264,12 +264,12 @@ StatusCode EoverPHists::initialize()
     m_eop_EM_200_vs_npv = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_EM_200_vs_highE_layer = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_EM_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
+      m_eop_EM_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_EM_200_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -297,12 +297,12 @@ StatusCode EoverPHists::initialize()
     m_eop_HAD_100_vs_npv = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_HAD_100_vs_highE_layer = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_HAD_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
+      m_eop_HAD_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_HAD_100_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -320,12 +320,12 @@ StatusCode EoverPHists::initialize()
     m_eop_HAD_200_vs_npv = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_HAD_200_vs_highE_layer = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_HAD_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
+      m_eop_HAD_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_HAD_200_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -350,12 +350,12 @@ StatusCode EoverPHists::initialize()
     m_eop_EM_BG_vs_mu_avg = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
     m_eop_EM_BG_vs_npv = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_EM_BG_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
+      m_eop_EM_BG_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_BG_"+m_energyCalib), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_BG_"+m_energyCalib), "E/p", nBinsEop, minEop, maxEop);
           m_eop_EM_BG_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -378,12 +378,12 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileA_100_vs_npv = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileA_100_vs_TileA_E = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_TileA_E"), "E(Tile, layer A)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileA_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
+      m_eop_highTileA_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_highTileA_100_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -401,12 +401,12 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileB_100_vs_npv = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileB_100_vs_TileB_E = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_TileB_E"), "E(Tile, layer B)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileB_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
+      m_eop_highTileB_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_highTileB_100_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -424,12 +424,12 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileD_100_vs_npv = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileD_100_vs_TileD_E = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_TileD_E"), "E(Tile, layer D)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileD_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
+      m_eop_highTileD_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_highTileD_100_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -448,12 +448,12 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileA_200_vs_npv = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileA_200_vs_TileA_E = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_TileA_E"), "E(Tile, layer A)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileA_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray);
+      m_eop_highTileA_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray);
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_highTileA_200_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -471,12 +471,12 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileB_200_vs_npv = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileB_200_vs_TileB_E = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_TileB_E"), "E(Tile, layer B)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileB_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray);
+      m_eop_highTileB_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray);
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_highTileB_200_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
@@ -494,12 +494,12 @@ StatusCode EoverPHists::initialize()
     m_eop_highTileD_200_vs_npv = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
     m_eop_highTileD_200_vs_TileD_E = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_TileD_E"), "E(Tile, layer D)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
     if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileD_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray);
+      m_eop_highTileD_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray);
       char buffer [200];
       for (unsigned int i=0; i<nPbinsArray; i++) {
         for (unsigned int j=0; j<nEtabinsArray; j++) {
           std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+          TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
           m_eop_highTileD_200_EtaEnergyRanges[i].push_back(tmp_hist);
         }
       }
