@@ -221,8 +221,8 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_inTrackContainerName": trks_loose,
                                 "m_energyCalib": energy_calib, # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
                                 "m_doCaloTotal": True,
-                                "m_doCaloEM": True,
-                                "m_doCaloHAD": True,
+                                "m_doCaloEM": False,
+                                "m_doCaloHAD": False
                                 "m_doBgSubtr" : True,
                                 "m_doTileLayer": False,
                                 "m_trkIsoDRmax": .4,
@@ -246,7 +246,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doProfileEta": True,
                                 "m_doProfileP": True,
                                 "m_doExtraEtaEnergyBinHists": True,
-                                "m_doGlobalTileEfracRanges": True,
+                                "m_doGlobalTileEfracRanges": False,
                                 "m_doGlobalEnergyRanges": False,
                                 "m_doGlobalEtaRanges": False,
                                 "m_doGlobalExtraRanges": False,
