@@ -1,0 +1,2 @@
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.8967463.EXT0._000011.TrackCaloDxAOD.pool.root
+root://fax.mwt2.org:1094//atlas/rucio/user.jolsson:user.jolsson.8967463.EXT0._000002.TrackCaloDxAOD.pool.root

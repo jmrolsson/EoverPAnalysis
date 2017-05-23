@@ -4,15 +4,17 @@
 #ifndef EoverPAnalysis_EoverPAnalysis_H
 #define EoverPAnalysis_EoverPAnalysis_H
 
+#include "TTree.h"
+
 #include "xAODTracking/VertexContainer.h"
 #include "xAODTracking/TrackParticleContainer.h"
-
-// algorithm wrapper
-#include "xAODAnaHelpers/Algorithm.h"
 
 // Histograms
 #include "EoverPAnalysis/EoverPHists.h"
 #include "EoverPAnalysis/EoverPHistsTrks.h"
+
+// algorithm wrapper
+#include "xAODAnaHelpers/Algorithm.h"
 
 class EoverPAnalysis : public xAH::Algorithm
 {
@@ -24,9 +26,12 @@ class EoverPAnalysis : public xAH::Algorithm
     // configuration variables
     std::string m_detailStr;
 
+    // save output tree of key variables
+    bool m_fillOutputTree = false;
+
     // track isolation settings
-    float m_trkIsoDRmax = .4;
-    float m_trkIsoPfrac = 0.;
+    double m_trkIsoDRmax = .4;
+    double m_trkIsoPfrac = 0.;
     int m_mu_avg_min = 0;
     int m_mu_avg_max = 1e5;
 
@@ -39,18 +44,18 @@ class EoverPAnalysis : public xAH::Algorithm
 
     // global track p cuts
     bool m_doTrkPcut = false;
-    float m_trkPmin = 0.;
-    float m_trkPmax = 1e8; 
+    double m_trkPmin = 0.;
+    double m_trkPmax = 1e8; 
 
     // global track p cuts
     bool m_doTrkEtacut = false;
-    float m_trkEtamin = 0.;
-    float m_trkEtamax = 1e8; 
+    double m_trkEtamin = 0.;
+    double m_trkEtamax = 1e8; 
 
     // make plots with Tile specific cuts
     bool m_doTileCuts = false;
-    float m_LarEmax = 1e8;
-    float m_TileEfracmin = -1;
+    double m_LarEmax = 1e8;
+    double m_TileEfracmin = -1;
 
     // user defined energy (p) bins
     std::string m_Pbins = "";
@@ -63,6 +68,8 @@ class EoverPAnalysis : public xAH::Algorithm
     std::string m_EtabinsArray = "";
 
     // turn on extra E/p histograms for each of the track eta and p bins
+    bool m_doProfileEta; //!
+    bool m_doProfileP; //!
     bool m_doExtraEtaEnergyBinHists = false;
 
     // make all plots for different TileEfrac cuts
@@ -213,9 +220,24 @@ class EoverPAnalysis : public xAH::Algorithm
     // variables that don't get filled at submission time should be
     // protected from being send from the submission node to the worker
     // node (done by the //!)
+
   public:
     // Tree *myTree; //!
     // TH1 *myHist; //!
+
+    // tree for saving some key variables
+    TTree *m_tree; //!
+    unsigned long long m_eventNumber; //!
+    int m_trkIndex; //!
+    double m_trkEta; //!
+    double m_trkPhi; //!
+    double m_trkP; //!
+    double m_Etot; //!
+    int m_etaBin; //!
+    int m_phiBin; //!
+    int m_pBin; //!
+    double m_eopRaw; //!
+    double m_eopBg; //!
 
     // this is a standard constructor
     EoverPAnalysis (std::string className = "EoverPAnalysis");
@@ -231,7 +253,9 @@ class EoverPAnalysis : public xAH::Algorithm
     virtual EL::StatusCode finalize ();
     virtual EL::StatusCode histFinalize ();
 
-    float deltaR (float trk_eta, float trk_phi, float trk2_eta, float trk2_phi);
+    double deltaR (double trk_eta, double trk_phi, double trk2_eta, double trk2_phi);
+
+    std::vector<double> str2vec(std::string str);
 
     /// @cond
     // this is needed to distribute the algorithm to the workers

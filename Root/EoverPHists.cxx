@@ -8,7 +8,7 @@
 #include <sstream>
 #include <cmath>
 
-EoverPHists :: EoverPHists (std::string name, std::string detailStr, std::string energyCalib, bool doCaloTotal, bool doCaloEM, bool doCaloHAD, bool doBgSubtr, bool doTileLayer, std::string Pbins, bool doPbinsArray, std::string PbinsArray, std::string Etabins, bool doEtabinsArray, std::string EtabinsArray, bool doExtraEtaEnergyBinHists) : HistogramManager(name, detailStr)
+EoverPHists :: EoverPHists (std::string name, std::string detailStr, std::string energyCalib, bool doCaloTotal, bool doCaloEM, bool doCaloHAD, bool doBgSubtr, bool doTileLayer, std::string Pbins, bool doPbinsArray, std::string PbinsArray, std::string Etabins, bool doEtabinsArray, std::string EtabinsArray, bool doProfileEta, bool doProfileP, bool doExtraEtaEnergyBinHists) : HistogramManagerD(name, detailStr)
 {
   m_energyCalib = energyCalib;
   m_doCaloTotal = doCaloTotal;
@@ -22,6 +22,8 @@ EoverPHists :: EoverPHists (std::string name, std::string detailStr, std::string
   m_Etabins = Etabins; 
   m_doEtabinsArray = doEtabinsArray;
   m_EtabinsArray = EtabinsArray; 
+  m_doProfileEta= doProfileEta;
+  m_doProfileP= doProfileP;
   m_doExtraEtaEnergyBinHists = doExtraEtaEnergyBinHists;
 }
 
@@ -30,22 +32,22 @@ EoverPHists :: ~EoverPHists () {}
 StatusCode EoverPHists::initialize()
 {
   // number of bins and ranges for histograms
-  unsigned int nBinsMu = 50;          float minMu = 0;                  float maxMu = 50;
-  unsigned int nBinsNPV = 50;         float minNPV = -0.5;              float maxNPV = 49.5;
-  unsigned int nBinsDR = 60;          float minDR = 0;                  float maxDR = 3;
-  unsigned int nBinsPhi = 32;         float minPhi = -TMath::Pi();      float maxPhi = TMath::Pi(); 
-  unsigned int nBinsPhiExtra = 1024;  float minPhiExtra = -TMath::Pi(); float maxPhiExtra = TMath::Pi(); 
-  unsigned int nBinsPhiExtra2 = 800;  float minPhiExtra2 = -4.0;        float maxPhiExtra2 = 4.0; 
-  unsigned int nBinsEop = 300;        float minEop = -4;                float maxEop = 20;
-  unsigned int nBinsEop_l = 255;      float minEop_l = -100;            float maxEop_l = 5000;
-  unsigned int nBinsE = 700;          float minE = -20;                 float maxE = 50;
+  unsigned int nBinsMu = 50;          double minMu = 0;                  double maxMu = 50;
+  unsigned int nBinsNPV = 50;         double minNPV = -0.5;              double maxNPV = 49.5;
+  unsigned int nBinsDR = 60;          double minDR = 0;                  double maxDR = 3;
+  unsigned int nBinsPhi = 32;         double minPhi = -TMath::Pi();      double maxPhi = TMath::Pi(); 
+  unsigned int nBinsPhiExtra = 1024;  double minPhiExtra = -TMath::Pi(); double maxPhiExtra = TMath::Pi(); 
+  unsigned int nBinsPhiExtra2 = 800;  double minPhiExtra2 = -4.0;        double maxPhiExtra2 = 4.0; 
+  unsigned int nBinsEop = 300;        double minEop = -4;                double maxEop = 20;
+  unsigned int nBinsEop_l = 255;      double minEop_l = -100;            double maxEop_l = 5000;
+  unsigned int nBinsE = 700;          double minE = -20;                 double maxE = 50;
 
-  unsigned int nBinsP = 500;          float minP = 0;                   float maxP = 50;
+  unsigned int nBinsP = 500;          double minP = 0;                   double maxP = 50;
   std::vector<double> Pbins = str2vec(m_Pbins);
   if (Pbins.size() > 2) {
     nBinsP = (int) Pbins[0];
-    minP = (float) Pbins[1];
-    maxP = (float) Pbins[2];
+    minP = (double) Pbins[1];
+    maxP = (double) Pbins[2];
   }
 
   nPbinsArray = 0;
@@ -56,12 +58,12 @@ StatusCode EoverPHists::initialize()
   if (nPbinsArray <= 1)
     m_doPbinsArray = false;
 
-  unsigned int nBinsEta = 100;      float minEta = -2.5;           float maxEta = 2.5;
+  unsigned int nBinsEta = 100;      double minEta = -2.5;           double maxEta = 2.5;
   std::vector<double> Etabins = str2vec(m_Etabins);
   if (Etabins.size() > 2) {
     nBinsEta = (int) Etabins[0];
-    minEta = (float) Etabins[1];
-    maxEta = (float) Etabins[2];
+    minEta = (double) Etabins[1];
+    maxEta = (double) Etabins[2];
   }
   if (minEta < 0) m_doEtaAbs = false;
   else m_doEtaAbs = true;
@@ -97,9 +99,9 @@ StatusCode EoverPHists::initialize()
   m_trk_DR_EMB2_ID = book(m_name, std::string("trk_DR_EMB2_ID"), std::string("#Delta R_{trk}(EMB2, ID)"), nBinsDR, minDR, maxDR); 
   m_trk_DEta_EMB2_ID = book(m_name, std::string("trk_DEta_EMB2_ID"), std::string("#Delta #eta_{trk}(EMB2, ID)"), nBinsEta, minEta, maxEta); 
   m_trk_DPhi_EMB2_ID = book(m_name, std::string("trk_DPhi_EMB2_ID"), std::string("#Delta #phi_{trk}(EMB2, ID)"), nBinsPhi, minPhi, maxPhi); 
-  m_trk_DR_EMB2_ID_vs_trk_p = book(m_name, std::string("trk_DR_EMB2_ID_vs_trk_p"), "p_{trk} [GeV]", nBinsP, minP, maxP, std::string("#Delta R_{trk}(EMB2, ID)"), nBinsDR, minDR, maxDR); 
-  m_trk_DEta_EMB2_ID_vs_trk_p = book(m_name, std::string("trk_DEta_EMB2_ID_vs_trk_p"), "p_{trk} [GeV]", nBinsP, minP, maxP, std::string("#Delta #eta_{trk}(EMB2, ID)"), nBinsEta, minEta, maxEta); 
-  m_trk_DPhi_EMB2_ID_vs_trk_p = book(m_name, std::string("trk_DPhi_EMB2_ID_vs_trk_p"), "p_{trk} [GeV]", nBinsP, minP, maxP, std::string("#Delta #phi_{trk}(EMB2, ID)"), nBinsPhi, minPhi, maxPhi); 
+  m_trk_DR_EMB2_ID_vs_trk_p = book(m_name, std::string("trk_DR_EMB2_ID_vs_trk_p"), "p_{trk} [GeV]", nBinsP, minP, maxP, std::string("#Delta R_{trk}(EMB2, ID)"), minDR, maxDR); 
+  m_trk_DEta_EMB2_ID_vs_trk_p = book(m_name, std::string("trk_DEta_EMB2_ID_vs_trk_p"), "p_{trk} [GeV]", nBinsP, minP, maxP, std::string("#Delta #eta_{trk}(EMB2, ID)"), minEta, maxEta); 
+  m_trk_DPhi_EMB2_ID_vs_trk_p = book(m_name, std::string("trk_DPhi_EMB2_ID_vs_trk_p"), "p_{trk} [GeV]", nBinsP, minP, maxP, std::string("#Delta #phi_{trk}(EMB2, ID)"), minPhi, maxPhi); 
 
   m_trk_d0 = book(m_name, "trk_d0", "d0[mm]", 100,-5.0, 5.0 );
   m_trk_d0_s = book(m_name, "trk_d0_s" , "d0[mm]", 100,  -1.0, 1.0 );
@@ -170,60 +172,109 @@ StatusCode EoverPHists::initialize()
   if (m_doCaloTotal) {
     // dR(trk,cluster) < 0.1
     m_trk_E_Total_100 = book(m_name, std::string("trk_E_Total_"+m_energyCalib+"_0_100"), "E", nBinsE, minE, maxE);
-    m_trk_E_Total_100_vs_mu_avg = book(m_name, std::string("trk_E_Total_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E", nBinsE, minE, maxE);
+    m_trk_E_Total_100_vs_mu_avg = book(m_name, std::string("trk_E_Total_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E", minE, maxE);
 
     m_eop_Total_100 = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_Total_100_vs_trkP = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_Total_100_vs_trkP = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_Total_100_vs_trkEta = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_Total_100_vs_trkEta = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_100_vs_trkPhi = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_100_vs_trkPhiID = book(m_name, std::string("eop_ID_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_100_vs_trkPhi_extra = book(m_name, std::string("eop_extra_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_100_vs_trkPhi_extra2 = book(m_name, std::string("eop_extra2_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_100_vs_mu = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_100_vs_mu_avg = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_100_vs_npv = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_100_vs_highE_layer = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_Total_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_Total_100_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_Total_100_vs_trkP = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_Total_100_vs_trkP = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_Total_100_vs_trkEta = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_Total_100_vs_trkEta = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_100_vs_trkPhi = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_100_vs_trkPhiID = book(m_name, std::string("eop_ID_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_100_vs_trkPhi_extra = book(m_name, std::string("eop_extra_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_100_vs_trkPhi_extra2 = book(m_name, std::string("eop_extra2_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_100_vs_mu = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_100_vs_mu_avg = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_100_vs_npv = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_100_vs_highE_layer = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) {
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_Total_100_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_100"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_Total_100_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_Total_100_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_100"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_Total_100_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_Total_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_Total_100_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
+    
     // dR(trk,cluster) < 0.2
     m_trk_E_Total_200 = book(m_name, std::string("trk_E_Total_"+m_energyCalib+"_0_200"), "E", nBinsE, minE, maxE);
-    m_trk_E_Total_200_vs_mu_avg = book(m_name, std::string("trk_E_Total_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E", nBinsE, minE, maxE);
+    m_trk_E_Total_200_vs_mu_avg = book(m_name, std::string("trk_E_Total_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E", minE, maxE);
     m_eop_Total_200 = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
     m_eop_Total_200_l = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_l"), "E/p", nBinsEop_l, minEop_l, maxEop_l);
-    if (m_doPbinsArray) m_eop_Total_200_vs_trkP = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_Total_200_vs_trkP = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsP, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_Total_200_vs_trkEta = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_Total_200_vs_trkEta = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_200_vs_trkPhi = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_200_vs_trkPhiID = book(m_name, std::string("eop_ID_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_200_vs_trkPhi_extra = book(m_name, std::string("eop_extra_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_200_vs_trkPhi_extra2 = book(m_name, std::string("eop_extra2_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_200_vs_mu = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_200_vs_mu_avg = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_200_vs_npv = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_Total_200_vs_highE_layer = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_Total_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_Total_200_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_Total_200_vs_trkP = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_Total_200_vs_trkP = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsP, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_Total_200_vs_trkEta = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_Total_200_vs_trkEta = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_200_vs_trkPhi = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_200_vs_trkPhiID = book(m_name, std::string("eop_ID_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_200_vs_trkPhi_extra = book(m_name, std::string("eop_extra_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_200_vs_trkPhi_extra2 = book(m_name, std::string("eop_extra2_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_200_vs_mu = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_200_vs_mu_avg = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_200_vs_npv = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_Total_200_vs_highE_layer = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "<E/p>", minEop_l, maxEop_l);
+
+    if (m_doEtabinsArray && m_doPbinsArray) {
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_Total_200_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_200"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_Total_200_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_Total_200_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_200"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_Total_200_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_Total_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_Total_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_Total_200_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
+
   } // doCaloTotal
 
   // EM calorimeter (EMB+EMEC)
@@ -231,46 +282,92 @@ StatusCode EoverPHists::initialize()
     // dR(trk,cluster) < 0.1
     m_trk_E_EM_100 = book(m_name, std::string("trk_E_EM_"+m_energyCalib+"_0_100"), "E", nBinsE, minE, maxE);
     m_eop_EM_100 = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_EM_100_vs_trkP = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_EM_100_vs_trkP = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_EM_100_vs_trkEta = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_EM_100_vs_trkEta = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_100_vs_trkPhi = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_100_vs_mu = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_100_vs_mu_avg = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_100_vs_npv = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_100_vs_highE_layer = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_EM_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_EM_100_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_EM_100_vs_trkP = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_EM_100_vs_trkP = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_EM_100_vs_trkEta = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_EM_100_vs_trkEta = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_100_vs_trkPhi = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_100_vs_mu = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_100_vs_mu_avg = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_100_vs_npv = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_100_vs_highE_layer = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) { 
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_EM_100_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_100"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_EM_100_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_EM_100_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_100"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_EM_100_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_EM_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_EM_100_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
     // dR(trk,cluster) < 0.2
     m_trk_E_EM_200 = book(m_name, std::string("trk_E_EM_"+m_energyCalib+"_0_200"), "E", nBinsE, minE, maxE);
     m_eop_EM_200 = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_EM_200_vs_trkP = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_EM_200_vs_trkP = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_EM_200_vs_trkEta = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_EM_200_vs_trkEta = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_200_vs_trkPhi = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_200_vs_mu = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_200_vs_mu_avg = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_200_vs_npv = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_200_vs_highE_layer = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_EM_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_EM_200_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_EM_200_vs_trkP = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_EM_200_vs_trkP = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_EM_200_vs_trkEta = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_EM_200_vs_trkEta = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_200_vs_trkPhi = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_200_vs_mu = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_200_vs_mu_avg = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_200_vs_npv = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_200_vs_highE_layer = book(m_name, std::string("eop_EM_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) { 
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_EM_200_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_200"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_EM_200_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_EM_200_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_200"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_EM_200_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_EM_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_EM_200_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
@@ -287,46 +384,92 @@ StatusCode EoverPHists::initialize()
     // dR(trk,cluster) < 0.1
     m_trk_E_HAD_100 = book(m_name, std::string("trk_E_HAD_"+m_energyCalib+"_0_100"), "E", nBinsE, minE, maxE);
     m_eop_HAD_100 = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_HAD_100_vs_trkP = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_HAD_100_vs_trkP = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_HAD_100_vs_trkEta = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_HAD_100_vs_trkEta = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_HAD_100_vs_trkPhi = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_HAD_100_vs_mu = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_HAD_100_vs_mu_avg = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_HAD_100_vs_npv = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_HAD_100_vs_highE_layer = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_HAD_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_HAD_100_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_HAD_100_vs_trkP = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_HAD_100_vs_trkP = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_HAD_100_vs_trkEta = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_HAD_100_vs_trkEta = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_HAD_100_vs_trkPhi = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_HAD_100_vs_mu = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_HAD_100_vs_mu_avg = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_HAD_100_vs_npv = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_HAD_100_vs_highE_layer = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_100_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) { 
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_HAD_100_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_100"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_HAD_100_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_HAD_100_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_100"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_HAD_100_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_HAD_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_HAD_100_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
     // dR(trk,cluster) < 0.2
     m_trk_E_HAD_200 = book(m_name, std::string("trk_E_HAD_"+m_energyCalib+"_0_200"), "E", nBinsE, minE, maxE);
     m_eop_HAD_200 = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_HAD_200_vs_trkP = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_HAD_200_vs_trkP = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_HAD_200_vs_trkEta = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_HAD_200_vs_trkEta = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_HAD_200_vs_trkPhi = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_HAD_200_vs_mu = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_HAD_200_vs_mu_avg = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_HAD_200_vs_npv = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_HAD_200_vs_highE_layer = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_HAD_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_HAD_200_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_HAD_200_vs_trkP = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_HAD_200_vs_trkP = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_HAD_200_vs_trkEta = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_HAD_200_vs_trkEta = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_HAD_200_vs_trkPhi = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_HAD_200_vs_mu = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_HAD_200_vs_mu_avg = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_HAD_200_vs_npv = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_HAD_200_vs_highE_layer = book(m_name, std::string("eop_HAD_"+m_energyCalib+"_0_200_vs_highE_layer"), "Calorimeter layer with the highest energy", 21, 0, 21, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) { 
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_HAD_200_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_200"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_HAD_200_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_HAD_200_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_200"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_HAD_200_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_HAD_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_HAD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_HAD_200_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
@@ -341,22 +484,45 @@ StatusCode EoverPHists::initialize()
   // background subtraction, the way it was done in run 1
   if (m_doBgSubtr) {
     m_eop_EM_BG = book(m_name, std::string("eop_EM_BG_"+m_energyCalib), "E/p Background", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_EM_BG_vs_trkP = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_EM_BG_vs_trkP = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_EM_BG_vs_trkEta = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_EM_BG_vs_trkEta = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_BG_vs_trkPhi = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_BG_vs_mu = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_BG_vs_mu_avg = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_EM_BG_vs_npv = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_EM_BG_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_BG_"+m_energyCalib), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_EM_BG_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_EM_BG_vs_trkP = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_EM_BG_vs_trkP = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_EM_BG_vs_trkEta = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_EM_BG_vs_trkEta = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_BG_vs_trkPhi = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_BG_vs_mu = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_BG_vs_mu_avg = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_EM_BG_vs_npv = book(m_name, std::string("eop_EM_BG_"+m_energyCalib+"_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) {
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_EM_BG_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_EM_BG_"+m_energyCalib), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_EM_BG_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_EM_BG_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_EM_BG_"+m_energyCalib), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_EM_BG_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_EM_BG_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_EM_BG_"+m_energyCalib), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_EM_BG_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
@@ -368,69 +534,138 @@ StatusCode EoverPHists::initialize()
     // max in Tile Layer A
     m_trk_E_highTileA_100 = book(m_name, std::string("trk_E_highTileA_"+m_energyCalib+"_0_100"), "E", nBinsE, minE, maxE);
     m_eop_highTileA_100 = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_highTileA_100_vs_trkP = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileA_100_vs_trkP = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_highTileA_100_vs_trkEta = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileA_100_vs_trkEta = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileA_100_vs_trkPhi = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileA_100_vs_mu = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileA_100_vs_mu_avg = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileA_100_vs_npv = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileA_100_vs_TileA_E = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_TileA_E"), "E(Tile, layer A)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileA_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_highTileA_100_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_highTileA_100_vs_trkP = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileA_100_vs_trkP = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_highTileA_100_vs_trkEta = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileA_100_vs_trkEta = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileA_100_vs_trkPhi = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileA_100_vs_mu = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileA_100_vs_mu_avg = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileA_100_vs_npv = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileA_100_vs_TileA_E = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_100_vs_TileA_E"), "E(Tile, layer A)", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) { 
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_highTileA_100_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_100"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileA_100_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_highTileA_100_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_100"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileA_100_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_highTileA_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_highTileA_100_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
     // max in Tile Layer BC
     m_trk_E_highTileB_100 = book(m_name, std::string("trk_E_highTileB_"+m_energyCalib+"_0_100"), "E", nBinsE, minE, maxE);
     m_eop_highTileB_100 = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_highTileB_100_vs_trkP = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileB_100_vs_trkP = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_highTileB_100_vs_trkEta = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileB_100_vs_trkEta = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileB_100_vs_trkPhi = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileB_100_vs_mu = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileB_100_vs_mu_avg = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileB_100_vs_npv = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileB_100_vs_TileB_E = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_TileB_E"), "E(Tile, layer B)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileB_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_highTileB_100_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_highTileB_100_vs_trkP = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileB_100_vs_trkP = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_highTileB_100_vs_trkEta = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileB_100_vs_trkEta = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileB_100_vs_trkPhi = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileB_100_vs_mu = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileB_100_vs_mu_avg = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileB_100_vs_npv = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileB_100_vs_TileB_E = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_100_vs_TileB_E"), "E(Tile, layer B)", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) { 
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_highTileB_100_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_100"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileB_100_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_highTileB_100_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_100"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileB_100_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_highTileB_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_highTileB_100_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
     // max in Tile Layer D
     m_trk_E_highTileD_100 = book(m_name, std::string("trk_E_highTileD_"+m_energyCalib+"_0_100"), "E", nBinsE, minE, maxE);
     m_eop_highTileD_100 = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_highTileD_100_vs_trkP = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileD_100_vs_trkP = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_highTileD_100_vs_trkEta = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileD_100_vs_trkEta = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileD_100_vs_trkPhi = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileD_100_vs_mu = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileD_100_vs_mu_avg = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileD_100_vs_npv = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileD_100_vs_TileD_E = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_TileD_E"), "E(Tile, layer D)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileD_100_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray); 
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_highTileD_100_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_highTileD_100_vs_trkP = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileD_100_vs_trkP = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_highTileD_100_vs_trkEta = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileD_100_vs_trkEta = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileD_100_vs_trkPhi = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileD_100_vs_mu = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileD_100_vs_mu_avg = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileD_100_vs_npv = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileD_100_vs_TileD_E = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_100_vs_TileD_E"), "E(Tile, layer D)", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) { 
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_highTileD_100_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_100"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileD_100_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_highTileD_100_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_100"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileD_100_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_highTileD_100_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray); 
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_100"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_highTileD_100_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
@@ -438,69 +673,138 @@ StatusCode EoverPHists::initialize()
     // max in Tile Layer A
     m_trk_E_highTileA_200 = book(m_name, std::string("trk_E_highTileA_"+m_energyCalib+"_0_200"), "E", nBinsE, minE, maxE);
     m_eop_highTileA_200 = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_highTileA_200_vs_trkP = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileA_200_vs_trkP = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_highTileA_200_vs_trkEta = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileA_200_vs_trkEta = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileA_200_vs_trkPhi = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileA_200_vs_mu = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileA_200_vs_mu_avg = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileA_200_vs_npv = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileA_200_vs_TileA_E = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_TileA_E"), "E(Tile, layer A)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileA_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray);
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_highTileA_200_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_highTileA_200_vs_trkP = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileA_200_vs_trkP = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_highTileA_200_vs_trkEta = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileA_200_vs_trkEta = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileA_200_vs_trkPhi = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileA_200_vs_mu = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileA_200_vs_mu_avg = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileA_200_vs_npv = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileA_200_vs_TileA_E = book(m_name, std::string("eop_highTileA_"+m_energyCalib+"_0_200_vs_TileA_E"), "E(Tile, layer A)", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) { 
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_highTileA_200_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_200"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileA_200_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_highTileA_200_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_200"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileA_200_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_highTileA_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray);
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileA_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_highTileA_200_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
     // max in Tile Layer B
     m_trk_E_highTileB_200 = book(m_name, std::string("trk_E_highTileB_"+m_energyCalib+"_0_200"), "E", nBinsE, minE, maxE);
     m_eop_highTileB_200 = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_highTileB_200_vs_trkP = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileB_200_vs_trkP = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_highTileB_200_vs_trkEta = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileB_200_vs_trkEta = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileB_200_vs_trkPhi = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileB_200_vs_mu = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileB_200_vs_mu_avg = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileB_200_vs_npv = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileB_200_vs_TileB_E = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_TileB_E"), "E(Tile, layer B)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileB_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray);
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_highTileB_200_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_highTileB_200_vs_trkP = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileB_200_vs_trkP = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_highTileB_200_vs_trkEta = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileB_200_vs_trkEta = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileB_200_vs_trkPhi = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileB_200_vs_mu = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileB_200_vs_mu_avg = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileB_200_vs_npv = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileB_200_vs_TileB_E = book(m_name, std::string("eop_highTileB_"+m_energyCalib+"_0_200_vs_TileB_E"), "E(Tile, layer B)", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) { 
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_highTileB_200_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_200"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileB_200_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_highTileB_200_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_200"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileB_200_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_highTileB_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray);
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileB_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_highTileB_200_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
     // max in Tile Layer D
     m_trk_E_highTileD_200 = book(m_name, std::string("trk_E_highTileD_"+m_energyCalib+"_0_200"), "E", nBinsE, minE, maxE);
     m_eop_highTileD_200 = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-    if (m_doPbinsArray) m_eop_highTileD_200_vs_trkP = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileD_200_vs_trkP = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if(m_doEtabinsArray) m_eop_highTileD_200_vs_trkEta = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "E/p", nBinsEop, minEop, maxEop);
-    else m_eop_highTileD_200_vs_trkEta = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileD_200_vs_trkPhi = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileD_200_vs_mu = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileD_200_vs_mu_avg = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileD_200_vs_npv = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "E/p", nBinsEop, minEop, maxEop);
-    m_eop_highTileD_200_vs_TileD_E = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_TileD_E"), "E(Tile, layer D)", nBinsE, minE, maxE, "E/p", nBinsEop, minEop, maxEop);
-    if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
-      m_eop_highTileD_200_EtaEnergyRanges = std::vector<std::vector<TH1F*> >(nPbinsArray);
-      char buffer [200];
-      for (unsigned int i=0; i<nPbinsArray; i++) {
-        for (unsigned int j=0; j<nEtabinsArray; j++) {
-          std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
-          TH1F* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
-          m_eop_highTileD_200_EtaEnergyRanges[i].push_back(tmp_hist);
+    if (m_doPbinsArray) m_eop_highTileD_200_vs_trkP = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileD_200_vs_trkP = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_trkP"), "p_{trk}", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if(m_doEtabinsArray) m_eop_highTileD_200_vs_trkEta = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+    else m_eop_highTileD_200_vs_trkEta = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileD_200_vs_trkPhi = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileD_200_vs_mu = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileD_200_vs_mu_avg = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileD_200_vs_npv = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
+    m_eop_highTileD_200_vs_TileD_E = book(m_name, std::string("eop_highTileD_"+m_energyCalib+"_0_200_vs_TileD_E"), "E(Tile, layer D)", nBinsE, minE, maxE, "<E/p>", minEop_l, maxEop_l);
+    if (m_doEtabinsArray && m_doPbinsArray) { 
+      if (m_doProfileEta) {
+        // TProfile binned in p (one profile for each eta bin)
+        m_eop_highTileD_200_profileEta = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nEtabinsArray; i++) {
+          std::snprintf(buffer, 200, "etaG%dL%d", (int)std::round((EtabinsArray[i]*10)), (int)std::round((EtabinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_200"), "p_{trk}", nPbinsArray, &PbinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileD_200_profileEta.push_back(tmp_profile);
+        }
+      }
+      if (m_doProfileP) {
+        // TProfile binned in eta (one profile for each p bin)
+        m_eop_highTileD_200_profileP = std::vector<TProfile* >();
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          std::snprintf(buffer, 200, "pG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*10)));
+          TProfile* tmp_profile = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_200"), "eta_{trk}", nEtabinsArray, &EtabinsArray[0], "<E/p>", minEop_l, maxEop_l);
+          m_eop_highTileD_200_profileP.push_back(tmp_profile);
+        }
+      }
+      if (m_doExtraEtaEnergyBinHists) {
+        // 1D histograms for E/p distributions
+        m_eop_highTileD_200_EtaEnergyRanges = std::vector<std::vector<TH1D*> >(nPbinsArray);
+        char buffer [200];
+        for (unsigned int i=0; i<nPbinsArray; i++) {
+          for (unsigned int j=0; j<nEtabinsArray; j++) {
+            std::snprintf(buffer, 200, "pG%dL%d_etaG%dL%d", (int)std::round((PbinsArray[i]*1000)), (int)std::round((PbinsArray[i+1]*1000)), (int)std::round((EtabinsArray[j]*10)), (int)std::round((EtabinsArray[j+1]*10)));
+            TH1D* tmp_hist = book(m_name, std::string(std::string(buffer)+"_eop_highTileD_"+m_energyCalib+"_0_200"), "E/p", nBinsEop, minEop, maxEop);
+            m_eop_highTileD_200_EtaEnergyRanges[i].push_back(tmp_hist);
+          }
         }
       }
     }
@@ -510,15 +814,15 @@ StatusCode EoverPHists::initialize()
   return StatusCode::SUCCESS;
 }
 
-StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::VertexContainer *vtxs, const xAOD::EventInfo* eventInfo, float eventWeight )
+StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::VertexContainer *vtxs, const xAOD::EventInfo* eventInfo, double eventWeight )
 {
 
   // get pileup
-  float mu(-1.);
+  double mu(-1.);
   if( eventInfo->isAvailable< float >( "actualInteractionsPerCrossing" ) ) {
     mu = eventInfo->actualInteractionsPerCrossing();
   }
-  float mu_avg(-1.);
+  double mu_avg(-1.);
   if( eventInfo->isAvailable< float >( "corrected_averageInteractionsPerCrossing" ) &&
       !eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) 
     mu_avg = eventInfo->auxdata< float >( "corrected_averageInteractionsPerCrossing" );
@@ -526,24 +830,24 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     mu_avg = eventInfo->averageInteractionsPerCrossing();
 
   // get number of primary vtxs 
-  float npv = HelperFunctions::countPrimaryVertices(vtxs, 2);
+  double npv = HelperFunctions::countPrimaryVertices(vtxs, 2);
 
-  float trk_p = 0;
+  double trk_p = 0;
   if (TMath::Abs(trk->qOverP())>0.) trk_p = (1./TMath::Abs(trk->qOverP()))/1e3; 
-  float trk_pt = trk->pt()/1e3;
+  double trk_pt = trk->pt()/1e3;
   // coordinates of the track in the ID
-  float trk_etaID = trk->eta();
-  float trk_phiID = trk->phi();
+  double trk_etaID = trk->eta();
+  double trk_phiID = trk->phi();
   // coordinates of the track extrapolated to the specified calorimeter layer
-  float trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
-  float trk_phiEMB2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
-  float trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
-  float trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
-  float dEta_EMB2_ID = TMath::Abs(trk_etaEMB2 - trk_etaID);
-  float dPhi_EMB2_ID = TMath::Abs(trk_phiEMB2 - trk_phiID);
+  double trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
+  double trk_phiEMB2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
+  double trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
+  double trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
+  double dEta_EMB2_ID = TMath::Abs(trk_etaEMB2 - trk_etaID);
+  double dPhi_EMB2_ID = TMath::Abs(trk_phiEMB2 - trk_phiID);
   if (dPhi_EMB2_ID > TMath::Pi())
     dPhi_EMB2_ID = 2*TMath::Pi() - dPhi_EMB2_ID;
-  float dR_EMB2_ID = sqrt( pow(dEta_EMB2_ID, 2) + pow(dPhi_EMB2_ID, 2) );
+  double dR_EMB2_ID = sqrt( pow(dEta_EMB2_ID, 2) + pow(dPhi_EMB2_ID, 2) );
 
   if (m_doEtaAbs) {
     trk_etaID = TMath::Abs(trk_etaID);
@@ -578,14 +882,14 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_DPhi_EMB2_ID_vs_trk_p -> Fill(trk_p, dPhi_EMB2_ID, eventWeight);
 
 
-  float chi2 = trk->chiSquared();
-  float ndof = trk->numberDoF();
-  float chi2Prob = TMath::Prob(chi2,ndof);
-  float d0 = trk->d0();
+  double chi2 = trk->chiSquared();
+  double ndof = trk->numberDoF();
+  double chi2Prob = TMath::Prob(chi2,ndof);
+  double d0 = trk->d0();
   const xAOD::Vertex* pvx = HelperFunctions::getPrimaryVertex(vtxs);
-  float pvz = HelperFunctions::getPrimaryVertexZ(pvx);
-  float z0 = trk->z0() + trk->vz() - pvz;
-  float sinT = sin(trk->theta());
+  double pvz = HelperFunctions::getPrimaryVertexZ(pvx);
+  double z0 = trk->z0() + trk->vz() - pvz;
+  double sinT = sin(trk->theta());
   m_trk_d0 -> Fill( d0, eventWeight );
   m_trk_d0_s -> Fill( d0, eventWeight );
   m_trk_z0 -> Fill( z0, eventWeight );
@@ -624,31 +928,31 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   m_trk_nTRT_vs_eta -> Fill( trk_etaID, nTRT, eventWeight );
 
   // cluster energy associated with the track
-  float trk_E_Total_100_all = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_100"))/1e3; 
-  float trk_E_Total_200_all = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_200"))/1e3; 
-  float trk_E_EM_100 = trk->auxdata<float>(std::string("CALO_EM_"+m_energyCalib+"_0_100"))/1e3; 
-  float trk_E_EM_200 = trk->auxdata<float>(std::string("CALO_EM_"+m_energyCalib+"_0_200"))/1e3; 
-  float trk_E_HAD_100 = trk->auxdata<float>(std::string("CALO_HAD_"+m_energyCalib+"_0_100"))/1e3; 
-  float trk_E_HAD_200 = trk->auxdata<float>(std::string("CALO_HAD_"+m_energyCalib+"_0_200"))/1e3; 
+  double trk_E_Total_100_all = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_100"))/1e3; 
+  double trk_E_Total_200_all = trk->auxdata<float>(std::string("CALO_Total_"+m_energyCalib+"_0_200"))/1e3; 
+  double trk_E_EM_100 = trk->auxdata<float>(std::string("CALO_EM_"+m_energyCalib+"_0_100"))/1e3; 
+  double trk_E_EM_200 = trk->auxdata<float>(std::string("CALO_EM_"+m_energyCalib+"_0_200"))/1e3; 
+  double trk_E_HAD_100 = trk->auxdata<float>(std::string("CALO_HAD_"+m_energyCalib+"_0_100"))/1e3; 
+  double trk_E_HAD_200 = trk->auxdata<float>(std::string("CALO_HAD_"+m_energyCalib+"_0_200"))/1e3; 
 
   // To agree with Millie
-  float trk_E_Total_100 = trk_E_EM_100 + trk_E_HAD_100;
-  float trk_E_Total_200 = trk_E_EM_200 + trk_E_HAD_200;
+  double trk_E_Total_100 = trk_E_EM_100 + trk_E_HAD_100;
+  double trk_E_Total_200 = trk_E_EM_200 + trk_E_HAD_200;
 
   // calculate energy fractions in different layers
-  float trk_sumE_Tile_100 = 0; 
-  float trk_sumE_Tile_200 = 0; 
-  float trk_sumE_Lar_100 = 0; 
-  float trk_sumE_Lar_200 = 0; 
-  float trk_sumE_HAD_100 = 0; 
-  float trk_sumE_HAD_200 = 0; 
-  float trk_sumE_EM_100 = 0; 
-  float trk_sumE_EM_200 = 0; 
+  double trk_sumE_Tile_100 = 0; 
+  double trk_sumE_Tile_200 = 0; 
+  double trk_sumE_Lar_100 = 0; 
+  double trk_sumE_Lar_200 = 0; 
+  double trk_sumE_HAD_100 = 0; 
+  double trk_sumE_HAD_200 = 0; 
+  double trk_sumE_EM_100 = 0; 
+  double trk_sumE_EM_200 = 0; 
   for (unsigned int i=0; i<m_layer_tile.size(); i++) {
-    float trk_E_100_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_tile[i]+"_100"))/1e3; 
+    double trk_E_100_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_tile[i]+"_100"))/1e3; 
     if (trk_E_100_tmp > 0.) // only include E > 0 (i.e. not calorimeter noise)
       trk_sumE_Tile_100 += trk_E_100_tmp; 
-    float trk_E_200_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_tile[i]+"_200"))/1e3; 
+    double trk_E_200_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer_tile[i]+"_200"))/1e3; 
     if (trk_E_200_tmp > 0.)
       trk_sumE_Tile_200 += trk_E_200_tmp; 
   }
@@ -684,14 +988,14 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
   // determine which layer has the highest energy deposit 
   int trk_highE_100_layer = 0;
   int trk_highE_200_layer = 0;
-  float trk_highE_100 = -1e8;
-  float trk_highE_200 = -1e8;
-  float trk_E_100_tmp = -1e8;
-  float trk_E_200_tmp = -1e8;
-  float trk_sumE_Total_100 = 0.;
-  float trk_sumE_Total_200 = 0.;
-  float trk_sumEg0_Total_100 = 0.;
-  float trk_sumEg0_Total_200 = 0.;
+  double trk_highE_100 = -1e8;
+  double trk_highE_200 = -1e8;
+  double trk_E_100_tmp = -1e8;
+  double trk_E_200_tmp = -1e8;
+  double trk_sumE_Total_100 = 0.;
+  double trk_sumE_Total_200 = 0.;
+  double trk_sumEg0_Total_100 = 0.;
+  double trk_sumEg0_Total_200 = 0.;
   for (unsigned int i=0; i<m_layer.size(); i++) { 
     trk_E_100_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer[i]+"_100"))/1e3; 
     trk_E_200_tmp = trk->auxdata<float>(std::string("CALO_"+m_energyCalib+"_"+m_layer[i]+"_200"))/1e3; 
@@ -714,18 +1018,18 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     }
   }
 
-  float trk_TileEfrac_100 = trk_sumE_Tile_100/trk_sumEg0_Total_100;    
-  float trk_TileEfrac_200 = trk_sumE_Tile_200/trk_sumEg0_Total_200;    
+  double trk_TileEfrac_100 = trk_sumE_Tile_100/trk_sumEg0_Total_100;    
+  double trk_TileEfrac_200 = trk_sumE_Tile_200/trk_sumEg0_Total_200;    
 
   int trk_p_i = -1;
   int trk_eta_i = -1;
-  if (m_doEtabinsArray && m_doPbinsArray && m_doExtraEtaEnergyBinHists) {
+  if (m_doEtabinsArray && m_doPbinsArray) {
     for (unsigned int i=0; i<nPbinsArray; i++) {
-      if (trk_p > PbinsArray[i] && trk_p < PbinsArray[i+1]) 
+      if (trk_p >= PbinsArray[i] && trk_p < PbinsArray[i+1]) 
         trk_p_i = i;
     }
     for (unsigned int i=0; i<nEtabinsArray; i++) {
-      if (trk_etaID > EtabinsArray[i] && trk_etaID < EtabinsArray[i+1]) 
+      if (trk_etaID >= EtabinsArray[i] && trk_etaID < EtabinsArray[i+1]) 
         trk_eta_i = i; 
     }
   }
@@ -762,6 +1066,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_Total_100_vs_mu_avg -> Fill(mu_avg, trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_npv -> Fill(npv, trk_E_Total_100/trk_p, eventWeight); 
     m_eop_Total_100_vs_highE_layer -> Fill(trk_highE_100_layer, trk_E_Total_100/trk_p, eventWeight); 
+    if (m_doProfileEta && trk_eta_i >= 0)
+      m_eop_Total_100_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_Total_100/trk_p, eventWeight); 
+    if (m_doProfileP && trk_p_i >= 0)
+      m_eop_Total_100_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_Total_100/trk_p, eventWeight); 
     if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_Total_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_100/trk_p, eventWeight); 
     // dR(trk,cluster) < 0.2
@@ -788,6 +1096,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_Total_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_npv -> Fill(npv, trk_E_Total_200/trk_p, eventWeight); 
     m_eop_Total_200_vs_highE_layer -> Fill(trk_highE_200_layer, trk_E_Total_200/trk_p, eventWeight); 
+    if (m_doProfileEta && trk_eta_i >= 0)
+      m_eop_Total_200_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_Total_200/trk_p, eventWeight); 
+    if (m_doProfileP && trk_p_i >= 0)
+      m_eop_Total_200_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_Total_200/trk_p, eventWeight); 
     if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_Total_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_200/trk_p, eventWeight); 
   } // END doCaloTotal
@@ -804,6 +1116,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_EM_100_vs_mu_avg -> Fill(mu_avg, trk_E_EM_100/trk_p, eventWeight); 
     m_eop_EM_100_vs_npv -> Fill(npv, trk_E_EM_100/trk_p, eventWeight); 
     m_eop_EM_100_vs_highE_layer -> Fill(trk_highE_100_layer, trk_E_EM_100/trk_p, eventWeight); 
+    if (m_doProfileEta && trk_eta_i >= 0)
+      m_eop_EM_100_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_EM_100/trk_p, eventWeight); 
+    if (m_doProfileP && trk_p_i >= 0)
+      m_eop_EM_100_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_EM_100/trk_p, eventWeight); 
     if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_EM_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_EM_100/trk_p, eventWeight); 
     // dR(trk,cluster) < 0.2
@@ -816,6 +1132,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_EM_200_vs_mu_avg -> Fill(mu_avg, trk_E_EM_200/trk_p, eventWeight); 
     m_eop_EM_200_vs_npv -> Fill(npv, trk_E_EM_200/trk_p, eventWeight); 
     m_eop_EM_200_vs_highE_layer -> Fill(trk_highE_200_layer, trk_E_EM_200/trk_p, eventWeight); 
+    if (m_doProfileEta && trk_eta_i >= 0)
+      m_eop_EM_200_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_EM_200/trk_p, eventWeight); 
+    if (m_doProfileP && trk_p_i >= 0)
+      m_eop_EM_200_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_EM_200/trk_p, eventWeight); 
     if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_EM_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_EM_200/trk_p, eventWeight); 
 
@@ -840,8 +1160,13 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_HAD_100_vs_mu_avg -> Fill(mu_avg, trk_E_HAD_100/trk_p, eventWeight); 
     m_eop_HAD_100_vs_npv -> Fill(npv, trk_E_HAD_100/trk_p, eventWeight); 
     m_eop_HAD_100_vs_highE_layer -> Fill(trk_highE_100_layer, trk_E_HAD_100/trk_p, eventWeight); 
+    if (m_doProfileEta && trk_eta_i >= 0)
+      m_eop_HAD_100_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_HAD_100/trk_p, eventWeight); 
+    if (m_doProfileP && trk_p_i >= 0)
+      m_eop_HAD_100_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_HAD_100/trk_p, eventWeight); 
     if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_HAD_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_HAD_100/trk_p, eventWeight); 
+
     // dR(trk,cluster) < 0.2
     m_trk_E_HAD_200 -> Fill(trk_E_HAD_200, eventWeight); 
     m_eop_HAD_200 -> Fill(trk_E_HAD_200/trk_p, eventWeight); 
@@ -852,8 +1177,13 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
     m_eop_HAD_200_vs_mu_avg -> Fill(mu_avg, trk_E_HAD_200/trk_p, eventWeight); 
     m_eop_HAD_200_vs_npv -> Fill(npv, trk_E_HAD_200/trk_p, eventWeight); 
     m_eop_HAD_200_vs_highE_layer -> Fill(trk_highE_200_layer, trk_E_HAD_200/trk_p, eventWeight); 
+    if (m_doProfileEta && trk_eta_i >= 0)
+      m_eop_HAD_200_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_HAD_200/trk_p, eventWeight); 
+    if (m_doProfileP && trk_p_i >= 0)
+      m_eop_HAD_200_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_HAD_200/trk_p, eventWeight); 
     if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
       m_eop_HAD_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_HAD_200/trk_p, eventWeight); 
+
     // MIP requirement for HAD calorimeter
     if (trk_E_EM_100 < 1.1 && trk_E_HAD_100/trk_p > 0.4 && trk_E_HAD_100/trk_p < 0.9) {
       m_eop_Total_200_MIP -> Fill(trk_E_Total_200/trk_p, eventWeight);
@@ -873,6 +1203,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_EM_BG_vs_mu -> Fill(mu, (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
       m_eop_EM_BG_vs_mu_avg -> Fill(mu_avg, (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
       m_eop_EM_BG_vs_npv -> Fill(npv, (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
+      if (m_doProfileEta && trk_eta_i >= 0)
+        m_eop_EM_BG_profileEta[trk_eta_i] -> Fill(trk_p, (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
+      if (m_doProfileP && trk_p_i >= 0)
+        m_eop_EM_BG_profileP[trk_p_i] -> Fill(trk_etaID, (trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
       if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_EM_BG_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill((trk_E_EM_200 - trk_E_EM_100)/trk_p, eventWeight); 
     }
@@ -880,8 +1214,8 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
 
   // E/p where E is maximum in either Tile layer A, BC, or D
   if (m_doTileLayer) {
-    float highTileLayer_100 = -1e8;
-    float highTileLayer_200 = -1e8;
+    double highTileLayer_100 = -1e8;
+    double highTileLayer_200 = -1e8;
     int highTileLayer_i_100 = -1; 
     int highTileLayer_i_200 = -1; 
     if (trk_highE_100_layer == 12 || trk_highE_100_layer == 18) {
@@ -915,6 +1249,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileA_100_vs_mu_avg -> Fill(mu_avg, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileA_100_vs_npv -> Fill(npv, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileA_100_vs_TileA_E -> Fill(highTileLayer_100, trk_E_Total_100/trk_p, eventWeight); 
+      if (m_doProfileEta && trk_eta_i >= 0)
+        m_eop_highTileA_100_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_Total_100/trk_p, eventWeight); 
+      if (m_doProfileP && trk_p_i >= 0)
+        m_eop_highTileA_100_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_Total_100/trk_p, eventWeight); 
       if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileA_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_100/trk_p, eventWeight); 
     }
@@ -929,6 +1267,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileB_100_vs_mu_avg -> Fill(mu_avg, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileB_100_vs_npv -> Fill(npv, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileB_100_vs_TileB_E -> Fill(highTileLayer_100, trk_E_Total_100/trk_p, eventWeight); 
+      if (m_doProfileEta && trk_eta_i >= 0)
+        m_eop_highTileB_100_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_Total_100/trk_p, eventWeight); 
+      if (m_doProfileP && trk_p_i >= 0)
+        m_eop_highTileB_100_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_Total_100/trk_p, eventWeight); 
       if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileB_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_100/trk_p, eventWeight); 
     }
@@ -943,6 +1285,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileD_100_vs_mu_avg -> Fill(mu_avg, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileD_100_vs_npv -> Fill(npv, trk_E_Total_100/trk_p, eventWeight); 
       m_eop_highTileD_100_vs_TileD_E -> Fill(highTileLayer_100, trk_E_Total_100/trk_p, eventWeight); 
+      if (m_doProfileEta && trk_eta_i >= 0)
+        m_eop_highTileD_100_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_Total_100/trk_p, eventWeight); 
+      if (m_doProfileP && trk_p_i >= 0)
+        m_eop_highTileD_100_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_Total_100/trk_p, eventWeight); 
       if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileD_100_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_100/trk_p, eventWeight); 
     }
@@ -958,6 +1304,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileA_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileA_200_vs_npv -> Fill(npv, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileA_200_vs_TileA_E -> Fill(highTileLayer_200, trk_E_Total_200/trk_p, eventWeight); 
+      if (m_doProfileEta && trk_eta_i >= 0)
+        m_eop_highTileA_200_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_Total_200/trk_p, eventWeight); 
+      if (m_doProfileP && trk_p_i >= 0)
+        m_eop_highTileA_200_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_Total_200/trk_p, eventWeight); 
       if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileA_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_200/trk_p, eventWeight); 
     }
@@ -972,6 +1322,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileB_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileB_200_vs_npv -> Fill(npv, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileB_200_vs_TileB_E -> Fill(highTileLayer_200, trk_E_Total_200/trk_p, eventWeight); 
+      if (m_doProfileEta && trk_eta_i >= 0)
+        m_eop_highTileB_200_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_Total_200/trk_p, eventWeight); 
+      if (m_doProfileP && trk_p_i >= 0)
+        m_eop_highTileB_200_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_Total_200/trk_p, eventWeight); 
       if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileB_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_200/trk_p, eventWeight); 
     }
@@ -986,6 +1340,10 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
       m_eop_highTileD_200_vs_mu_avg -> Fill(mu_avg, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileD_200_vs_npv -> Fill(npv, trk_E_Total_200/trk_p, eventWeight); 
       m_eop_highTileD_200_vs_TileD_E -> Fill(highTileLayer_200, trk_E_Total_200/trk_p, eventWeight); 
+      if (m_doProfileEta && trk_eta_i >= 0)
+        m_eop_highTileD_200_profileEta[trk_eta_i] -> Fill(trk_p, trk_E_Total_200/trk_p, eventWeight); 
+      if (m_doProfileP && trk_p_i >= 0)
+        m_eop_highTileD_200_profileP[trk_p_i] -> Fill(trk_etaID, trk_E_Total_200/trk_p, eventWeight); 
       if (m_doExtraEtaEnergyBinHists && trk_p_i >= 0 && trk_eta_i >= 0)
         m_eop_highTileD_200_EtaEnergyRanges[trk_p_i][trk_eta_i] -> Fill(trk_E_Total_200/trk_p, eventWeight); 
     }
@@ -993,24 +1351,6 @@ StatusCode EoverPHists::execute( const xAOD::TrackParticle* trk, const xAOD::Ver
 
   return StatusCode::SUCCESS;
 }
-
-// Double_t* EoverPHists::linspace(float a, float b, unsigned int n) {
-//   Double_t *vec = new Double_t[n];
-//   vec[0] = a;
-//   if ((a == b) || (n == 1)) return vec;
-//   Double_t diff = b-a;
-//   Double_t step=diff/(n-1);
-//   for(unsigned int i=1; i<n; i++)
-//     vec[i] = vec[i-1] + step;
-//   return vec;
-// }
-//
-// Double_t* EoverPHists::logspace(float a, float b, unsigned int n) {
-//   Double_t *vec = linspace(TMath::Log10(a), TMath::Log10(b), n);
-//   for(unsigned int i=0; i<n; i++)
-//     vec[i] = float(TMath::Nint(TMath::Power(10, vec[i])*10))/10; 
-//   return vec;
-// }
 
 std::vector<double> EoverPHists::str2vec(std::string str)
 {
