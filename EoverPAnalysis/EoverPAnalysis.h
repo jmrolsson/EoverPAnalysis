@@ -28,7 +28,7 @@ class EoverPAnalysis : public xAH::Algorithm
     float m_trkIsoDRmax = .4;
     float m_trkIsoPfrac = 0.;
     int m_mu_avg_min = 0;
-    int m_mu_avg_max = 1e8;
+    int m_mu_avg_max = 1e5;
 
     // what plots to make (eop from clusters in entire calo, EM calo, HAD calo, with background subtraction, for maximum energy in tile)
     bool m_doCaloTotal= true;
@@ -86,6 +86,9 @@ class EoverPAnalysis : public xAH::Algorithm
 
     // pileup reweighting
     bool m_doCustomPUreweighting = false;
+    std::string m_pileupReweightingFile = "pileup_reweighting.root";
+
+    // pt reweighting
     bool m_doTrkPtReweighting = false;
     std::string m_trkPtReweightingFile = "pt_reweighting.root";
 

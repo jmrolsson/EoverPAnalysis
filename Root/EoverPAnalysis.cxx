@@ -334,8 +334,10 @@ EL::StatusCode EoverPAnalysis :: initialize ()
   const xAOD::EventInfo* eventInfo(nullptr);
   RETURN_CHECK("EoverPAnalysis::execute()", HelperFunctions::retrieve(eventInfo, m_eventInfoContainerName, m_event, m_store, m_verbose) ,"");
   if (m_doCustomPUreweighting && eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) {
-    TFile *f_prw = wk()->getOutputFile ("pileup");
-    m_puwHist = (TH1D*)f_prw->Get("pileup_weights");
+    // TFile *f_prw = wk()->getOutputFile ("pileup");
+    // m_puwHist = (TH1D*)f_prw->Get("pileup_weights");
+    TFile *f_pileup = new TFile(std::string("$ROOTCOREBIN/data/EoverPAnalysis/"+m_pileupReweightingFile).c_str(), "READ");
+    m_puwHist = (TH1D*)f_pileup->Get("h_pileupweight");
   }
   if (m_doTrkPtReweighting && eventInfo->eventType( xAOD::EventInfo::IS_SIMULATION )) {
     TFile *f_pt = new TFile(std::string("$ROOTCOREBIN/data/EoverPAnalysis/"+m_trkPtReweightingFile).c_str(), "READ");
@@ -378,21 +380,16 @@ EL::StatusCode EoverPAnalysis :: execute ()
     float pileupWeight(0.);
     // std::cout << "before getting PileupWeight" << std::endl;
     if (m_doCustomPUreweighting) {
-      if (mu_avg <= m_puwHist->GetNbinsX())
-        pileupWeight = m_puwHist->GetBinContent(mu_avg);
+      if (mu_avg > 0. && mu_avg <= m_puwHist->GetNbinsX()) {
+        pileupWeight = m_puwHist->GetBinContent(mu_avg+1);
+      }
       eventWeight *= pileupWeight;
     }
-    else if (eventInfo->isAvailable< float >( "PileupWeight" )) {
-      pileupWeight = eventInfo->auxdata< float >( "PileupWeight" );
-      eventWeight *= pileupWeight;
-    }
-    // std::cout << "pileupWeight: " << pileupWeight << std::endl;
-    // std::cout << "eventWeight, after PRW: " << eventWeight << std::endl;
   }
 
   m_numEvent++;
 
-  if (mu_avg < m_mu_avg_min || mu_avg >= m_mu_avg_max) return EL::StatusCode::SUCCESS;
+  if (mu_avg < m_mu_avg_min || mu_avg > m_mu_avg_max) return EL::StatusCode::SUCCESS;
 
   m_trk_n_all_tmp = 0;
   m_trk_n_pass_extrapol_tmp = 0;
@@ -532,16 +529,16 @@ EL::StatusCode EoverPAnalysis :: execute ()
       m_trk_n_pass_etaG15L23_tmp++;
 
     // check track p requirement
-    if (m_doTrkPcut) {
-      if (trk_p < m_trkPmin) continue;
-      if (trk_p >= m_trkPmax) continue;
-    }
+    // if (m_doTrkPcut) {
+    //   if (trk_p < m_trkPmin) continue;
+    //   if (trk_p >= m_trkPmax) continue;
+    // }
     m_trk_cutflow_eop_pass_p++;
     m_trk_n_pass_p_tmp++;
 
     // check track eta requirement
     if (m_doTrkEtacut) {
-      if (TMath::Abs(trk_etaID) < m_trkEtamin) continue;
+      // if (TMath::Abs(trk_etaID) < m_trkEtamin) continue;
       if (TMath::Abs(trk_etaID) >= m_trkEtamax) continue;
     }
     m_trk_cutflow_eop_pass_eta++;
@@ -782,7 +779,9 @@ float EoverPAnalysis :: deltaR (float trk_eta, float trk_phi, float trk2_eta, fl
 {
   float trk_trk2_dEta = TMath::Abs(trk2_eta - trk_eta);
   float trk_trk2_dPhi = TMath::Abs(trk2_phi - trk_phi);
+
   if (trk_trk2_dPhi > TMath::Pi())
     trk_trk2_dPhi = 2*TMath::Pi() - trk_trk2_dPhi;
+
   return sqrt( pow(trk_trk2_dEta, 2) + pow(trk_trk2_dPhi, 2) );
 }
