@@ -21,23 +21,23 @@ if [ $# -eq 0 ]
     echo xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
     xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
 
-    echo "---> Running MC:"
-    echo xAH_run.py --files ${files_mc_ND} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_ND_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
-    echo xAH_run.py --files ${files_mc_SD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_SD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
-    echo xAH_run.py --files ${files_mc_DD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_DD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
-    xAH_run.py --files ${files_mc_ND} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_ND_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
-    xAH_run.py --files ${files_mc_SD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_SD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
-    xAH_run.py --files ${files_mc_DD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_DD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    # echo "---> Running MC:"
+    # echo xAH_run.py --files ${files_mc_ND} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_ND_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    # echo xAH_run.py --files ${files_mc_SD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_SD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    # echo xAH_run.py --files ${files_mc_DD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_DD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    # xAH_run.py --files ${files_mc_ND} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_ND_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    # xAH_run.py --files ${files_mc_SD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_SD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    # xAH_run.py --files ${files_mc_DD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_DD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
 
     echo "---> Write to logfile:"
     echo ${files_data} > results/run_condor_eop_lowmu_runII_general.log
     echo results/condor_all_eop_lowmu_runII_general_data_${today}_${tag} >> results/run_condor_eop_lowmu_runII_general.log
-    echo ${files_mc_ND} >> results/run_condor_eop_lowmu_runII_general.log
-    echo results/condor_all_eop_lowmu_runII_general_mc_ND_${today}_${tag} >> results/run_condor_eop_lowmu_runII_general.log
-    echo ${files_mc_SD} >> results/run_condor_eop_lowmu_runII_general.log
-    echo results/condor_all_eop_lowmu_runII_general_mc_SD_${today}_${tag} >> results/run_condor_eop_lowmu_runII_general.log
-    echo ${files_mc_DD} >> results/run_condor_eop_lowmu_runII_general.log
-    echo results/condor_all_eop_lowmu_runII_general_mc_DD_${today}_${tag} >> results/run_condor_eop_lowmu_runII_general.log
+    # echo ${files_mc_ND} >> results/run_condor_eop_lowmu_runII_general.log
+    # echo results/condor_all_eop_lowmu_runII_general_mc_ND_${today}_${tag} >> results/run_condor_eop_lowmu_runII_general.log
+    # echo ${files_mc_SD} >> results/run_condor_eop_lowmu_runII_general.log
+    # echo results/condor_all_eop_lowmu_runII_general_mc_SD_${today}_${tag} >> results/run_condor_eop_lowmu_runII_general.log
+    # echo ${files_mc_DD} >> results/run_condor_eop_lowmu_runII_general.log
+    # echo results/condor_all_eop_lowmu_runII_general_mc_DD_${today}_${tag} >> results/run_condor_eop_lowmu_runII_general.log
 
     echo "--> Jobs submitted!"
     echo "source $ROOTCOREBIN/../EoverPAnalysis/scripts/merge_condor_eop.sh $ROOTCOREBIN/../results/run_condor_eop_lowmu_runII_general.log # when condor jobs are finished to merge output files"

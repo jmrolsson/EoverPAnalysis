@@ -222,7 +222,7 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_energyCalib": energy_calib, # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
                                 "m_doCaloTotal": True,
                                 "m_doCaloEM": False,
-                                "m_doCaloHAD": False
+                                "m_doCaloHAD": False,
                                 "m_doBgSubtr" : True,
                                 "m_doTileLayer": False,
                                 "m_trkIsoDRmax": .4,
@@ -252,5 +252,4 @@ for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
                                 "m_doGlobalExtraRanges": False,
                                 "m_detailStr": "all",
                                 "m_useCutFlow": useCutFlow,
-                                "m_fillOutputTree": True,
                                 "m_debug": False})
