@@ -36,8 +36,6 @@ StatusCode EoverPHists::initialize()
   unsigned int nBinsNPV = 50;         double minNPV = -0.5;              double maxNPV = 49.5;
   unsigned int nBinsDR = 60;          double minDR = 0;                  double maxDR = 3;
   unsigned int nBinsPhi = 32;         double minPhi = -TMath::Pi();      double maxPhi = TMath::Pi(); 
-  unsigned int nBinsPhiExtra = 1024;  double minPhiExtra = -TMath::Pi(); double maxPhiExtra = TMath::Pi(); 
-  unsigned int nBinsPhiExtra2 = 800;  double minPhiExtra2 = -4.0;        double maxPhiExtra2 = 4.0; 
   unsigned int nBinsEop = 300;        double minEop = -4;                double maxEop = 20;
   unsigned int nBinsEop_l = 255;      double minEop_l = -100;            double maxEop_l = 5000;
   unsigned int nBinsE = 700;          double minE = -20;                 double maxE = 50;
@@ -88,8 +86,6 @@ StatusCode EoverPHists::initialize()
   m_trk_phiID = book(m_name, "trk_phiID", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
   m_trk_phiEMB2 = book(m_name, "trk_phiEMB2", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
   m_trk_phiEME2 = book(m_name, "trk_phiEME2", "#phi_{trk}", nBinsPhi, minPhi, maxPhi); 
-  m_trk_phi_extra = book(m_name, "trk_phi_extra", "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra); 
-  m_trk_phi_extra2 = book(m_name, "trk_phi_extra2", "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2); 
 
   m_trk_p_vs_eta = book(m_name, "trk_p_vs_eta", "#eta_{trk}", nBinsEta, minEta, maxEta, "p_{trk} [GeV]", nBinsP, minP, maxP); 
   m_trk_p_vs_etaEMB2 = book(m_name, "trk_p_vs_etaEMB2", "#eta_{trk}", nBinsEta, minEta, maxEta, "p_{trk} [GeV]", nBinsP, minP, maxP); 
@@ -181,8 +177,6 @@ StatusCode EoverPHists::initialize()
     else m_eop_Total_100_vs_trkEta = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
     m_eop_Total_100_vs_trkPhi = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
     m_eop_Total_100_vs_trkPhiID = book(m_name, std::string("eop_ID_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
-    m_eop_Total_100_vs_trkPhi_extra = book(m_name, std::string("eop_extra_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra, "<E/p>", minEop_l, maxEop_l);
-    m_eop_Total_100_vs_trkPhi_extra2 = book(m_name, std::string("eop_extra2_Total_"+m_energyCalib+"_0_100_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2, "<E/p>", minEop_l, maxEop_l);
     m_eop_Total_100_vs_mu = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
     m_eop_Total_100_vs_mu_avg = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
     m_eop_Total_100_vs_npv = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_100_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);
@@ -233,8 +227,6 @@ StatusCode EoverPHists::initialize()
     else m_eop_Total_200_vs_trkEta = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkEta"), "|#eta_{trk}|", nBinsEta, minEta, maxEta, "<E/p>", minEop_l, maxEop_l);
     m_eop_Total_200_vs_trkPhi = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
     m_eop_Total_200_vs_trkPhiID = book(m_name, std::string("eop_ID_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhi, minPhi, maxPhi, "<E/p>", minEop_l, maxEop_l);
-    m_eop_Total_200_vs_trkPhi_extra = book(m_name, std::string("eop_extra_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra, minPhiExtra, maxPhiExtra, "<E/p>", minEop_l, maxEop_l);
-    m_eop_Total_200_vs_trkPhi_extra2 = book(m_name, std::string("eop_extra2_Total_"+m_energyCalib+"_0_200_vs_trkPhi"), "#phi_{trk}", nBinsPhiExtra2, minPhiExtra2, maxPhiExtra2, "<E/p>", minEop_l, maxEop_l);
     m_eop_Total_200_vs_mu = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_mu"), "#mu", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
     m_eop_Total_200_vs_mu_avg = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_mu_avg"), "<#mu>", nBinsMu, minMu, maxMu, "<E/p>", minEop_l, maxEop_l);
     m_eop_Total_200_vs_npv = book(m_name, std::string("eop_Total_"+m_energyCalib+"_0_200_vs_npv"), "NPV", nBinsNPV, minNPV, maxNPV, "<E/p>", minEop_l, maxEop_l);

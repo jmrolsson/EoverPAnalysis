@@ -504,7 +504,7 @@ EL::StatusCode EoverPAnalysis :: execute ()
     // EMB2
     double trk_etaEMB2 = trk->auxdata<float>("CALO_trkEta_EMB2");
     double trk_phiEMB2 = trk->auxdata<float>("CALO_trkPhi_EMB2");
-    //EME2
+    // EME2
     double trk_etaEME2 = trk->auxdata<float>("CALO_trkEta_EME2");
     double trk_phiEME2 = trk->auxdata<float>("CALO_trkPhi_EME2");
 
@@ -586,18 +586,18 @@ EL::StatusCode EoverPAnalysis :: execute ()
       m_trk_n_pass_etaG15L23_tmp++;
 
     // check track p requirement
-    // if (m_doTrkPcut) {
-    //   if (trk_p < m_trkPmin) continue;
-    //   if (trk_p >= m_trkPmax) continue;
-    // }
+    if (m_doTrkPcut) {
+      if (trk_p < m_trkPmin) continue;
+      if (trk_p >= m_trkPmax) continue;
+    }
     m_trk_cutflow_eop_pass_p++;
     m_trk_n_pass_p_tmp++;
 
     // check track eta requirement
     if (m_doTrkEtacut) {
-      // if (fabs(trk_etaID) < m_trkEtamin) continue;
-      // if (fabs(trk_etaID) >= m_trkEtamax) continue;
-      if ((double)fabs(trk_etaID) >= (double)2.3) continue;
+      if (fabs(trk_etaID) < m_trkEtamin) continue;
+      if (fabs(trk_etaID) >= m_trkEtamax) continue;
+      // if ((double)fabs(trk_etaID) >= (double)2.3) continue;
     }
     m_trk_cutflow_eop_pass_eta++;
     m_trk_n_pass_eta_tmp++;

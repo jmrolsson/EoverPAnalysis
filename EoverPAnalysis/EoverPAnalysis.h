@@ -67,9 +67,11 @@ class EoverPAnalysis : public xAH::Algorithm
     bool m_doEtabinsArray = false;
     std::string m_EtabinsArray = "";
 
-    // turn on extra E/p histograms for each of the track eta and p bins
+    // turn on <E/p> profile histograms (as a function of p and eta)
     bool m_doProfileEta; //!
     bool m_doProfileP; //!
+
+    // turn on extra E/p histograms for each of the track eta and p bins
     bool m_doExtraEtaEnergyBinHists = false;
 
     // make all plots for different TileEfrac cuts
