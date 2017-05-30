@@ -587,16 +587,16 @@ EL::StatusCode EoverPAnalysis :: execute ()
 
     // check track p requirement
     if (m_doTrkPcut) {
-      if (trk_p < m_trkPmin) continue;
-      if (trk_p >= m_trkPmax) continue;
+      if (trk_p < (double)m_trkPmin) continue;
+      if (trk_p >= (double)m_trkPmax) continue;
     }
     m_trk_cutflow_eop_pass_p++;
     m_trk_n_pass_p_tmp++;
 
     // check track eta requirement
     if (m_doTrkEtacut) {
-      if (fabs(trk_etaID) < m_trkEtamin) continue;
-      if (fabs(trk_etaID) >= m_trkEtamax) continue;
+      if (fabs(trk_etaID) < (double)m_trkEtamin) continue;
+      if (fabs(trk_etaID) >= (double)m_trkEtamax) continue;
       // if ((double)fabs(trk_etaID) >= (double)2.3) continue;
     }
     m_trk_cutflow_eop_pass_eta++;

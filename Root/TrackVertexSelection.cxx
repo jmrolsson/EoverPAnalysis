@@ -181,19 +181,19 @@ EL::StatusCode TrackVertexSelection :: initialize ()
   //------------------------------------------------------
   m_trkSelection = new InDet::InDetTrackSelectionTool("TrackSelection");
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("CutLevel", m_cutLevel.c_str()), "failed to set CutLevel property");
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minPt", static_cast<double>(m_minPt)*1000), "failed to set minPt property"); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxAbsEta", static_cast<double>(m_maxAbsEta)), "failed to set maxAbsEta property"); 
-  // RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minPt", 400), "failed to set minPt property"); 
-  // RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxAbsEta", 2.5), "failed to set maxAbsEta property"); 
+  // RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minPt", static_cast<double>(m_minPt)*1000), "failed to set minPt property"); 
+  // RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxAbsEta", static_cast<double>(m_maxAbsEta)), "failed to set maxAbsEta property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minPt", 0.4), "failed to set minPt property"); 
+  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxAbsEta", 2.5), "failed to set maxAbsEta property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxZ0SinTheta", static_cast<double>(m_maxZ0SinTheta)), "failed to set maxZ0SinTheta property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxD0", static_cast<double>(m_maxD0)), "failed to set maxD0 property");
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxZ0", static_cast<double>(m_maxZ0)), "failed to set maxZ0 property");
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNPixelHits", static_cast<int>(m_minNPixelHits)), "failed to set minNPixelHits property"); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNSctHits", static_cast<int>(m_minNSctHits)), "failed to set minNSctHits property"); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNSiHits", static_cast<int>(m_minNSiHits)), "failed to set minNSiHits property"); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxTrtEtaAcceptance", 0.0), "failed to set property"); 
-  RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxEtaForTrtHitCuts", 2.0), "failed to set property"); 
-  if (m_minNTrtHits =! -1) RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNTrtHits", static_cast<int>(m_minNTrtHits)), "failed to set minNTrtHits property"); 
+  // RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNPixelHits", static_cast<int>(m_minNPixelHits)), "failed to set minNPixelHits property"); 
+  // RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNSctHits", static_cast<int>(m_minNSctHits)), "failed to set minNSctHits property"); 
+  // RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNSiHits", static_cast<int>(m_minNSiHits)), "failed to set minNSiHits property"); 
+  // RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxTrtEtaAcceptance", 0.0), "failed to set property"); 
+  // RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("maxEtaForTrtHitCuts", 2.0), "failed to set property"); 
+  // if (m_minNTrtHits =! -1) RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->setProperty("minNTrtHits", static_cast<int>(m_minNTrtHits)), "failed to set minNTrtHits property"); 
   RETURN_CHECK("TrackSelectionTool::initialize()", m_trkSelection->initialize(), ""); 
 
   m_event = wk()->xaodEvent();

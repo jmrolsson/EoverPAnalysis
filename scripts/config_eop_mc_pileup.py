@@ -16,7 +16,7 @@ trks_run1 = trks+"Run1"
 doCustomPUreweighting = True
 pileupReweightingFile = "pileup_reweighting.root";
 
-do_trkPtRewighting = True
+do_trkPtRewighting = False
 trkPtReweightingFile = "pt_reweighting_pileup.root"
 
 

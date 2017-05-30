@@ -17,11 +17,11 @@ if [ $# -eq 0 ]
 
     mkdir -p results
 
-    echo "---> Running data:"
-    echo xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
-    xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
+    # echo "---> Running data:"
+    # echo xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 5
+    # xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 5
 
-    # echo "---> Running MC:"
+    echo "---> Running MC:"
     echo xAH_run.py --files ${files_mc_ND} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_ND_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
     echo xAH_run.py --files ${files_mc_SD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_SD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
     echo xAH_run.py --files ${files_mc_DD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_DD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
@@ -29,9 +29,9 @@ if [ $# -eq 0 ]
     xAH_run.py --files ${files_mc_SD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_SD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
     xAH_run.py --files ${files_mc_DD} --inputList --config EoverPAnalysis/scripts/config_eop_mc_lowmu_runII_general.py --submitDir results/condor_all_eop_lowmu_runII_general_mc_DD_${today}_${tag} --verbose --force condor --optFilesPerWorker 10
 
-    echo "---> Write to logfile:"
-    echo ${files_data} > results/run_condor_eop_lowmu_runII_general.log
-    echo results/condor_all_eop_lowmu_runII_general_data_${today}_${tag} >> results/run_condor_eop_lowmu_runII_general.log
+    # echo "---> Write to logfile:"
+    # echo ${files_data} > results/run_condor_eop_lowmu_runII_general.log
+    # echo results/condor_all_eop_lowmu_runII_general_data_${today}_${tag} >> results/run_condor_eop_lowmu_runII_general.log
     echo ${files_mc_ND} >> results/run_condor_eop_lowmu_runII_general.log
     echo results/condor_all_eop_lowmu_runII_general_mc_ND_${today}_${tag} >> results/run_condor_eop_lowmu_runII_general.log
     echo ${files_mc_SD} >> results/run_condor_eop_lowmu_runII_general.log

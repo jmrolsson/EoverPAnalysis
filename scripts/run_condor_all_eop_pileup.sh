@@ -17,16 +17,16 @@ if [ $# -eq 0 ]
     mkdir -p results
 
     echo "---> Running JZxW pileup MC samples:"
-    # echo xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_pileup.py --submitDir results/condor_all_eop_pileup_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 5
-    # xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_pileup.py --submitDir results/condor_all_eop_pileup_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 5
+    echo xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_pileup.py --submitDir results/condor_all_eop_pileup_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 5
+    xAH_run.py --files ${files_data} --inputList --config EoverPAnalysis/scripts/config_eop_data_pileup.py --submitDir results/condor_all_eop_pileup_data_${today}_${tag} --verbose --force condor --optFilesPerWorker 5
     # echo xAH_run.py --files ${files_JZ0W} --inputList --config EoverPAnalysis/scripts/config_eop_mc_pileup.py --submitDir results/condor_all_eop_pileup_JZ0W_${today}_${tag} --verbose --force condor --optFilesPerWorker 2
     # xAH_run.py --files ${files_JZ0W} --inputList --config EoverPAnalysis/scripts/config_eop_mc_pileup.py --submitDir results/condor_all_eop_pileup_JZ0W_${today}_${tag} --verbose --force condor --optFilesPerWorker 2
     echo xAH_run.py --files ${files_JZ1W} --inputList --config EoverPAnalysis/scripts/config_eop_mc_pileup.py --submitDir results/condor_all_eop_pileup_JZ1W_${today}_${tag} --verbose --force condor --optFilesPerWorker 2
     xAH_run.py --files ${files_JZ1W} --inputList --config EoverPAnalysis/scripts/config_eop_mc_pileup.py --submitDir results/condor_all_eop_pileup_JZ1W_${today}_${tag} --verbose --force condor --optFilesPerWorker 2
-    #
+
     echo "---> Write to logfile:"
-    # echo ${files_data} > results/run_condor_eop_pileup.log
-    # echo results/condor_all_eop_pileup_data_${today}_${tag} >> results/run_condor_eop_pileup.log
+    echo ${files_data} > results/run_condor_eop_pileup.log
+    echo results/condor_all_eop_pileup_data_${today}_${tag} >> results/run_condor_eop_pileup.log
     # echo ${files_JZ0W} >> results/run_condor_eop_pileup.log
     # echo results/condor_all_eop_pileup_JZ0W_${today}_${tag} >> results/run_condor_eop_pileup.log
     echo ${files_JZ1W} >> results/run_condor_eop_pileup.log
