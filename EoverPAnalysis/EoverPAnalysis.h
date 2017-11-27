@@ -29,6 +29,9 @@ class EoverPAnalysis : public xAH::Algorithm
     // save output tree of key variables
     bool m_fillOutputTree = false;
 
+    // overall sample weight
+    double m_sampleWeight = 1.0;
+
     // track isolation settings
     double m_trkIsoDRmax = .4;
     double m_trkIsoPfrac = 0.;

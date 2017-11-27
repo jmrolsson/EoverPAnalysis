@@ -16,7 +16,7 @@ trks_run1 = trks+"Run1"
 doCustomPUreweighting = True
 pileupReweightingFile = "pileup_reweighting.root";
 
-do_trkPtRewighting = False
+do_trkPtRewighting = True
 trkPtReweightingFile = "pt_reweighting_pileup.root"
 
 
@@ -217,80 +217,80 @@ c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_ClusterEnergy_Til
                             "m_useCutFlow": False,
                             "m_debug": False})
 
-# ''' E/p histograms with LoosePrimary track selection'''
-# c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_ClusterEnergy_Tile_2GeVTrkP_noLar_noTileEfrac",
-#                             "m_inTrackContainerName": trks_loose,
-#                             "m_energyCalib": "ClusterEnergy", # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
-#                             "m_doCaloTotal": True,
-#                             "m_doCaloEM": True,
-#                             "m_doCaloHAD": True,
-#                             "m_doBgSubtr" : False,
-#                             "m_doTileLayer": True,
-#                             "m_trkIsoDRmax": .4,
-#                             "m_trkIsoPfrac": 0.,
-#                             "m_doTrkPcut": True,
-#                             "m_trkPmin": 2.,
-#                             "m_trkPmax": 1e8,
-#                             "m_doTrkEtacut": True,
-#                             "m_trkEtamin": 0.,
-#                             "m_trkEtamax": 1.7,
-#                             "m_doTileCuts": True,
-#                             "m_LarEmax": 1e8,
-#                             "m_TileEfracmin": -1,
-#                             "m_Pbins": "30, 0., 30.",
-#                             "m_doPbinsArray": True,
-#                             "m_PbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
-#                             "m_Etabins": "17, -1.7, 1.7",
-#                             "m_doEtabinsArray": False,
-#                             "m_EtabinsArray": "",
-#                             "m_doExtraEtaEnergyBinHists": False,
-#                             "m_doGlobalTileEfracRanges": False,
-#                             "m_doGlobalEnergyRanges": False,
-#                             "m_doGlobalEtaRanges": False,
-#                             "m_trkPtReweightingFile": trkPtReweightingFile,
-#                             "m_doTrkPtReweighting": do_trkPtRewighting,
-#                             "m_detailStr": "all",
-#                             "m_useCutFlow": False,
-#                             "m_debug": False})
-#
-# ''' E/p histograms with LoosePrimary track selection'''
-# c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_ClusterEnergy_Tile_2GeVTrkP_1GeVLar_noTileEfrac",
-#                             "m_inTrackContainerName": trks_loose,
-#                             "m_energyCalib": "ClusterEnergy", # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
-#                             "m_doCaloTotal": True,
-#                             "m_doCaloEM": True,
-#                             "m_doCaloHAD": True,
-#                             "m_doBgSubtr" : False,
-#                             "m_doTileLayer": True,
-#                             "m_trkIsoDRmax": .4,
-#                             "m_trkIsoPfrac": 0.,
-#                             "m_doTrkPcut": True,
-#                             "m_trkPmin": 2.,
-#                             "m_trkPmax": 1e8,
-#                             "m_doTrkEtacut": True,
-#                             "m_trkEtamin": 0.,
-#                             "m_trkEtamax": 1.7,
-#                             "m_doTileCuts": True,
-#                             "m_LarEmax": 1,
-#                             "m_TileEfracmin": -1,
-#                             "m_Pbins": "30, 0., 30.",
-#                             "m_doPbinsArray": True,
-#                             "m_PbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
-#                             "m_Etabins": "17, -1.7, 1.7",
-#                             "m_doEtabinsArray": False,
-#                             "m_EtabinsArray": "",
-#                             "m_doExtraEtaEnergyBinHists": False,
-#                             "m_doGlobalTileEfracRanges": False,
-#                             "m_doGlobalEnergyRanges": False,
-#                             "m_doGlobalEtaRanges": False,
-#                             "m_trkPtReweightingFile": trkPtReweightingFile,
-#                             "m_doTrkPtReweighting": do_trkPtRewighting,
-#                             "m_detailStr": "all",
-#                             "m_useCutFlow": False,
-#                             "m_debug": False})
+''' E/p histograms with LoosePrimary track selection'''
+c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_ClusterEnergy_Tile_2GeVTrkP_noLar_noTileEfrac",
+                            "m_inTrackContainerName": trks_loose,
+                            "m_energyCalib": "ClusterEnergy", # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
+                            "m_doCaloTotal": True,
+                            "m_doCaloEM": True,
+                            "m_doCaloHAD": True,
+                            "m_doBgSubtr" : False,
+                            "m_doTileLayer": True,
+                            "m_trkIsoDRmax": .4,
+                            "m_trkIsoPfrac": 0.,
+                            "m_doTrkPcut": True,
+                            "m_trkPmin": 2.,
+                            "m_trkPmax": 1e8,
+                            "m_doTrkEtacut": True,
+                            "m_trkEtamin": 0.,
+                            "m_trkEtamax": 1.7,
+                            "m_doTileCuts": True,
+                            "m_LarEmax": 1e8,
+                            "m_TileEfracmin": -1,
+                            "m_Pbins": "30, 0., 30.",
+                            "m_doPbinsArray": True,
+                            "m_PbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
+                            "m_Etabins": "17, -1.7, 1.7",
+                            "m_doEtabinsArray": False,
+                            "m_EtabinsArray": "",
+                            "m_doExtraEtaEnergyBinHists": False,
+                            "m_doGlobalTileEfracRanges": False,
+                            "m_doGlobalEnergyRanges": False,
+                            "m_doGlobalEtaRanges": False,
+                            "m_trkPtReweightingFile": trkPtReweightingFile,
+                            "m_doTrkPtReweighting": do_trkPtRewighting,
+                            "m_detailStr": "all",
+                            "m_useCutFlow": False,
+                            "m_debug": False})
 
-# for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
-for energy_calib in ["ClusterEnergy"]:
+''' E/p histograms with LoosePrimary track selection'''
+c.setalg("EoverPAnalysis", {"m_name": "EoverP_LoosePrimaryTrks_ClusterEnergy_Tile_2GeVTrkP_1GeVLar_noTileEfrac",
+                            "m_inTrackContainerName": trks_loose,
+                            "m_energyCalib": "ClusterEnergy", # ClusterEnergy, ClusterEnergyLCW, or CellEnergy
+                            "m_doCaloTotal": True,
+                            "m_doCaloEM": True,
+                            "m_doCaloHAD": True,
+                            "m_doBgSubtr" : False,
+                            "m_doTileLayer": True,
+                            "m_trkIsoDRmax": .4,
+                            "m_trkIsoPfrac": 0.,
+                            "m_doTrkPcut": True,
+                            "m_trkPmin": 2.,
+                            "m_trkPmax": 1e8,
+                            "m_doTrkEtacut": True,
+                            "m_trkEtamin": 0.,
+                            "m_trkEtamax": 1.7,
+                            "m_doTileCuts": True,
+                            "m_LarEmax": 1,
+                            "m_TileEfracmin": -1,
+                            "m_Pbins": "30, 0., 30.",
+                            "m_doPbinsArray": True,
+                            "m_PbinsArray": "0., 2.5, 3., 3.5, 4., 4.5, 5., 6., 7., 8., 9., 10., 12., 14., 16., 20., 30.",
+                            "m_Etabins": "17, -1.7, 1.7",
+                            "m_doEtabinsArray": False,
+                            "m_EtabinsArray": "",
+                            "m_doExtraEtaEnergyBinHists": False,
+                            "m_doGlobalTileEfracRanges": False,
+                            "m_doGlobalEnergyRanges": False,
+                            "m_doGlobalEtaRanges": False,
+                            "m_trkPtReweightingFile": trkPtReweightingFile,
+                            "m_doTrkPtReweighting": do_trkPtRewighting,
+                            "m_detailStr": "all",
+                            "m_useCutFlow": False,
+                            "m_debug": False})
+
+for energy_calib in ["ClusterEnergy", "ClusterEnergyLCW", "CellEnergy"]:
+# for energy_calib in ["ClusterEnergy"]:
 
     if energy_calib == "ClusterEnergy":
         useCutFlow = True

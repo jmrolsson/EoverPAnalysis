@@ -429,6 +429,8 @@ EL::StatusCode EoverPAnalysis :: execute ()
       eventWeight *= pileupWeight;
     }
   }
+  eventWeight *= m_sampleWeight;
+
 
   m_numEvent++;
 

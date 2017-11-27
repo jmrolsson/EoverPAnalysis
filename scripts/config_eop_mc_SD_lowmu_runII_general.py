@@ -17,7 +17,7 @@ trks_run1 = trks+"Run1"
 do_trkPtRewighting = True
 trkPtReweightingFile = "pt_reweighting_runII_general.root"
 
-sampleWeight = 1.0
+sampleWeight = 4.1908906364
 
 eta_bins_runII_general = ".0, .6, 1.1, 1.4, 1.5, 1.8, 1.9, 2.3"
 # OLD  p_bins_runII_general = ".5, .8, 1.2, 1.8, 2.2, 2.8, 3.6, 4.6, 6., 10., 15., 20., 25., 30., 40., 50., 100., 200., 1000., 10000."
